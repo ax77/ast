@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ast._entry.PreprocessSourceForParser;
@@ -21,6 +22,7 @@ import jscan.Tokenlist;
 
 public class _TestExprTypeNew {
 
+  @Ignore
   @Test
   public void testSizeofEvaluation() throws IOException {
     Map<String, Integer> s = new HashMap<String, Integer>();
@@ -135,7 +137,6 @@ public class _TestExprTypeNew {
     s.add("0 && 0 ? 1 : 2        ");
     s.add("(1,2,3,4,5,6,7,8,9,0) ");
     s.add("(1+2, 2+3, 3+4)       ");
-    s.add("a = b = c");
     //@formatter:on
 
     for (String source : s) {

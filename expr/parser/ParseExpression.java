@@ -39,7 +39,6 @@ import ast.declarations.parser.ParseDeclarations;
 import ast.expr.main.CExpression;
 import ast.expr.main.CExpressionBase;
 import ast.expr.sem.CExpressionBuilder;
-import ast.expr.sem.TypeApplier;
 import ast.parse.Parse;
 import ast.parse.ParseState;
 import ast.symtabg.elements.CSymbol;
@@ -218,7 +217,7 @@ public class ParseExpression {
 
         if (parser.tp() != T.T_LEFT_BRACE) {
           final CExpression tocast = e_cast();
-          return new CExpression(typeName, tocast, lparen);
+          return CExpressionBuilder.doCast(parser, typeName, tocast, lparen, false);
         }
       }
 
@@ -262,20 +261,23 @@ public class ParseExpression {
         parser.rparen();
 
         C_strtox strtox = new C_strtox(String.format("%d", typename.getSize()));
-        final CExpression ret = new CExpression(strtox, id);
-        TypeApplier.applyType(ret, parser);
+        final CExpression ret = CExpressionBuilder.number(strtox, id, parser, false);
+        //        TypeApplier.applyType(ret, parser);
 
         return ret;
 
       } else {
 
         CExpression sizeofexpr = e_expression();
-        TypeApplier.applyType(sizeofexpr, parser);
+        //        TypeApplier.applyType(sizeofexpr, parser);
+        if (sizeofexpr.getResultType() == null) {
+          parser.perror("no type for " + sizeofexpr.getBase().toString() + ": " + sizeofexpr.toString());
+        }
 
         parser.rparen();
 
         C_strtox strtox = new C_strtox(String.format("%d", sizeofexpr.getResultType().getSize()));
-        return new CExpression(strtox, id);
+        return CExpressionBuilder.number(strtox, id, parser, false);
 
       }
 
@@ -284,10 +286,14 @@ public class ParseExpression {
     // sizeof 1
 
     CExpression sizeofexpr = e_unary();
-    TypeApplier.applyType(sizeofexpr, parser);
+    //    TypeApplier.applyType(sizeofexpr, parser);
+
+    if (sizeofexpr.getResultType() == null) {
+      parser.perror("no type for " + sizeofexpr.getBase().toString() + ": " + sizeofexpr.toString());
+    }
 
     C_strtox strtox = new C_strtox(String.format("%d", sizeofexpr.getResultType().getSize()));
-    return new CExpression(strtox, id);
+    return CExpressionBuilder.number(strtox, id, parser, false);
 
   }
 
@@ -411,7 +417,7 @@ public class ParseExpression {
 
         // TODO:NUMBERS
         C_strtox strtox = new C_strtox(toeval);
-        CExpression e = new CExpression(strtox, saved);
+        CExpression e = CExpressionBuilder.number(strtox, saved, parser, false);
         return e;
       }
     }
@@ -425,7 +431,7 @@ public class ParseExpression {
         parser.perror("symbol '" + saved.getValue() + "' was not declared in the scope.");
       }
 
-      CExpression e = new CExpression(sym, saved);
+      CExpression e = CExpressionBuilder.esymbol(sym, saved, false);
       return e;
     }
 

@@ -120,8 +120,7 @@ public class CType implements CTypeApi {
 
   private void assertGetType(TypeKind need) {
     if (need != kind) {
-      throw new ParseException(
-          "internal error: you want get type " + need.toString() + " from " + kind.toString());
+      throw new ParseException("internal error: you want get type " + need.toString() + " from " + kind.toString());
     }
   }
 
@@ -377,8 +376,7 @@ public class CType implements CTypeApi {
 
   @Override
   public boolean isIncomplete() {
-    return isCanBeIncomplete()
-        && (isIncompleteArray() || isIncompleteStruct() || isIncompleteUnion() || isVoid());
+    return isCanBeIncomplete() && (isIncompleteArray() || isIncompleteStruct() || isIncompleteUnion() || isVoid());
   }
 
   @Override
@@ -445,12 +443,7 @@ public class CType implements CTypeApi {
 
   @Override
   public boolean isUnsigned() {
-    return isUchar()
-        || isUshort()
-        || isUint()
-        || isUlong()
-        || isUlongLong()
-        || isUnsignedBitfield();
+    return isUchar() || isUshort() || isUint() || isUlong() || isUlongLong() || isUnsignedBitfield();
   }
 
   @Override

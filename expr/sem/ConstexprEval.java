@@ -14,12 +14,12 @@ public class ConstexprEval {
     this.parser = parser;
   }
 
-  public long ce(CExpression e) {
-    TypeApplier.applyType(e, parser);
-    return ce_internal(e);
-  }
+  //  public long ce(CExpression e) {
+  //    TypeApplier.applyType(e, parser);
+  //    return ce_internal(e);
+  //  }
 
-  private long ce_internal(CExpression expression) {
+  public long ce(CExpression expression) {
     CExpressionBase base = expression.getBase();
 
     if (base == CExpressionBase.ETERNARY) {

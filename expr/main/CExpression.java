@@ -169,7 +169,8 @@ public class CExpression implements ILocation {
     this.arglist = arguments;
   }
 
-  public CExpression(CType typename, CExpression tocast, Token token) {
+  public CExpression(CType typename, CExpression tocast, Token token,
+      boolean isParameterStubToDestroyConstructorUsage) {
     this.tname = NodeTemp.gettemp();
     this.tree = emptyTree();
     this.location = new SourceLocation(token);
@@ -204,7 +205,7 @@ public class CExpression implements ILocation {
     setRhs(branchFalse);
   }
 
-  public CExpression(CSymbol e, Token token) {
+  public CExpression(CSymbol e, Token token, boolean isParameterStubToDestroyConstructorUsage) {
     this.tname = NodeTemp.gettemp();
     this.location = new SourceLocation(token);
     this.tree = emptyTree();
@@ -213,7 +214,7 @@ public class CExpression implements ILocation {
     this.symbol = e;
   }
 
-  public CExpression(C_strtox e, Token token) {
+  public CExpression(C_strtox e, Token token, boolean isParameterStubToDestroyConstructorUsage) {
     e.ev(); // XXX:
 
     this.tname = NodeTemp.gettemp();

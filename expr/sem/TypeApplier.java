@@ -18,22 +18,22 @@ import jscan.tokenize.Token;
 public abstract class TypeApplier {
 
   //@formatter:off
-  private static final CType TYPE_BOOL = new CType(TypeKind.TP_BOOL, StorageKind.ST_NONE);
-  private static final CType TYPE_CHAR = new CType(TypeKind.TP_CHAR, StorageKind.ST_NONE);
-  private static final CType TYPE_UCHAR = new CType(TypeKind.TP_UCHAR, StorageKind.ST_NONE);
-  private static final CType TYPE_SHORT = new CType(TypeKind.TP_SHORT, StorageKind.ST_NONE);
-  private static final CType TYPE_USHORT = new CType(TypeKind.TP_USHORT, StorageKind.ST_NONE);
-  private static final CType TYPE_INT = new CType(TypeKind.TP_INT, StorageKind.ST_NONE);
-  private static final CType TYPE_UINT = new CType(TypeKind.TP_UINT, StorageKind.ST_NONE);
-  private static final CType TYPE_LONG = new CType(TypeKind.TP_LONG, StorageKind.ST_NONE);
-  private static final CType TYPE_ULONG = new CType(TypeKind.TP_ULONG, StorageKind.ST_NONE);
-  private static final CType TYPE_LONG_LONG = new CType(TypeKind.TP_LONG_LONG, StorageKind.ST_NONE);
-  private static final CType TYPE_ULONG_LONG = new CType(TypeKind.TP_ULONG_LONG, StorageKind.ST_NONE);
-  private static final CType TYPE_FLOAT = new CType(TypeKind.TP_FLOAT, StorageKind.ST_NONE);
-  private static final CType TYPE_DOUBLE = new CType(TypeKind.TP_DOUBLE, StorageKind.ST_NONE);
-  private static final CType TYPE_LONG_DOUBLE = new CType(TypeKind.TP_LONG_DOUBLE, StorageKind.ST_NONE);
+  public static final CType TYPE_BOOL = new CType(TypeKind.TP_BOOL, StorageKind.ST_NONE);
+  public static final CType TYPE_CHAR = new CType(TypeKind.TP_CHAR, StorageKind.ST_NONE);
+  public static final CType TYPE_UCHAR = new CType(TypeKind.TP_UCHAR, StorageKind.ST_NONE);
+  public static final CType TYPE_SHORT = new CType(TypeKind.TP_SHORT, StorageKind.ST_NONE);
+  public static final CType TYPE_USHORT = new CType(TypeKind.TP_USHORT, StorageKind.ST_NONE);
+  public static final CType TYPE_INT = new CType(TypeKind.TP_INT, StorageKind.ST_NONE);
+  public static final CType TYPE_UINT = new CType(TypeKind.TP_UINT, StorageKind.ST_NONE);
+  public static final CType TYPE_LONG = new CType(TypeKind.TP_LONG, StorageKind.ST_NONE);
+  public static final CType TYPE_ULONG = new CType(TypeKind.TP_ULONG, StorageKind.ST_NONE);
+  public static final CType TYPE_LONG_LONG = new CType(TypeKind.TP_LONG_LONG, StorageKind.ST_NONE);
+  public static final CType TYPE_ULONG_LONG = new CType(TypeKind.TP_ULONG_LONG, StorageKind.ST_NONE);
+  public static final CType TYPE_FLOAT = new CType(TypeKind.TP_FLOAT, StorageKind.ST_NONE);
+  public static final CType TYPE_DOUBLE = new CType(TypeKind.TP_DOUBLE, StorageKind.ST_NONE);
+  public static final CType TYPE_LONG_DOUBLE = new CType(TypeKind.TP_LONG_DOUBLE, StorageKind.ST_NONE);
   
-  private static Map<NumType, CType> bindings = new HashMap<NumType, CType>();
+  public static Map<NumType, CType> bindings = new HashMap<NumType, CType>();
   static {
     bindings.put(NumType.N_INT           , TYPE_INT);
     bindings.put(NumType.N_UINT          , TYPE_UINT);
@@ -155,18 +155,18 @@ public abstract class TypeApplier {
       e.setResultType(e.getRhs().getResultType()); // TODO:
     }
 
-    else if (base == CExpressionBase.EPRIMARY_CONST) {
-      final NumType numtype = e.getCnumber().getNumtype();
-      e.setResultType(bindings.get(numtype));
-    }
+    //    else if (base == CExpressionBase.EPRIMARY_CONST) {
+    //      final NumType numtype = e.getCnumber().getNumtype();
+    //      e.setResultType(bindings.get(numtype));
+    //    }
 
-    else if (base == CExpressionBase.EPRIMARY_IDENT) {
-      e.setResultType(e.getSymbol().getType());
-    }
+    //    else if (base == CExpressionBase.EPRIMARY_IDENT) {
+    //      e.setResultType(e.getSymbol().getType());
+    //    }
 
-    else if (base == CExpressionBase.ECAST) {
-      e.setResultType(e.getTypename());
-    }
+    //    else if (base == CExpressionBase.ECAST) {
+    //      e.setResultType(e.getTypename());
+    //    }
 
     else if (base == CExpressionBase.ECOMMA) {
       applyTypeInternal(e.getLhs(), parser);
