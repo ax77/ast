@@ -1,9 +1,11 @@
 package ast.parse;
 
 import static jscan.tokenize.T.T_AND;
+import static jscan.tokenize.T.T_EXCLAMATION;
 import static jscan.tokenize.T.T_MINUS;
+import static jscan.tokenize.T.T_PLUS;
 import static jscan.tokenize.T.T_TILDE;
-
+import static jscan.tokenize.T.T_TIMES;
 import jscan.hashed.Hash_ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
@@ -29,13 +31,14 @@ public abstract class Pcheckers {
   }
   
 
+  // & * + - ~ !
   public static boolean isUnaryOperator(Token what) {
     return what.ofType(T_AND) 
-        || what.ofType(T.T_TIMES)
-        || what.ofType(T.T_PLUS)
+        || what.ofType(T_TIMES)
+        || what.ofType(T_PLUS)
         || what.ofType(T_MINUS) 
         || what.ofType(T_TILDE)
-        || what.ofType(T.T_EXCLAMATION);
+        || what.ofType(T_EXCLAMATION);
   }
   
   public static boolean isStorageClassSpec(Token what) {

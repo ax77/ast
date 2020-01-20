@@ -1,7 +1,7 @@
 package ast.declarations;
 
-import ast.expr.main.CExpression;
 import jscan.tokenize.Token;
+import ast.expr.main.CExpression;
 
 public class Designator {
 

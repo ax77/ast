@@ -1,19 +1,25 @@
 package ast.expr.sem;
 
+import jscan.cstrtox.C_strtox;
+import jscan.cstrtox.NumType;
+import jscan.tokenize.T;
+import jscan.tokenize.Token;
 import ast._typesnew.CType;
 import ast.expr.main.CExpression;
 import ast.expr.main.CExpressionBase;
 import ast.parse.Parse;
 import ast.symtabg.elements.CSymbol;
-import jscan.cstrtox.C_strtox;
-import jscan.cstrtox.NumType;
-import jscan.tokenize.T;
-import jscan.tokenize.Token;
 
 public abstract class CExpressionBuilder {
 
   private static CExpression ecast(CType to, CExpression what, Token where) {
     return new CExpression(to, what, where, false);
+  }
+
+  //public CExpression(Token op, CExpression lhs, boolean isParameterStubToDestroyConstructorUsage) 
+  public static CExpression unary(Token op, CExpression operand, boolean isParameterStubToDestroyConstructorUsage) {
+    CExpression res = new CExpression(op, operand, isParameterStubToDestroyConstructorUsage);
+    return res;
   }
 
   public static CExpression binary(Token operator, Parse parser, CExpression lhs, CExpression rhs) {

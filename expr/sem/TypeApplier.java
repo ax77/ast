@@ -3,6 +3,9 @@ package ast.expr.sem;
 import java.util.HashMap;
 import java.util.Map;
 
+import jscan.cstrtox.NumType;
+import jscan.tokenize.T;
+import jscan.tokenize.Token;
 import ast._typesnew.CType;
 import ast._typesnew.main.StorageKind;
 import ast._typesnew.main.TypeKind;
@@ -11,9 +14,6 @@ import ast.expr.main.CExpressionBase;
 import ast.parse.NullChecker;
 import ast.parse.Parse;
 import ast.parse.ParseException;
-import jscan.cstrtox.NumType;
-import jscan.tokenize.T;
-import jscan.tokenize.Token;
 
 public abstract class TypeApplier {
 
@@ -174,11 +174,11 @@ public abstract class TypeApplier {
       e.setResultType(e.getRhs().getResultType());
     }
 
-    else if (base == CExpressionBase.ESUBSCRIPT) {
-      applyTypeInternal(e.getLhs(), parser);
-      applyTypeInternal(e.getRhs(), parser);
-      e.setResultType(e.getLhs().getResultType());
-    }
+    //    else if (base == CExpressionBase.ESUBSCRIPT) {
+    //      applyTypeInternal(e.getLhs(), parser);
+    //      applyTypeInternal(e.getRhs(), parser);
+    //      e.setResultType(e.getLhs().getResultType());
+    //    }
 
     else if (base == CExpressionBase.EFCALL) {
       applyTypeInternal(e.getLhs(), parser);

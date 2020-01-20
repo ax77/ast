@@ -14,7 +14,6 @@ public enum CExpressionBase {
  , ECOMPSEL // . ->
  , ECAST
  , EFCALL
- , ESUBSCRIPT
  , EPREINCDEC
  , EPOSTINCDEC
  , ECOMPLITERAL

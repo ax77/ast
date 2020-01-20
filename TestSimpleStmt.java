@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import jscan.tokenize.Stream;
+import jscan.tokenize.Token;
+
 import org.junit.Test;
 
 import ast.parse.Parse;
@@ -13,8 +16,6 @@ import ast.stmt.main.CStatement;
 import ast.stmt.main.CStatementBase;
 import ast.stmt.parser.ParseStatement;
 import ast.unit.TranslationUnit;
-import jscan.tokenize.Stream;
-import jscan.tokenize.Token;
 
 public class TestSimpleStmt {
 

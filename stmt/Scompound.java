@@ -3,10 +3,10 @@ package ast.stmt;
 import java.util.ArrayList;
 import java.util.List;
 
-import ast.unit.BlockItem;
 import jscan.sourceloc.SourceLocation;
 import jscan.sourceloc.SourceLocationRange;
 import jscan.tokenize.Token;
+import ast.unit.BlockItem;
 
 public class Scompound {
   private final List<BlockItem> blockItemList;

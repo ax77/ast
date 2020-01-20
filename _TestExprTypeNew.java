@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import jscan.Tokenlist;
+
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -18,7 +20,6 @@ import ast.expr.main.CExpression;
 import ast.expr.parser.ParseExpression;
 import ast.expr.sem.ConstexprEval;
 import ast.parse.Parse;
-import jscan.Tokenlist;
 
 public class _TestExprTypeNew {
 
@@ -116,23 +117,24 @@ public class _TestExprTypeNew {
     }
   }
 
-  //  @Test
-  //  public void testPrint() throws IOException {
-  //    List<String> s = new ArrayList<String>(0);
-//    //@formatter:off
-//    s.add("1 += 2");
-//    s.add("1 = 2 += 3");
-//    //@formatter:on
-  //
-  //    for (String source : s) {
-  //
-  //      Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
-  //      Parse p = new Parse(it);
-  //      p.setSemanticEnable(false);
-  //
-  //      CExpression expr = new ParseExpression(p).e_expression();
-  //      //System.out.println(expr.toString());
-  //    }
-  //  }
+  @Ignore
+  @Test
+  public void testPrintDirty() throws IOException {
+    List<String> s = new ArrayList<String>(0);
+    //@formatter:off
+    s.add("1024[1]");
+    s.add("1024[1][2][3]");
+    //@formatter:on
+
+    for (String source : s) {
+
+      Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
+      Parse p = new Parse(it);
+      p.setSemanticEnable(false);
+
+      CExpression expr = new ParseExpression(p).e_expression();
+      System.out.println(expr.toString());
+    }
+  }
 
 }

@@ -10,6 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import jscan.Tokenlist;
+import jscan.symtab.Ident;
+import jscan.tokenize.T;
+import jscan.tokenize.Token;
 import ast._typesnew.CType;
 import ast._typesnew.decl.CDecl;
 import ast._typesnew.main.StorageKind;
@@ -27,10 +31,6 @@ import ast.symtabg.elements.CSymbol;
 import ast.unit.ExternalDeclaration;
 import ast.unit.FunctionDefinition;
 import ast.unit.TranslationUnit;
-import jscan.Tokenlist;
-import jscan.symtab.Ident;
-import jscan.tokenize.T;
-import jscan.tokenize.Token;
 
 public class Parse {
 

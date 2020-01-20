@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import jscan.Tokenlist;
+import jscan.hashed.Hash_ident;
+
 import org.junit.Test;
 
 import ast._entry.PreprocessSourceForParser;
@@ -29,8 +32,6 @@ import ast.parse.Parse;
 import ast.parse.ParseException;
 import ast.symtabg.elements.CSymbol;
 import ast.unit.TranslationUnit;
-import jscan.Tokenlist;
-import jscan.hashed.Hash_ident;
 
 public class _TestCTypeNew {
 

@@ -7,6 +7,8 @@ import static jscan.tokenize.T.T_SEMI_COLON;
 import java.util.ArrayList;
 import java.util.List;
 
+import jscan.tokenize.T;
+import jscan.tokenize.Token;
 import ast._typesnew.CStructField;
 import ast._typesnew.CStructType;
 import ast._typesnew.CType;
@@ -18,8 +20,6 @@ import ast.expr.main.CExpression;
 import ast.expr.parser.ParseExpression;
 import ast.expr.sem.ConstexprEval;
 import ast.parse.Parse;
-import jscan.tokenize.T;
-import jscan.tokenize.Token;
 
 public class ParseStruct {
   private final Parse parser;

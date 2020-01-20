@@ -7,6 +7,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import jscan.hashed.Hash_ident;
+import jscan.symtab.Ident;
+import jscan.tokenize.T;
+import jscan.tokenize.Token;
 import ast._typesnew.CEnumType;
 import ast._typesnew.CStructType;
 import ast._typesnew.CType;
@@ -19,10 +23,6 @@ import ast.parse.Parse;
 import ast.parse.ParseState;
 import ast.parse.Pcheckers;
 import ast.symtabg.elements.CSymbol;
-import jscan.hashed.Hash_ident;
-import jscan.symtab.Ident;
-import jscan.tokenize.T;
-import jscan.tokenize.Token;
 
 public class ParseBase {
   private final Parse p;

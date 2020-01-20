@@ -1,7 +1,7 @@
 package ast._typesnew;
 
-import ast.parse.NullChecker;
 import jscan.symtab.Ident;
+import ast.parse.NullChecker;
 
 public class CFuncParam {
   private final Ident name;

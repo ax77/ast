@@ -1,15 +1,15 @@
 package ast.symtabg.elements;
 
+import jscan.cstrtox.NumType;
+import jscan.sourceloc.SourceLocation;
+import jscan.symtab.Ident;
+import jscan.tokenize.Token;
 import ast._typesnew.CType;
 import ast._typesnew.CTypeApi;
 import ast._typesnew.main.TypeKind;
 import ast.declarations.Initializer;
 import ast.parse.ILocation;
 import ast.parse.ParseException;
-import jscan.cstrtox.NumType;
-import jscan.sourceloc.SourceLocation;
-import jscan.symtab.Ident;
-import jscan.tokenize.Token;
 
 public class CSymbol implements CTypeApi, ILocation {
   private final SourceLocation location;

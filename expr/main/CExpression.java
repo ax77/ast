@@ -9,12 +9,15 @@ import static ast.expr.main.CExpressionBase.EFCALL;
 import static ast.expr.main.CExpressionBase.EPOSTINCDEC;
 import static ast.expr.main.CExpressionBase.EPREINCDEC;
 import static ast.expr.main.CExpressionBase.EPRIMARY_GENERIC;
-import static ast.expr.main.CExpressionBase.ESUBSCRIPT;
 import static ast.expr.main.CExpressionBase.ETERNARY;
 import static ast.expr.main.CExpressionBase.EUNARY;
 
 import java.util.List;
 
+import jscan.cstrtox.C_strtox;
+import jscan.sourceloc.SourceLocation;
+import jscan.symtab.Ident;
+import jscan.tokenize.Token;
 import ast._typesnew.CType;
 import ast.declarations.InitializerList;
 import ast.parse.ILocation;
@@ -22,10 +25,6 @@ import ast.parse.NodeTemp;
 import ast.parse.ParseException;
 import ast.symtabg.elements.CSymbol;
 import ast.symtabg.elements.NumericConstant;
-import jscan.cstrtox.C_strtox;
-import jscan.sourceloc.SourceLocation;
-import jscan.symtab.Ident;
-import jscan.tokenize.Token;
 
 public class CExpression implements ILocation {
 
@@ -67,7 +66,7 @@ public class CExpression implements ILocation {
   }
 
   public CExpression getLhs() {
-    assertBaseIsOneOf(EASSIGN, EBINARY, ETERNARY, ECOMMA, ECAST, ESUBSCRIPT, EFCALL, EPRIMARY_GENERIC);
+    assertBaseIsOneOf(EASSIGN, EBINARY, ETERNARY, ECOMMA, ECAST /*, ESUBSCRIPT*/, EFCALL, EPRIMARY_GENERIC);
     return tree[LHS_INDEX];
   }
 
@@ -77,7 +76,7 @@ public class CExpression implements ILocation {
   }
 
   public CExpression getRhs() {
-    assertBaseIsOneOf(EASSIGN, EBINARY, ETERNARY, ECOMMA, ESUBSCRIPT);
+    assertBaseIsOneOf(EASSIGN, EBINARY, ETERNARY, ECOMMA /*, ESUBSCRIPT*/);
     return tree[RHS_INDEX];
   }
 
@@ -139,7 +138,7 @@ public class CExpression implements ILocation {
   }
 
   // unary
-  public CExpression(Token op, CExpression lhs) {
+  public CExpression(Token op, CExpression lhs, boolean isParameterStubToDestroyConstructorUsage) {
     this.base = CExpressionBase.EUNARY;
     this.tname = NodeTemp.gettemp();
     this.location = new SourceLocation(op);
@@ -169,8 +168,7 @@ public class CExpression implements ILocation {
     this.arglist = arguments;
   }
 
-  public CExpression(CType typename, CExpression tocast, Token token,
-      boolean isParameterStubToDestroyConstructorUsage) {
+  public CExpression(CType typename, CExpression tocast, Token token, boolean isParameterStubToDestroyConstructorUsage) {
     this.tname = NodeTemp.gettemp();
     this.tree = emptyTree();
     this.location = new SourceLocation(token);
@@ -334,7 +332,12 @@ public class CExpression implements ILocation {
       return getLhs().toString() + tokenTos(getToken()) + getRhs().toString();
     }
     case ETERNARY: {
-      return "(" + getCnd().toString().trim() + " ? " + getLhs().toString().trim() + " : " + getRhs().toString().trim()
+      return "("
+          + getCnd().toString().trim()
+          + " ? "
+          + getLhs().toString().trim()
+          + " : "
+          + getRhs().toString().trim()
           + ")";
     }
     case EUNARY: {
@@ -362,14 +365,14 @@ public class CExpression implements ILocation {
       sb.append(")");
       return sb.toString();
     }
-    case ESUBSCRIPT: {
-      StringBuilder sb = new StringBuilder();
-      sb.append(getLhs().toString());
-      if (getRhs() != null) {
-        sb.append("[" + getRhs().toString() + "]");
-      }
-      return sb.toString();
-    }
+    //    case ESUBSCRIPT: {
+    //      StringBuilder sb = new StringBuilder();
+    //      sb.append(getLhs().toString());
+    //      if (getRhs() != null) {
+    //        sb.append("[" + getRhs().toString() + "]");
+    //      }
+    //      return sb.toString();
+    //    }
     case EPREINCDEC: {
       return "(" + getToken().getValue() + getOperand().toString() + ")";
     }

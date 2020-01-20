@@ -2,13 +2,14 @@ package ast;
 
 import java.io.IOException;
 
+import jscan.Tokenlist;
+
 import org.junit.Test;
 
 import ast._entry.PreprocessSourceForParser;
 import ast._entry.PreprocessSourceForParserVariant;
 import ast.parse.Parse;
 import ast.unit.TranslationUnit;
-import jscan.Tokenlist;
 
 public class _TestInternalConversions {
 

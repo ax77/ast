@@ -1,12 +1,55 @@
 package ast.expr.parser;
 
-import static jscan.tokenize.T.*;
+import static jscan.tokenize.T.TOKEN_CHAR;
+import static jscan.tokenize.T.TOKEN_NUMBER;
+import static jscan.tokenize.T.TOKEN_STRING;
+import static jscan.tokenize.T.T_AND;
+import static jscan.tokenize.T.T_AND_AND;
+import static jscan.tokenize.T.T_AND_EQUAL;
+import static jscan.tokenize.T.T_ARROW;
+import static jscan.tokenize.T.T_ASSIGN;
+import static jscan.tokenize.T.T_COLON;
+import static jscan.tokenize.T.T_DIVIDE;
+import static jscan.tokenize.T.T_DIVIDE_EQUAL;
+import static jscan.tokenize.T.T_DOT;
+import static jscan.tokenize.T.T_EQ;
+import static jscan.tokenize.T.T_GE;
+import static jscan.tokenize.T.T_GT;
+import static jscan.tokenize.T.T_LE;
+import static jscan.tokenize.T.T_LEFT_BRACKET;
+import static jscan.tokenize.T.T_LEFT_PAREN;
+import static jscan.tokenize.T.T_LSHIFT;
+import static jscan.tokenize.T.T_LSHIFT_EQUAL;
+import static jscan.tokenize.T.T_LT;
+import static jscan.tokenize.T.T_MINUS;
+import static jscan.tokenize.T.T_MINUS_EQUAL;
+import static jscan.tokenize.T.T_MINUS_MINUS;
+import static jscan.tokenize.T.T_NE;
+import static jscan.tokenize.T.T_OR;
+import static jscan.tokenize.T.T_OR_EQUAL;
+import static jscan.tokenize.T.T_OR_OR;
+import static jscan.tokenize.T.T_PERCENT;
+import static jscan.tokenize.T.T_PERCENT_EQUAL;
+import static jscan.tokenize.T.T_PLUS;
+import static jscan.tokenize.T.T_PLUS_EQUAL;
+import static jscan.tokenize.T.T_QUESTION;
+import static jscan.tokenize.T.T_RIGHT_PAREN;
+import static jscan.tokenize.T.T_RSHIFT;
+import static jscan.tokenize.T.T_RSHIFT_EQUAL;
+import static jscan.tokenize.T.T_TIMES;
+import static jscan.tokenize.T.T_TIMES_EQUAL;
+import static jscan.tokenize.T.T_XOR;
+import static jscan.tokenize.T.T_XOR_EQUAL;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jscan.cstrtox.C_strtox;
+import jscan.hashed.Hash_ident;
+import jscan.tokenize.T;
+import jscan.tokenize.Token;
 import ast._typesnew.CType;
 import ast.declarations.InitializerList;
 import ast.declarations.parser.ParseDeclarations;
@@ -17,10 +60,6 @@ import ast.parse.Parse;
 import ast.parse.ParseState;
 import ast.parse.Pcheckers;
 import ast.symtabg.elements.CSymbol;
-import jscan.cstrtox.C_strtox;
-import jscan.hashed.Hash_ident;
-import jscan.tokenize.T;
-import jscan.tokenize.Token;
 
 class CompoundAssignInfo {
 
@@ -307,10 +346,11 @@ public class ParseExpression {
 
   private CExpression e_unary() {
 
-    if (parser.isUnaryOperator() || parser.tp() == T_TIMES || parser.tp() == T_AND) {
+    // [& * + - ~ !]
+    if (parser.isUnaryOperator()) {
       Token operator = parser.tok();
       parser.move();
-      return new CExpression(operator, e_cast());
+      return CExpressionBuilder.unary(operator, e_cast(), false);
     }
 
     if (parser.tp() == T.T_PLUS_PLUS || parser.tp() == T_MINUS_MINUS) {
@@ -448,7 +488,19 @@ public class ParseExpression {
       else if (parser.tp() == T.T_LEFT_BRACKET) {
         while (parser.tp() == T_LEFT_BRACKET) {
           Token lbrack = parser.lbracket();
-          lhs = new CExpression(CExpressionBase.ESUBSCRIPT, lhs, e_expression(), lbrack);
+
+          // a[5] to *(a+5)
+          Token operatorPlus = new Token(lbrack);
+          operatorPlus.setType(T_PLUS);
+          operatorPlus.setValue("+");
+
+          Token operatorDeref = new Token(lbrack);
+          operatorDeref.setType(T_TIMES);
+          operatorDeref.setValue("*");
+
+          CExpression inBrace = CExpressionBuilder.binary(operatorPlus, parser, lhs, e_expression());
+          lhs = CExpressionBuilder.unary(operatorDeref, inBrace, false);
+
           parser.rbracket();
         }
       }

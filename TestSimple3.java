@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import jscan.Tokenlist;
+
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -13,7 +15,6 @@ import ast._entry.PreprocessSourceForParser;
 import ast._entry.PreprocessSourceForParserVariant;
 import ast.parse.Parse;
 import ast.unit.TranslationUnit;
-import jscan.Tokenlist;
 
 public class TestSimple3 {
 

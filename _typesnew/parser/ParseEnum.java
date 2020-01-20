@@ -5,6 +5,9 @@ import static jscan.tokenize.T.TOKEN_IDENT;
 import java.util.ArrayList;
 import java.util.List;
 
+import jscan.symtab.Ident;
+import jscan.tokenize.T;
+import jscan.tokenize.Token;
 import ast._typesnew.CEnumType;
 import ast._typesnew.CType;
 import ast._typesnew.main.StorageKind;
@@ -16,9 +19,6 @@ import ast.expr.sem.ConstexprEval;
 import ast.parse.Parse;
 import ast.parse.ParseException;
 import ast.symtabg.elements.CSymbol;
-import jscan.symtab.Ident;
-import jscan.tokenize.T;
-import jscan.tokenize.Token;
 
 class EnumDto {
   private final Parse parser;

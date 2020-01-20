@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jscan.hashed.Hash_ident;
+import jscan.symtab.Ident;
+import jscan.tokenize.T;
 import ast._typesnew.CArrayType;
 import ast._typesnew.CFuncParam;
 import ast._typesnew.CType;
@@ -23,9 +26,6 @@ import ast.declarations.parser.ParseDeclarations;
 import ast.expr.main.CExpression;
 import ast.symtabg.elements.CSymbol;
 import ast.unit.FunctionDefinition;
-import jscan.hashed.Hash_ident;
-import jscan.symtab.Ident;
-import jscan.tokenize.T;
 
 public class Pfunction {
 

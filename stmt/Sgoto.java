@@ -1,7 +1,7 @@
 package ast.stmt;
 
-import ast.unit.FunctionDefinition;
 import jscan.symtab.Ident;
+import ast.unit.FunctionDefinition;
 
 public class Sgoto {
   private final FunctionDefinition function;
