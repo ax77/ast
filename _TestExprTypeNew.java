@@ -122,8 +122,10 @@ public class _TestExprTypeNew {
   public void testPrintDirty() throws IOException {
     List<String> s = new ArrayList<String>(0);
     //@formatter:off
-    s.add("1024[1]");
-    s.add("1024[1][2][3]");
+    s.add("a[1]");
+    s.add("1[a]");
+    s.add("a[1][2][3]");
+    s.add("a->b->c->d->e");
     //@formatter:on
 
     for (String source : s) {

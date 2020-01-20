@@ -5,6 +5,8 @@ import jscan.cstrtox.NumType;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import ast._typesnew.CType;
+import ast._typesnew.main.StorageKind;
+import ast._typesnew.main.TypeKind;
 import ast.expr.main.CExpression;
 import ast.expr.main.CExpressionBase;
 import ast.parse.Parse;
@@ -86,9 +88,13 @@ public abstract class CExpressionBuilder {
 
   //e.setResultType(e.getSymbol().getType());
   // public CExpression(CSymbol e, Token token, boolean isParameterStubToDestroyConstructorUsage)
-  public static CExpression esymbol(CSymbol e, Token token, boolean isParameterStubToDestroyConstructorUsage) {
+  public static CExpression esymbol(Parse parser, CSymbol e, Token token, boolean isParameterStubToDestroyConstructorUsage) {
     CExpression ret = new CExpression(e, token, isParameterStubToDestroyConstructorUsage);
-    ret.setResultType(e.getType());
+    if(!parser.isSemanticEnable()) {
+      ret.setResultType(new CType(TypeKind.TP_INT, StorageKind.ST_NONE));
+    } else {
+      ret.setResultType(e.getType());
+    }
     return ret;
   }
 

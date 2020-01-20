@@ -61,7 +61,7 @@ import ast.parse.ParseState;
 import ast.parse.Pcheckers;
 import ast.symtabg.elements.CSymbol;
 
-class CompoundAssignInfo {
+class Copier {
 
   //@formatter:off
   private static Map<T, T> asopmap = new HashMap<T, T>();
@@ -83,6 +83,13 @@ class CompoundAssignInfo {
     Token ntoken = new Token(from);
     ntoken.setType(T_ASSIGN);
     ntoken.setValue("=");
+    return ntoken;
+  }
+
+  public static Token copyTokenAddNewType(Token from, T newtype, String newvalue) {
+    Token ntoken = new Token(from);
+    ntoken.setType(newtype);
+    ntoken.setValue(newvalue);
     return ntoken;
   }
 
@@ -185,8 +192,8 @@ public class ParseExpression {
         // += lhs(a) rhs(b)
         // = lhs(a) rhs( + lhs(a) rhs(b) )
 
-        Token assignOperator = CompoundAssignInfo.getAssignToken(saved);
-        Token binaryOperator = CompoundAssignInfo.getOperatorFromCompAssign(saved);
+        Token assignOperator = Copier.getAssignToken(saved);
+        Token binaryOperator = Copier.getOperatorFromCompAssign(saved);
 
         CExpression rhs = CExpressionBuilder.binary(binaryOperator, parser, lhs, e_assign());
         lhs = CExpressionBuilder.assign(assignOperator, lhs, rhs);
@@ -379,18 +386,11 @@ public class ParseExpression {
 
         C_strtox strtox = new C_strtox(String.format("%d", typename.getSize()));
         final CExpression ret = CExpressionBuilder.number(strtox, id, parser, false);
-        //        TypeApplier.applyType(ret, parser);
-
         return ret;
 
       } else {
 
         CExpression sizeofexpr = e_expression();
-        //        TypeApplier.applyType(sizeofexpr, parser);
-        if (sizeofexpr.getResultType() == null) {
-          parser.perror("no type for " + sizeofexpr.getBase().toString() + ": " + sizeofexpr.toString());
-        }
-
         parser.rparen();
 
         C_strtox strtox = new C_strtox(String.format("%d", sizeofexpr.getResultType().getSize()));
@@ -403,12 +403,6 @@ public class ParseExpression {
     // sizeof 1
 
     CExpression sizeofexpr = e_unary();
-    //    TypeApplier.applyType(sizeofexpr, parser);
-
-    if (sizeofexpr.getResultType() == null) {
-      parser.perror("no type for " + sizeofexpr.getBase().toString() + ": " + sizeofexpr.toString());
-    }
-
     C_strtox strtox = new C_strtox(String.format("%d", sizeofexpr.getResultType().getSize()));
     return CExpressionBuilder.number(strtox, id, parser, false);
 
@@ -472,7 +466,20 @@ public class ParseExpression {
         parser.move(); // move . or ->
 
         Token ident = parser.expectIdentifier();
-        lhs = new CExpression(lhs, operator, ident.getIdent());
+
+        // a->b :: (*a).b
+        if (operator.ofType(T_ARROW)) {
+          final Token operatorDeref = Copier.copyTokenAddNewType(operator, T_TIMES, "*");
+          final Token operatorDot = Copier.copyTokenAddNewType(operator, T_DOT, ".");
+
+          CExpression inBrace = CExpressionBuilder.unary(operatorDeref, lhs, false);
+          lhs = new CExpression(inBrace, operatorDot, ident.getIdent());
+        }
+
+        else {
+          lhs = new CExpression(lhs, operator, ident.getIdent());
+        }
+
       }
 
       // ++ --
@@ -490,13 +497,8 @@ public class ParseExpression {
           Token lbrack = parser.lbracket();
 
           // a[5] to *(a+5)
-          Token operatorPlus = new Token(lbrack);
-          operatorPlus.setType(T_PLUS);
-          operatorPlus.setValue("+");
-
-          Token operatorDeref = new Token(lbrack);
-          operatorDeref.setType(T_TIMES);
-          operatorDeref.setValue("*");
+          Token operatorPlus = Copier.copyTokenAddNewType(lbrack, T_PLUS, "+");
+          Token operatorDeref = Copier.copyTokenAddNewType(lbrack, T_TIMES, "*");
 
           CExpression inBrace = CExpressionBuilder.binary(operatorPlus, parser, lhs, e_expression());
           lhs = CExpressionBuilder.unary(operatorDeref, inBrace, false);
@@ -560,7 +562,7 @@ public class ParseExpression {
         parser.perror("symbol '" + saved.getValue() + "' was not declared in the scope.");
       }
 
-      CExpression e = CExpressionBuilder.esymbol(sym, saved, false);
+      CExpression e = CExpressionBuilder.esymbol(parser, sym, saved, false);
       return e;
     }
 
