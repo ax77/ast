@@ -1,37 +1,11 @@
 package ast.expr.parser;
 
-import static jscan.tokenize.T.TOKEN_CHAR;
-import static jscan.tokenize.T.TOKEN_NUMBER;
-import static jscan.tokenize.T.TOKEN_STRING;
-import static jscan.tokenize.T.T_AND;
-import static jscan.tokenize.T.T_AND_AND;
-import static jscan.tokenize.T.T_ARROW;
-import static jscan.tokenize.T.T_COLON;
-import static jscan.tokenize.T.T_DIVIDE;
-import static jscan.tokenize.T.T_DOT;
-import static jscan.tokenize.T.T_EQ;
-import static jscan.tokenize.T.T_GE;
-import static jscan.tokenize.T.T_GT;
-import static jscan.tokenize.T.T_LE;
-import static jscan.tokenize.T.T_LEFT_BRACKET;
-import static jscan.tokenize.T.T_LEFT_PAREN;
-import static jscan.tokenize.T.T_LSHIFT;
-import static jscan.tokenize.T.T_LT;
-import static jscan.tokenize.T.T_MINUS;
-import static jscan.tokenize.T.T_MINUS_MINUS;
-import static jscan.tokenize.T.T_NE;
-import static jscan.tokenize.T.T_OR;
-import static jscan.tokenize.T.T_OR_OR;
-import static jscan.tokenize.T.T_PERCENT;
-import static jscan.tokenize.T.T_PLUS;
-import static jscan.tokenize.T.T_QUESTION;
-import static jscan.tokenize.T.T_RIGHT_PAREN;
-import static jscan.tokenize.T.T_RSHIFT;
-import static jscan.tokenize.T.T_TIMES;
-import static jscan.tokenize.T.T_XOR;
+import static jscan.tokenize.T.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import ast._typesnew.CType;
 import ast.declarations.InitializerList;
@@ -41,11 +15,78 @@ import ast.expr.main.CExpressionBase;
 import ast.expr.sem.CExpressionBuilder;
 import ast.parse.Parse;
 import ast.parse.ParseState;
+import ast.parse.Pcheckers;
 import ast.symtabg.elements.CSymbol;
 import jscan.cstrtox.C_strtox;
 import jscan.hashed.Hash_ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+
+class CompoundAssignInfo {
+
+  //@formatter:off
+  private static Map<T, T> asopmap = new HashMap<T, T>();
+  static {
+    asopmap.put(T_TIMES_EQUAL     , T_TIMES);
+    asopmap.put(T_PERCENT_EQUAL   , T_PERCENT);
+    asopmap.put(T_DIVIDE_EQUAL    , T_DIVIDE);
+    asopmap.put(T_PLUS_EQUAL      , T_PLUS);
+    asopmap.put(T_MINUS_EQUAL     , T_MINUS);
+    asopmap.put(T_LSHIFT_EQUAL    , T_LSHIFT);
+    asopmap.put(T_RSHIFT_EQUAL    , T_RSHIFT);
+    asopmap.put(T_AND_EQUAL       , T_AND);
+    asopmap.put(T_XOR_EQUAL       , T_XOR);
+    asopmap.put(T_OR_EQUAL        , T_OR);
+  }
+  //@formatter:on
+
+  public static Token getAssignToken(Token from) {
+    Token ntoken = new Token(from);
+    ntoken.setType(T_ASSIGN);
+    ntoken.setValue("=");
+    return ntoken;
+  }
+
+  public static Token getOperatorFromCompAssign(Token from) {
+    Token ntoken = new Token(from);
+    ntoken.setType(asopmap.get(from.getType()));
+    switch (ntoken.getType()) {
+    case T_TIMES:
+      ntoken.setValue("*");
+      break;
+    case T_PERCENT:
+      ntoken.setValue("%");
+      break;
+    case T_DIVIDE:
+      ntoken.setValue("/");
+      break;
+    case T_PLUS:
+      ntoken.setValue("+");
+      break;
+    case T_MINUS:
+      ntoken.setValue("-");
+      break;
+    case T_LSHIFT:
+      ntoken.setValue("<<");
+      break;
+    case T_RSHIFT:
+      ntoken.setValue(">>");
+      break;
+    case T_AND:
+      ntoken.setValue("&");
+      break;
+    case T_XOR:
+      ntoken.setValue("^");
+      break;
+    case T_OR:
+      ntoken.setValue("|");
+      break;
+    default:
+      break;
+    }
+    return ntoken;
+  }
+}
 
 public class ParseExpression {
   private final Parse parser;
@@ -76,14 +117,50 @@ public class ParseExpression {
     return e;
   }
 
+  private boolean isCompoundAssign(Token what) {
+    return Pcheckers.isAssignOperator(what) && !what.ofType(T.T_ASSIGN);
+  }
+
   public CExpression e_assign() {
     CExpression lhs = e_cnd();
+
+    // if simple, then: this...
+    //
+    //    if (parser.isAssignOperator()) {
+    //      Token saved = parser.tok();
+    //      parser.move();
+    //      final CExpression rhs = e_assign();
+    //      lhs = CExpressionBuilder.assign(saved, lhs, rhs);
+    //    }
+
     if (parser.isAssignOperator()) {
+
       Token saved = parser.tok();
-      parser.move();
-      final CExpression rhs = e_assign();
-      lhs = CExpressionBuilder.assign(saved, lhs, rhs);
+
+      if (isCompoundAssign(saved)) {
+        parser.move();
+
+        // linearize compound assign
+        // a+=b :: a=a+b
+        //
+        // += lhs(a) rhs(b)
+        // = lhs(a) rhs( + lhs(a) rhs(b) )
+
+        Token assignOperator = CompoundAssignInfo.getAssignToken(saved);
+        Token binaryOperator = CompoundAssignInfo.getOperatorFromCompAssign(saved);
+
+        CExpression rhs = CExpressionBuilder.binary(binaryOperator, parser, lhs, e_assign());
+        lhs = CExpressionBuilder.assign(assignOperator, lhs, rhs);
+      }
+
+      else {
+
+        parser.move();
+        lhs = CExpressionBuilder.assign(saved, lhs, e_assign());
+      }
+
     }
+
     return lhs;
   }
 

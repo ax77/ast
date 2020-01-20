@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ast.parse.Parse;
@@ -18,6 +19,7 @@ public class TestSimple1 {
     return new Stream("<utest>", source);
   }
 
+  @Ignore
   @Test
   public void test() throws IOException {
     //@formatter:off

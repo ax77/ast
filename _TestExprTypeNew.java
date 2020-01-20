@@ -79,6 +79,7 @@ public class _TestExprTypeNew {
     }
   }
 
+  @Ignore
   @Test
   public void testConstexprEval_0() throws IOException {
     Map<String, Integer> s = new HashMap<String, Integer>();
@@ -115,39 +116,23 @@ public class _TestExprTypeNew {
     }
   }
 
-  @Test
-  public void testPrint() throws IOException {
-    List<String> s = new ArrayList<String>(0);
-    //@formatter:off
-    s.add("1 + 2ULL * 3ULL       ");
-    s.add("1 + 2 * 3             ");
-    s.add("1 ? 2 : 3 ? 4 : 5     ");
-    s.add("1 ? 2 : 1 / 0         ");
-    s.add("0 && 1 / 0            ");
-    s.add("1 - 1 && 1 / 0        ");
-    s.add("1 || 1 / 0            ");
-    s.add("-1 || 1 / 0           ");
-    s.add("1+2*3-1+2*1024-2+1/2  ");
-    s.add("1 & 2                 ");
-    s.add("1 | 2                 ");
-    s.add("1 ^ 2                 ");
-    s.add("1 << 1                ");
-    s.add("1 << 2                ");
-    s.add("1 << 3                ");
-    s.add("0 && 0 ? 1 : 2        ");
-    s.add("(1,2,3,4,5,6,7,8,9,0) ");
-    s.add("(1+2, 2+3, 3+4)       ");
-    //@formatter:on
-
-    for (String source : s) {
-
-      Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
-      Parse p = new Parse(it);
-      p.setSemanticEnable(false);
-
-      CExpression expr = new ParseExpression(p).e_expression();
-      //System.out.println(expr.toString());
-    }
-  }
+  //  @Test
+  //  public void testPrint() throws IOException {
+  //    List<String> s = new ArrayList<String>(0);
+//    //@formatter:off
+//    s.add("1 += 2");
+//    s.add("1 = 2 += 3");
+//    //@formatter:on
+  //
+  //    for (String source : s) {
+  //
+  //      Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
+  //      Parse p = new Parse(it);
+  //      p.setSemanticEnable(false);
+  //
+  //      CExpression expr = new ParseExpression(p).e_expression();
+  //      //System.out.println(expr.toString());
+  //    }
+  //  }
 
 }

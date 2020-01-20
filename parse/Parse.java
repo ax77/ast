@@ -389,10 +389,6 @@ public class Parse {
     return Pcheckers.isAsmStart(tok);
   }
 
-  public boolean isCompoundAssign() {
-    return isAssignOperator() && !tok.ofType(T.T_ASSIGN);
-  }
-
   public boolean isTypedefName(Token tok) {
     if (!tok.ofType(TOKEN_IDENT)) {
       return false;
