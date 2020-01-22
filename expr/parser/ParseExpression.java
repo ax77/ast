@@ -340,35 +340,11 @@ public class ParseExpression {
 
   private CExpression e_unary() {
 
-    //    // [& * + - ~ !]
-    //    if (parser.isUnaryOperator()) {
-    //      Token operator = parser.tok();
-    //      parser.move();
-    //      return CExpressionBuilder.unary(operator, e_cast(), false);
-    //    }
-
     // [& * + - ~ !]
     if (parser.isUnaryOperator()) {
       Token operator = parser.tok();
       parser.move();
-
-      final CExpression operand = e_cast();
-
-      // -x :: 0 - x
-      // +x :: 0 + x
-      // !x :: 0 == x
-
-      if (operator.ofType(T_MINUS) || operator.ofType(T_PLUS)) {
-        CExpression zero = CExpressionBuilderHelper.digitZero(operator);
-        return CExpressionBuilder.binary(operator, parser, zero, operand);
-      }
-      if (operator.ofType(T.T_EXCLAMATION)) {
-        CExpression zero = CExpressionBuilderHelper.digitZero(operator);
-        Token equalOp = CExpressionBuilderHelper.copyTokenAddNewType(operator, T_EQ, "==");
-        return CExpressionBuilder.binary(equalOp, parser, zero, operand);
-      }
-
-      return CExpressionBuilder.unary(operator, operand);
+      return CExpressionBuilder.unary(operator, e_cast());
     }
 
     if (parser.tp() == T.T_PLUS_PLUS || parser.tp() == T_MINUS_MINUS) {

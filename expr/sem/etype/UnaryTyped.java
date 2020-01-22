@@ -13,6 +13,7 @@ import jscan.tokenize.Token;
 import ast._typesnew.CType;
 import ast._typesnew.main.StorageKind;
 import ast.expr.main.CExpression;
+import ast.expr.sem.CExpressionBuilderHelper;
 import ast.parse.NullChecker;
 import ast.parse.ParseException;
 
@@ -28,7 +29,7 @@ public abstract class UnaryTyped {
     // T_EXCLAMATION
     //
     if (operator.ofType(T_EXCLAMATION)) {
-      CType lhsRT = operand.getResultType();
+      CType lhsRT = CExpressionBuilderHelper.ipromote(operand.getResultType());
       CType resRT = null;
       if (lhsRT.isScalar()) {
         resRT = TYPE_INT;
@@ -45,7 +46,7 @@ public abstract class UnaryTyped {
     // T_UMINUS
     //
     else if (operator.ofType(T_MINUS)) {
-      CType lhsRT = operand.getResultType();
+      CType lhsRT = CExpressionBuilderHelper.ipromote(operand.getResultType());
       CType resRT = null;
       if (lhsRT.isArithmetic()) {
         resRT = lhsRT;
@@ -62,7 +63,7 @@ public abstract class UnaryTyped {
     // T_UPLUS
     //
     else if (operator.ofType(T_PLUS)) {
-      CType lhsRT = operand.getResultType();
+      CType lhsRT = CExpressionBuilderHelper.ipromote(operand.getResultType());
       CType resRT = null;
       if (lhsRT.isArithmetic()) {
         resRT = lhsRT;
@@ -79,7 +80,7 @@ public abstract class UnaryTyped {
     // T_UTILDE
     //
     else if (operator.ofType(T_TILDE)) {
-      CType lhsRT = operand.getResultType();
+      CType lhsRT = CExpressionBuilderHelper.ipromote(operand.getResultType());
       CType resRT = null;
       if (lhsRT.isInteger()) {
         resRT = lhsRT;

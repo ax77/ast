@@ -2,10 +2,10 @@ package ast.expr.sem.etype;
 
 import static ast._typesnew.CType.TYPE_DOUBLE;
 import static ast._typesnew.CType.TYPE_FLOAT;
-import static ast._typesnew.CType.TYPE_INT;
 import static ast._typesnew.CType.TYPE_LONG_DOUBLE;
 import ast._typesnew.CType;
 import ast.expr.main.CExpression;
+import ast.expr.sem.CExpressionBuilderHelper;
 import ast.parse.NullChecker;
 
 public class BinaryBalancing {
@@ -39,19 +39,6 @@ public class BinaryBalancing {
     return castTo;
   }
 
-  private CType ipromote(CType res) {
-    if (res.isBool()) {
-      return TYPE_INT;
-    }
-    if (res.isUchar() || res.isChar()) {
-      return TYPE_INT;
-    }
-    if (res.isUshort() || res.isShort()) {
-      return TYPE_INT;
-    }
-    return res;
-  }
-
   private CType balanced() {
     CType lhsRt = lhs.getResultType();
     CType rhsRt = rhs.getResultType();
@@ -63,8 +50,8 @@ public class BinaryBalancing {
     } else if (lhsRt.isFloat() || rhsRt.isFloat()) {
       return TYPE_FLOAT;
     } else {
-      CType prom_1 = ipromote(lhsRt);
-      CType prom_2 = ipromote(rhsRt);
+      CType prom_1 = CExpressionBuilderHelper.ipromote(lhsRt);
+      CType prom_2 = CExpressionBuilderHelper.ipromote(rhsRt);
       if (prom_1.getSize() > prom_2.getSize()) {
         return prom_1;
       } else if (prom_2.getSize() > prom_1.getSize()) {

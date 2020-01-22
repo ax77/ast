@@ -115,24 +115,24 @@ public class ConstexprEval {
     if (base == CExpressionBase.EUNARY) {
       T t = expression.getToken().getType();
 
-      //      //21)
-      //      if (t == T.T_MINUS) {
-      //        return -ce(expression.getOperand());
-      //      }
-      //      //22)
-      //      if (t == T.T_PLUS) {
-      //        return ce(expression.getOperand());
-      //      }
+      //21)
+      if (t == T.T_MINUS) {
+        return -ce(expression.getOperand());
+      }
+      //22)
+      if (t == T.T_PLUS) {
+        return ce(expression.getOperand());
+      }
 
       //23)
       if (t == T.T_TILDE) {
         return ~ce(expression.getOperand());
       }
-      //      //24)
-      //      if (t == T.T_EXCLAMATION) {
-      //        long r = ce(expression.getOperand());
-      //        return (r == 0 ? 1 : 0);
-      //      }
+      //24)
+      if (t == T.T_EXCLAMATION) {
+        long r = ce(expression.getOperand());
+        return (r == 0 ? 1 : 0);
+      }
 
       throw new ParseException("incorrect unary operator " + t.toString());
     }

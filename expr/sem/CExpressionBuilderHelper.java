@@ -1,5 +1,6 @@
 package ast.expr.sem;
 
+import static ast._typesnew.CType.TYPE_INT;
 import static jscan.tokenize.T.TOKEN_NUMBER;
 import jscan.cstrtox.NumType;
 import jscan.tokenize.T;
@@ -38,5 +39,18 @@ public abstract class CExpressionBuilderHelper {
 
     ret.setResultType(CType.TYPE_INT);
     return ret;
+  }
+
+  public static CType ipromote(CType res) {
+    if (res.isBool()) {
+      return TYPE_INT;
+    }
+    if (res.isUchar() || res.isChar()) {
+      return TYPE_INT;
+    }
+    if (res.isUshort() || res.isShort()) {
+      return TYPE_INT;
+    }
+    return res;
   }
 }
