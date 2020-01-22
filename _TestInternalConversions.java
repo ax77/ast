@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import jscan.Tokenlist;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ast._entry.PreprocessSourceForParser;

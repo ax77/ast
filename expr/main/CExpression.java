@@ -374,14 +374,6 @@ public class CExpression implements ILocation {
       sb.append(")");
       return sb.toString();
     }
-    //    case ESUBSCRIPT: {
-    //      StringBuilder sb = new StringBuilder();
-    //      sb.append(getLhs().toString());
-    //      if (getRhs() != null) {
-    //        sb.append("[" + getRhs().toString() + "]");
-    //      }
-    //      return sb.toString();
-    //    }
     case EPREINCDEC: {
       return "(" + getToken().getValue() + getOperand().toString() + ")";
     }
@@ -389,8 +381,7 @@ public class CExpression implements ILocation {
       return "(" + getOperand().toString() + getToken().getValue() + ")";
     }
     case ECOMPLITERAL: {
-      //TODO:
-      break;
+      return "(" + typename.toString() + ") {" + initializerList.toString() + " }";
     }
     case EPRIMARY_IDENT: {
       return token.getValue(); // TODO: this for unit-tests now.
@@ -409,8 +400,6 @@ public class CExpression implements ILocation {
       throw new ParseException("unknown: " + base.toString());
     }
     }
-
-    throw new ParseException("unknown: " + base.toString());
 
   }
 

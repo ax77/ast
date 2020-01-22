@@ -43,6 +43,7 @@ public class TestCompoundLiteral {
     }
   }
 
+  @Ignore
   @Test
   public void testCompoundLiteral_2() throws IOException {
     Map<String, String> tests = new TreeMap<String, String>();

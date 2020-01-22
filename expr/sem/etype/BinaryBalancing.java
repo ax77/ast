@@ -1,4 +1,4 @@
-package ast.expr.sem;
+package ast.expr.sem.etype;
 
 import static ast._typesnew.CType.TYPE_DOUBLE;
 import static ast._typesnew.CType.TYPE_FLOAT;

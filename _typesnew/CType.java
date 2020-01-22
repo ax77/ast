@@ -29,6 +29,9 @@ public class CType implements CTypeApi {
   public static final CType TYPE_DOUBLE = new CType(TypeKind.TP_DOUBLE, StorageKind.ST_NONE);
   public static final CType TYPE_LONG_DOUBLE = new CType(TypeKind.TP_LONG_DOUBLE, StorageKind.ST_NONE);
   
+  public static final CType VOID_TYPE = new CType(TypeKind.TP_VOID, StorageKind.ST_NONE);
+  public static final CType FUNC_DESIGNATOR_TODO_STUB = null; // TODO:
+  
   public static Map<NumType, CType> bindings = new HashMap<NumType, CType>();
   static {
     bindings.put(NumType.N_INT           , TYPE_INT);
@@ -522,13 +525,16 @@ public class CType implements CTypeApi {
 //@formatter:on
 
   public boolean isPointerToCompat(CType lhsRT) {
-    // TODO Auto-generated method stub
-    return false;
+    // TODO: XXX
+    return true;
   }
 
   public boolean isPointerToVoid() {
-    // TODO Auto-generated method stub
-    return false;
+    return isPointer() && getPointerTo().isVoid();
+  }
+
+  public boolean isAnObjectExceptBitField() {
+    return isObject() && !isBitfield();
   }
 
 }

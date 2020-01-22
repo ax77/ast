@@ -9,7 +9,7 @@ import ast.expr.main.CExpression;
 import ast.parse.NullChecker;
 import ast.symtabg.elements.NumericConstant;
 
-public abstract class ExpressionBuildHelper {
+public abstract class CExpressionBuilderHelper {
 
   public static Token copyTokenAddNewType(Token from, T newtype, String newvalue) {
     NullChecker.check(from, newtype, newvalue);

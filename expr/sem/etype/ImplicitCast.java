@@ -1,4 +1,4 @@
-package ast.expr.sem;
+package ast.expr.sem.etype;
 
 import static jscan.tokenize.T.T_AND;
 import static jscan.tokenize.T.T_PLUS;
@@ -8,6 +8,7 @@ import ast._typesnew.CType;
 import ast._typesnew.main.StorageKind;
 import ast.expr.main.CExpression;
 import ast.expr.main.CExpressionBase;
+import ast.expr.sem.CExpressionBuilderHelper;
 import ast.parse.NullChecker;
 
 public abstract class ImplicitCast {
@@ -46,9 +47,9 @@ public abstract class ImplicitCast {
       CType ptrtype = new CType(arrtype, StorageKind.ST_NONE);
 
       //1)
-      Token operatorPlus = ExpressionBuildHelper.copyTokenAddNewType(operator, T_PLUS, "+");
+      Token operatorPlus = CExpressionBuilderHelper.copyTokenAddNewType(operator, T_PLUS, "+");
       CExpression binary = new CExpression(CExpressionBase.EBINARY, inputExpr,
-          ExpressionBuildHelper.digitZero(operatorPlus), operatorPlus);
+          CExpressionBuilderHelper.digitZero(operatorPlus), operatorPlus);
       binary.setResultType(ptrtype);
 
       //2)
@@ -56,12 +57,12 @@ public abstract class ImplicitCast {
       castExpr.setResultType(ptrtype);
 
       //3)
-      Token operatorDeref = ExpressionBuildHelper.copyTokenAddNewType(operator, T_TIMES, "*");
+      Token operatorDeref = CExpressionBuilderHelper.copyTokenAddNewType(operator, T_TIMES, "*");
       CExpression unaryDeref = new CExpression(operatorDeref, castExpr);
       unaryDeref.setResultType(ptrtype);
 
       //4)
-      Token operatorAddressOf = ExpressionBuildHelper.copyTokenAddNewType(operator, T_AND, "&");
+      Token operatorAddressOf = CExpressionBuilderHelper.copyTokenAddNewType(operator, T_AND, "&");
       CExpression addressOfFirstElem = new CExpression(operatorAddressOf, unaryDeref);
       addressOfFirstElem.setResultType(ptrtype);
 
@@ -70,7 +71,7 @@ public abstract class ImplicitCast {
 
     if (typeOfNode.isFunction()) {
       CType ptrtype = new CType(typeOfNode, StorageKind.ST_NONE);
-      Token operatorAddressOf = ExpressionBuildHelper.copyTokenAddNewType(operator, T_AND, "&");
+      Token operatorAddressOf = CExpressionBuilderHelper.copyTokenAddNewType(operator, T_AND, "&");
 
       CExpression addressOfFunction = new CExpression(operatorAddressOf, inputExpr);
       addressOfFunction.setResultType(ptrtype);
