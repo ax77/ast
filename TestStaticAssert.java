@@ -18,7 +18,6 @@ public class TestStaticAssert {
     return new Stream("", source);
   }
 
-  @Ignore
   @Test
   public void testStaticAssert() throws IOException {
     StringBuilder sb = new StringBuilder();

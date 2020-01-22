@@ -78,7 +78,6 @@ public class _TestExprTypeNew {
     }
   }
 
-  @Ignore
   @Test
   public void testConstexprEval_0() throws IOException {
     Map<String, Integer> s = new HashMap<String, Integer>();

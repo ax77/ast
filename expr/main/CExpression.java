@@ -455,4 +455,9 @@ public class CExpression implements ILocation {
     return location.getFilename();
   }
 
+  public boolean isIntegerZero() {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
 }

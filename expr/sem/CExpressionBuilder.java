@@ -9,7 +9,7 @@ import static jscan.tokenize.T.T_MINUS;
 import static jscan.tokenize.T.T_OR;
 import static jscan.tokenize.T.T_OR_OR;
 import static jscan.tokenize.T.T_PERCENT;
-import static jscan.tokenize.T.T_PLUS;
+import static jscan.tokenize.T.*;
 import static jscan.tokenize.T.T_TIMES;
 import static jscan.tokenize.T.T_XOR;
 import jscan.cstrtox.C_strtox;
@@ -132,6 +132,97 @@ public abstract class CExpressionBuilder {
       } else {
         errorExpr("Binary expression error: ", operator, lhs, rhs);
       }
+      checkResultType(resRT, operator, lhs, rhs);
+      CExpression resultExpression = new CExpression(CExpressionBase.EBINARY, lhs, rhs, operator);
+      resultExpression.setResultType(resRT);
+      return resultExpression;
+    }
+
+    // <  <=  >  >=
+    //
+    else if (operator.ofType(T_LT) || operator.ofType(T_LE) || operator.ofType(T_GT) || operator.ofType(T_GE)) {
+      CType lhsRT = lhs.getResultType();
+      CType rhsRT = rhs.getResultType();
+      CType resRT = TYPE_INT;
+      if (lhsRT.isArithmetic() && rhsRT.isArithmetic()) {
+        /* OK */;
+      } else if (lhsRT.isPointer() && rhsRT.isPointerToCompat(lhsRT)) {
+        /* OK */;
+      } else {
+        errorExpr("Equality binary expression error: ", operator, lhs, rhs);
+      }
+
+      checkResultType(resRT, operator, lhs, rhs);
+      CExpression resultExpression = new CExpression(CExpressionBase.EBINARY, lhs, rhs, operator);
+      resultExpression.setResultType(resRT);
+      return resultExpression;
+    }
+
+    // ==  !=
+    //
+    else if (operator.ofType(T_EQ) || operator.ofType(T_NE)) {
+      CType lhsRT = lhs.getResultType();
+      CType rhsRT = rhs.getResultType();
+      CType resRT = TYPE_INT;
+      if (lhsRT.isArithmetic() && rhsRT.isArithmetic()) {
+        /* OK */;
+      } else if (lhsRT.isPointer() && rhs.isIntegerZero()) {
+        /* OK */;
+      } else if (lhs.isIntegerZero() && rhsRT.isPointer()) {
+        /* OK */;
+      } else if (lhsRT.isPointer() && rhsRT.isPointerToCompat(lhsRT)) {
+        /* OK */;
+      } else if (lhsRT.isPointerToVoid() && rhsRT.isPointerToObject()) {
+        /* OK */;
+      } else if (lhsRT.isPointerToVoid() && rhsRT.isPointerToIncomplete()) {
+        /* OK */;
+      } else if (lhsRT.isPointerToObject() && rhsRT.isPointerToVoid()) {
+        /* OK */;
+      } else if (lhsRT.isPointerToIncomplete() && rhsRT.isPointerToVoid()) {
+        /* OK */;
+      } else {
+        errorExpr("Equality binary expression error: ", operator, lhs, rhs);
+      }
+
+      checkResultType(resRT, operator, lhs, rhs);
+      CExpression resultExpression = new CExpression(CExpressionBase.EBINARY, lhs, rhs, operator);
+      resultExpression.setResultType(resRT);
+      return resultExpression;
+    }
+
+    // T_LSHIFT
+    //
+    else if (operator.ofType(T_LSHIFT)) {
+      CType lhsRT = lhs.getResultType();
+      CType rhsRT = rhs.getResultType();
+      CType resRT = null;
+      if (lhsRT.isInteger() && rhsRT.isInteger()) {
+        resRT = lhsRT;
+      } else {
+        errorExpr("Shift binary expression error: ", operator, lhs, rhs);
+      }
+
+      checkResultType(resRT, operator, lhs, rhs);
+      CExpression resultExpression = new CExpression(CExpressionBase.EBINARY, lhs, rhs, operator);
+      resultExpression.setResultType(resRT);
+      return resultExpression;
+    }
+
+    // T_RSHIFT
+    //
+    else if (operator.ofType(T_RSHIFT)) {
+      CType lhsRT = lhs.getResultType();
+      CType rhsRT = rhs.getResultType();
+      CType resRT = null;
+      if (lhsRT.isInteger() && rhsRT.isInteger()) {
+        BinaryBalancing bb = new BinaryBalancing(lhs, rhs);
+        lhs = bb.getCastedLhs();
+        rhs = bb.getCastedRhs();
+        resRT = bb.getBalancedResult();
+      } else {
+        errorExpr("Shift binary expression error: ", operator, lhs, rhs);
+      }
+
       checkResultType(resRT, operator, lhs, rhs);
       CExpression resultExpression = new CExpression(CExpressionBase.EBINARY, lhs, rhs, operator);
       resultExpression.setResultType(resRT);

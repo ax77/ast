@@ -538,4 +538,9 @@ public class CType implements CTypeApi {
     return false;
   }
 
+  public boolean isPointerToVoid() {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
 }

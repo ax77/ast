@@ -636,7 +636,6 @@ public class _TestCTypeNew {
     assertEquals(3, params.size());
   }
 
-  @Ignore
   @Test
   public void testBuildEnumSymbols() throws IOException {
     final String source = "enum { eax = 1, ecx = eax << 1, edx = eax << 2 };";
