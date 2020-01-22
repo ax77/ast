@@ -200,6 +200,7 @@ public class TestTypedefs {
     TranslationUnit unit = p.parse_unit();
   }
 
+  @Ignore
   @Test
   public void testTypedefs6() throws IOException {
 

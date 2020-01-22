@@ -6,6 +6,7 @@ import java.util.List;
 import jscan.tokenize.Stream;
 import jscan.tokenize.Token;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ast.parse.Parse;
@@ -70,6 +71,7 @@ public class TestStructs {
     p.parse_unit();
   }
 
+  @Ignore
   @Test
   public void testStructsNew2() throws IOException {
     StringBuilder sb = new StringBuilder();

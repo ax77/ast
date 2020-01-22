@@ -237,6 +237,66 @@ public abstract class CExpressionBuilder {
     return null;
   }
 
+  private static CExpression sAssign(Token operator, CExpression lhs, CExpression rhs) {
+
+    NullChecker.check(operator, lhs, rhs, lhs.getResultType(), rhs.getResultType());
+
+    // TODO: modLvalue and etc...
+
+    checkModLvalue(lhs);
+
+    // T_ASSIGN
+    //
+    if (operator.ofType(T_ASSIGN)) {
+      CType lhsRT = lhs.getResultType();
+      CType rhsRT = rhs.getResultType();
+      CType resRT = lhsRT;
+      if (lhsRT.isArithmetic() && rhsRT.isArithmetic()) {
+        /* OK */;
+      } else if (lhsRT.isPointer() && rhs.isIntegerZero()) {
+        /* OK */;
+      } else if (lhsRT.isPointer() && rhsRT.isEqualTo(lhsRT)) {
+        /* OK */;
+      } else if (lhsRT.isStruct() && rhsRT.isEqualTo(lhsRT)) {
+        /* OK */;
+      } else if (lhsRT.isUnion() && rhsRT.isEqualTo(lhsRT)) {
+        /* OK */;
+      } else if (lhsRT.isPointerToVoid() && rhsRT.isPointerToObject()) {
+        /* OK */;
+      } else if (lhsRT.isPointerToVoid() && rhsRT.isPointerToIncomplete()) {
+        /* OK */;
+      } else if (lhsRT.isPointerToObject() && rhsRT.isPointerToVoid()) {
+        /* OK */;
+      } else if (lhsRT.isPointerToIncomplete() && rhsRT.isPointerToVoid()) {
+        /* OK */;
+      } else {
+        errorExpr("Assign binary expression error: ", operator, lhs, rhs);
+      }
+      checkResultType(resRT, operator, lhs, rhs);
+
+      CExpression castExpr = new CExpression(lhsRT, rhs, operator, false);
+      castExpr.setResultType(lhsRT);
+
+      CExpression resultExpression = new CExpression(CExpressionBase.EASSIGN, lhs, castExpr, operator);
+      resultExpression.setResultType(resRT);
+      return resultExpression;
+    }
+
+    else {
+      errorUnknownBinaryOperator(operator);
+    }
+
+    errorUnknownBinaryOperator(operator);
+    return null;
+  }
+
+  private static void checkModLvalue(CExpression lhs) {
+    if (!lhs.isModifiableLvalue()) {
+      throw new ParseException("not an Lvalue: " + lhs.toString());
+    }
+
+  }
+
   private static void errorUnknownBinaryOperator(Token operator) {
     throw new ParseException("errorUnknownBinaryOperator: " + operator.toString());
   }
@@ -262,7 +322,7 @@ public abstract class CExpressionBuilder {
   }
 
   public static CExpression assign(Token tok, CExpression lvalue, CExpression rvalue) {
-    return new CExpression(CExpressionBase.EASSIGN, lvalue, rvalue, tok);
+    return sAssign(tok, lvalue, rvalue);
   }
 
   public static CExpression comma(Token tok, T op, CExpression lhs, CExpression rhs) {

@@ -32,4 +32,14 @@ public class NumericConstant {
     return numtype;
   }
 
+  public boolean isInteger() {
+    if (numtype == NumType.N_ERROR) {
+      return false;
+    }
+    if (numtype == NumType.N_FLOAT || numtype == NumType.N_DOUBLE || numtype == NumType.N_LONG_DOUBLE) {
+      return false;
+    }
+    return true;
+  }
+
 }

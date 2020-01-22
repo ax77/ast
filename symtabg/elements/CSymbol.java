@@ -124,8 +124,6 @@ public class CSymbol implements CTypeApi, ILocation {
   @Override public boolean isHasSignedness()               {  return type.isHasSignedness()         ; }
   @Override public boolean isUnsigned()                    {  return type.isUnsigned()              ; }
   @Override public boolean isSigned()                      {  return type.isSigned()                ; }
-  @Override public boolean isLvalue()                      {  return type.isLvalue()                ; }
-  @Override public boolean isModifiableLvalue()            {  return type.isModifiableLvalue()      ; }
   //
   @Override public boolean isBool()            { return type.isBool()         ; }
   @Override public boolean isChar()            { return type.isChar()         ; }

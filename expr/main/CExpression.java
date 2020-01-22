@@ -456,8 +456,12 @@ public class CExpression implements ILocation {
   }
 
   public boolean isIntegerZero() {
-    // TODO Auto-generated method stub
-    return false;
+    return base == CExpressionBase.EPRIMARY_CONST && cnumber.isInteger() && cnumber.getClong() == 0;
+  }
+
+  public boolean isModifiableLvalue() {
+    // TODO : XXX
+    return true;
   }
 
 }

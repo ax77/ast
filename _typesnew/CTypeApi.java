@@ -61,8 +61,6 @@ public interface CTypeApi {
   public boolean isUnsigned();
   public boolean isSigned();
   
-  public boolean isLvalue();
-  public boolean isModifiableLvalue();
   
   // integers
   public boolean isBool();

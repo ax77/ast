@@ -485,18 +485,6 @@ public class CType implements CTypeApi {
   }
 
   @Override
-  public boolean isLvalue() {
-    // TODO Auto-generated method stub
-    return false;
-  }
-
-  @Override
-  public boolean isModifiableLvalue() {
-    // TODO Auto-generated method stub
-    return false;
-  }
-
-  @Override
   public boolean isStatic() {
     return storage == StorageKind.ST_STATIC;
   }
