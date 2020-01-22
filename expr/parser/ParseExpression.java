@@ -56,6 +56,7 @@ import ast.declarations.parser.ParseDeclarations;
 import ast.expr.main.CExpression;
 import ast.expr.main.CExpressionBase;
 import ast.expr.sem.CExpressionBuilder;
+import ast.expr.sem.ExpressionBuildHelper;
 import ast.parse.Parse;
 import ast.parse.ParseState;
 import ast.parse.Pcheckers;
@@ -78,20 +79,6 @@ class Copier {
     asopmap.put(T_OR_EQUAL        , T_OR);
   }
   //@formatter:on
-
-  public static Token getAssignToken(Token from) {
-    Token ntoken = new Token(from);
-    ntoken.setType(T_ASSIGN);
-    ntoken.setValue("=");
-    return ntoken;
-  }
-
-  public static Token copyTokenAddNewType(Token from, T newtype, String newvalue) {
-    Token ntoken = new Token(from);
-    ntoken.setType(newtype);
-    ntoken.setValue(newvalue);
-    return ntoken;
-  }
 
   public static Token getOperatorFromCompAssign(Token from) {
     Token ntoken = new Token(from);
@@ -192,7 +179,7 @@ public class ParseExpression {
         // += lhs(a) rhs(b)
         // = lhs(a) rhs( + lhs(a) rhs(b) )
 
-        Token assignOperator = Copier.getAssignToken(saved);
+        Token assignOperator = ExpressionBuildHelper.copyTokenAddNewType(saved, T_ASSIGN, "=");
         Token binaryOperator = Copier.getOperatorFromCompAssign(saved);
 
         CExpression rhs = CExpressionBuilder.binary(binaryOperator, parser, lhs, e_assign());
@@ -353,11 +340,35 @@ public class ParseExpression {
 
   private CExpression e_unary() {
 
+    //    // [& * + - ~ !]
+    //    if (parser.isUnaryOperator()) {
+    //      Token operator = parser.tok();
+    //      parser.move();
+    //      return CExpressionBuilder.unary(operator, e_cast(), false);
+    //    }
+
     // [& * + - ~ !]
     if (parser.isUnaryOperator()) {
       Token operator = parser.tok();
       parser.move();
-      return CExpressionBuilder.unary(operator, e_cast(), false);
+
+      final CExpression operand = e_cast();
+
+      // -x :: 0 - x
+      // +x :: 0 + x
+      // !x :: 0 == x
+
+      if (operator.ofType(T_MINUS) || operator.ofType(T_PLUS)) {
+        CExpression zero = ExpressionBuildHelper.digitZero(operator);
+        return CExpressionBuilder.binary(operator, parser, zero, operand);
+      }
+      if (operator.ofType(T.T_EXCLAMATION)) {
+        CExpression zero = ExpressionBuildHelper.digitZero(operator);
+        Token equalOp = ExpressionBuildHelper.copyTokenAddNewType(operator, T_EQ, "==");
+        return CExpressionBuilder.binary(equalOp, parser, zero, operand);
+      }
+
+      return CExpressionBuilder.unary(operator, operand, false);
     }
 
     if (parser.tp() == T.T_PLUS_PLUS || parser.tp() == T_MINUS_MINUS) {
@@ -469,8 +480,8 @@ public class ParseExpression {
 
         // a->b :: (*a).b
         if (operator.ofType(T_ARROW)) {
-          final Token operatorDeref = Copier.copyTokenAddNewType(operator, T_TIMES, "*");
-          final Token operatorDot = Copier.copyTokenAddNewType(operator, T_DOT, ".");
+          final Token operatorDeref = ExpressionBuildHelper.copyTokenAddNewType(operator, T_TIMES, "*");
+          final Token operatorDot = ExpressionBuildHelper.copyTokenAddNewType(operator, T_DOT, ".");
 
           CExpression inBrace = CExpressionBuilder.unary(operatorDeref, lhs, false);
           lhs = new CExpression(inBrace, operatorDot, ident.getIdent());
@@ -496,9 +507,9 @@ public class ParseExpression {
         while (parser.tp() == T_LEFT_BRACKET) {
           Token lbrack = parser.lbracket();
 
-          // a[5] to *(a+5)
-          Token operatorPlus = Copier.copyTokenAddNewType(lbrack, T_PLUS, "+");
-          Token operatorDeref = Copier.copyTokenAddNewType(lbrack, T_TIMES, "*");
+          // a[5] :: *(a+5)
+          Token operatorPlus = ExpressionBuildHelper.copyTokenAddNewType(lbrack, T_PLUS, "+");
+          Token operatorDeref = ExpressionBuildHelper.copyTokenAddNewType(lbrack, T_TIMES, "*");
 
           CExpression inBrace = CExpressionBuilder.binary(operatorPlus, parser, lhs, e_expression());
           lhs = CExpressionBuilder.unary(operatorDeref, inBrace, false);

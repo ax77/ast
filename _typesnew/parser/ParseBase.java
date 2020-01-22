@@ -303,8 +303,7 @@ public class ParseBase {
 
   // TODO:
 
-  private void checkds(int variant, List<Token> st, List<Token> ts, Set<Token> tq, Set<Token> fs,
-      StringBuilder buffer) {
+  private void checkds(int variant, List<Token> st, List<Token> ts, Set<Token> tq, Set<Token> fs, StringBuilder buffer) {
     boolean expectTypeSpec = (variant & f_expect_typespec) == f_expect_typespec;
     boolean expectStorage = (variant & f_expect_storage_class) == f_expect_storage_class;
     boolean expectTypeQual = (variant & f_expect_typequal) == f_expect_typequal;

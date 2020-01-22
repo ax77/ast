@@ -10,7 +10,6 @@ import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import ast._typesnew.CType;
 import ast.expr.main.CExpression;
-import ast.expr.sem.TypeApplier;
 import ast.parse.Parse;
 
 class GenericAssociation {
@@ -154,18 +153,18 @@ public class ExpandGenericResult {
     final List<GenericAssociation> associations = genericSelection.getAssociations();
     final CExpression defaultAssociation = genericSelection.getDefaultAssociation();
 
-    TypeApplier.applyType(genericSelection.getControlExpression(), parser);
+    //    TypeApplier.applyType(genericSelection.getControlExpression(), parser);
 
     for (GenericAssociation assoc : associations) {
-      TypeApplier.applyType(assoc.getAssignment(), parser);
+      //      TypeApplier.applyType(assoc.getAssignment(), parser);
     }
 
     if (defaultAssociation != null) {
-      TypeApplier.applyType(defaultAssociation, parser);
+      //      TypeApplier.applyType(defaultAssociation, parser);
     }
 
     CExpression result = selectResultExpression(genericSelection);
-    TypeApplier.applyType(result, parser);
+    //    TypeApplier.applyType(result, parser);
     return result;
   }
 

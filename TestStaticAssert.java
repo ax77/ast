@@ -6,6 +6,7 @@ import java.util.List;
 import jscan.tokenize.Stream;
 import jscan.tokenize.Token;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ast.parse.Parse;
@@ -17,6 +18,7 @@ public class TestStaticAssert {
     return new Stream("", source);
   }
 
+  @Ignore
   @Test
   public void testStaticAssert() throws IOException {
     StringBuilder sb = new StringBuilder();

@@ -9,6 +9,7 @@ import java.util.List;
 import jscan.tokenize.Stream;
 import jscan.tokenize.Token;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ast.parse.Parse;
@@ -23,6 +24,7 @@ public class TestSimpleStmt {
     return new Stream("<utest>", source);
   }
 
+  @Ignore
   @Test
   public void test() throws IOException {
     StringBuilder sb = new StringBuilder();
@@ -83,6 +85,7 @@ public class TestSimpleStmt {
     assertEquals(0, unit.countOfDeclarations(unit));
   }
 
+  @Ignore
   @Test
   public void testForLoop1() throws IOException {
 
@@ -128,6 +131,7 @@ public class TestSimpleStmt {
     }
   }
 
+  @Ignore
   @Test
   public void testForLoop4() throws IOException {
 

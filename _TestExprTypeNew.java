@@ -3,9 +3,7 @@ package ast;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -114,28 +112,6 @@ public class _TestExprTypeNew {
 
       long ce = new ConstexprEval(p).ce(expr);
       assertEquals(entry.getValue().intValue(), ce);
-    }
-  }
-
-  @Ignore
-  @Test
-  public void testPrintDirty() throws IOException {
-    List<String> s = new ArrayList<String>(0);
-    //@formatter:off
-    s.add("a[1]");
-    s.add("1[a]");
-    s.add("a[1][2][3]");
-    s.add("a->b->c->d->e");
-    //@formatter:on
-
-    for (String source : s) {
-
-      Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
-      Parse p = new Parse(it);
-      p.setSemanticEnable(false);
-
-      CExpression expr = new ParseExpression(p).e_expression();
-      System.out.println(expr.toString());
     }
   }
 

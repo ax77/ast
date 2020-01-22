@@ -6,6 +6,7 @@ import java.util.List;
 import jscan.tokenize.Stream;
 import jscan.tokenize.Token;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ast.parse.Parse;
@@ -17,6 +18,7 @@ public class TestGeneric {
     return new Stream("", source);
   }
 
+  @Ignore
   @Test
   public void testGenericSelection() throws IOException {
     //@formatter:off
@@ -42,6 +44,7 @@ public class TestGeneric {
 
   }
 
+  @Ignore
   @Test
   public void testGenericTypeItself() throws IOException {
     //@formatter:off

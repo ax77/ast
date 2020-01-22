@@ -98,7 +98,7 @@ public class CSymbol implements CTypeApi, ILocation {
   @Override public boolean isUnion()                       {  return type.isUnion()                 ; }
   @Override public boolean isArray()                       {  return type.isArray()                 ; }
   @Override public boolean isArithmetic()                  {  return type.isArithmetic()            ; }
-  @Override public boolean isIntegerType()                 {  return type.isIntegerType()           ; }
+  @Override public boolean isInteger()                 {  return type.isInteger()           ; }
   @Override public boolean isBitfield()                    {  return type.isBitfield()              ; }
   @Override public boolean isPlainBitfield()               {  return type.isPlainBitfield()         ; }
   @Override public boolean isSignedBitfield()              {  return type.isSignedBitfield()        ; }

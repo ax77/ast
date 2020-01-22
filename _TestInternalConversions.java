@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import jscan.Tokenlist;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ast._entry.PreprocessSourceForParser;
@@ -12,7 +13,7 @@ import ast.parse.Parse;
 import ast.unit.TranslationUnit;
 
 public class _TestInternalConversions {
-
+  @Ignore
   @Test
   public void testUsualArithmeticConvOnExpressions_0() throws IOException {
     //@formatter:off

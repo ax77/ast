@@ -11,6 +11,7 @@ import java.util.TreeMap;
 import jscan.tokenize.Stream;
 import jscan.tokenize.Token;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ast.expr.main.CExpression;
@@ -60,6 +61,7 @@ public class TestCompoundLiteral {
     }
   }
 
+  @Ignore
   @Test
   public void testCompoundLiteral_3() throws IOException {
     StringBuilder sb = new StringBuilder();

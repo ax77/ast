@@ -250,6 +250,15 @@ public class CExpression implements ILocation {
     setLhs(genericSelectionResult);
   }
 
+  public CExpression(NumericConstant number, Token from) {
+    this.tname = NodeTemp.gettemp();
+    this.location = new SourceLocation(from);
+    this.tree = emptyTree();
+    this.token = from;
+    this.base = CExpressionBase.EPRIMARY_CONST;
+    this.cnumber = number;
+  }
+
   public CType getResultType() {
     return resultType;
   }

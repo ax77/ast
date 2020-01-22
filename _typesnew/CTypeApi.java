@@ -21,7 +21,7 @@ public interface CTypeApi {
   
   // arithmetic, scalar
   public boolean isArithmetic(); // integer, floating
-  public boolean isIntegerType(); // bitfields, enumeration, [int, char, etc...]
+  public boolean isInteger(); // bitfields, enumeration, [int, char, etc...]
   public boolean isBitfield();
   public boolean isPlainBitfield();
   public boolean isSignedBitfield();

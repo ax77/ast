@@ -64,7 +64,9 @@ public class UtilDumpGen {
   }
 
   private static String gcomm(String how) {
-    return "//////////////////////////////////////////////////////////////////////\n" + "// " + how.toUpperCase()
+    return "//////////////////////////////////////////////////////////////////////\n"
+        + "// "
+        + how.toUpperCase()
         + "\n";
   }
 
