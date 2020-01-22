@@ -52,17 +52,17 @@ public abstract class ImplicitCast {
       binary.setResultType(ptrtype);
 
       //2)
-      CExpression castExpr = new CExpression(ptrtype, binary, operator, false);
+      CExpression castExpr = new CExpression(ptrtype, binary, operator);
       castExpr.setResultType(ptrtype);
 
       //3)
       Token operatorDeref = ExpressionBuildHelper.copyTokenAddNewType(operator, T_TIMES, "*");
-      CExpression unaryDeref = new CExpression(operatorDeref, castExpr, false);
+      CExpression unaryDeref = new CExpression(operatorDeref, castExpr);
       unaryDeref.setResultType(ptrtype);
 
       //4)
       Token operatorAddressOf = ExpressionBuildHelper.copyTokenAddNewType(operator, T_AND, "&");
-      CExpression addressOfFirstElem = new CExpression(operatorAddressOf, unaryDeref, false);
+      CExpression addressOfFirstElem = new CExpression(operatorAddressOf, unaryDeref);
       addressOfFirstElem.setResultType(ptrtype);
 
       return addressOfFirstElem;
@@ -72,7 +72,7 @@ public abstract class ImplicitCast {
       CType ptrtype = new CType(typeOfNode, StorageKind.ST_NONE);
       Token operatorAddressOf = ExpressionBuildHelper.copyTokenAddNewType(operator, T_AND, "&");
 
-      CExpression addressOfFunction = new CExpression(operatorAddressOf, inputExpr, false);
+      CExpression addressOfFunction = new CExpression(operatorAddressOf, inputExpr);
       addressOfFunction.setResultType(ptrtype);
 
       return addressOfFunction;

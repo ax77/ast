@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 
 import jscan.Tokenlist;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ast._entry.PreprocessSourceForParser;
@@ -21,7 +20,6 @@ import ast.parse.Parse;
 
 public class _TestExprTypeNew {
 
-  @Ignore
   @Test
   public void testSizeofEvaluation() throws IOException {
     Map<String, Integer> s = new HashMap<String, Integer>();
@@ -60,6 +58,7 @@ public class _TestExprTypeNew {
     s.put(" sizeof(('1', 2, 3ULL))           \n",  8);
     s.put(" sizeof(('1', 2, 3ULL, 4.f))      \n",  4);
     s.put(" sizeof(('1', 2, 3ULL, 4.f, 5.))  \n",  8);
+    s.put("sizeof( ((_Bool)0 + (_Bool)0) )   \n",  4);
     //@formatter:on
 
     int x = 0;
@@ -72,6 +71,11 @@ public class _TestExprTypeNew {
       CExpression expr = new ParseExpression(p).e_expression();
 
       long ce = new ConstexprEval(p).ce(expr);
+
+      if (ce != entry.getValue()) {
+        System.out.println(expr.toString());
+      }
+
       assertEquals(entry.getValue().intValue(), ce);
 
       //System.out.println("    unsigned long x_" + String.format("%02d", x++) + " = " +  source.trim() + ";");

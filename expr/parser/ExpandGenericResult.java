@@ -150,21 +150,12 @@ public class ExpandGenericResult {
 
   public CExpression getResultExpressionWithType(GenericSelection genericSelection) {
 
+    @SuppressWarnings("unused")
     final List<GenericAssociation> associations = genericSelection.getAssociations();
+    @SuppressWarnings("unused")
     final CExpression defaultAssociation = genericSelection.getDefaultAssociation();
 
-    //    TypeApplier.applyType(genericSelection.getControlExpression(), parser);
-
-    for (GenericAssociation assoc : associations) {
-      //      TypeApplier.applyType(assoc.getAssignment(), parser);
-    }
-
-    if (defaultAssociation != null) {
-      //      TypeApplier.applyType(defaultAssociation, parser);
-    }
-
     CExpression result = selectResultExpression(genericSelection);
-    //    TypeApplier.applyType(result, parser);
     return result;
   }
 

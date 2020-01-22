@@ -13,7 +13,7 @@ import ast.parse.Parse;
 import ast.unit.TranslationUnit;
 
 public class _TestInternalConversions {
-  @Ignore
+
   @Test
   public void testUsualArithmeticConvOnExpressions_0() throws IOException {
     //@formatter:off
@@ -41,25 +41,25 @@ public class _TestInternalConversions {
     sb.append(" /*021*/      _Static_assert(    4 == sizeof( ((int)0 + (char)0) ), \"((int)0 + (char)0)\" );                                   \n");
     sb.append(" /*022*/      _Static_assert(    4 == sizeof( ((float)0 + (char)0) ), \"((float)0 + (char)0)\" );                               \n");
     sb.append(" /*023*/      _Static_assert(    8 == sizeof( ((double)0 + (char)0) ), \"((double)0 + (char)0)\" );                             \n");
-    sb.append(" /*024*/      _Static_assert(    sizeof(long long) == sizeof( ((long long)0 - (char)0) ), \"((long long)0 - (char)0)\" );                       \n");
+    sb.append(" /*024*/      _Static_assert(    sizeof(long long) == sizeof( ((long long)0 - (char)0) ), \"((long long)0 - (char)0)\" );       \n");
     sb.append(" /*025*/      _Static_assert(   16 == sizeof( ((long double)0 + (char)0) ), \"((long double)0 + (char)0)\" );                   \n");
     sb.append(" /*026*/      _Static_assert(    4 == sizeof( ((_Bool)0 || (_Bool)0) ), \"((_Bool)0 || (_Bool)0)\" );                           \n");
     sb.append(" /*027*/      _Static_assert(    4 == sizeof( ((int)0 && (char)0) ), \"((int)0 && (char)0)\" );                                 \n");
     sb.append(" /*028*/      _Static_assert(    4 == sizeof( ((long double)0 && (long double)0) ), \"((long double)0 && (long double)0)\" );   \n");
-//    sb.append(" /*029*/      _Static_assert(    4 == sizeof( ((_Bool)0 | (_Bool)0) ), \"((_Bool)0 | (_Bool)0)\" );                             \n");
-//    sb.append(" /*030*/      _Static_assert(    4 == sizeof( ((int)0 & (char)0) ), \"((int)0 & (char)0)\" );                                   \n");
-//    sb.append(" /*031*/      _Static_assert(    8 == sizeof( ((long long)0 & (char)0) ), \"((long long)0 & (char)0)\" );                       \n");
-//    sb.append(" /*032*/      _Static_assert(    4 == sizeof( (!(_Bool)0) ), \"(!(_Bool)0)\" );                                                 \n");
-//    sb.append(" /*033*/      _Static_assert(    4 == sizeof( (-(int)0) ), \"(-(int)0)\" );                                                     \n");
-//    sb.append(" /*034*/      _Static_assert(    4 == sizeof( (+(char)0) ), \"(+(char)0)\" );                                                   \n");
-//    sb.append(" /*035*/      _Static_assert(    8 == sizeof( (+(long long)0) ), \"(+(long long)0)\" );                                         \n");
-//    sb.append(" /*036*/      _Static_assert(    1 == sizeof( (i8 += i16) ), \"(i8 += i16)\" );                                                 \n");
-//    sb.append(" /*037*/      _Static_assert(    1 == sizeof( (i8 = f64+f128) ), \"(i8 = f64+f128)\" );                                         \n");
-//    sb.append(" /*038*/      _Static_assert(    2 == sizeof( (i16 = i8+i16+i32+i64) ), \"(i16 = i8+i16+i32+i64)\" );                           \n");
-//    sb.append(" /*039*/      _Static_assert(    2 == sizeof( (i16 = f64) ), \"(i16 = f64)\" );                                                 \n");
-//    sb.append(" /*040*/      _Static_assert(    8 == sizeof( (f64 = i8) ), \"(f64 = i8)\" );                                                   \n");
-//    sb.append(" /*041*/      _Static_assert(    8 == sizeof( (f64 = f128) ), \"(f64 = f128)\" );                                               \n");
-//    sb.append(" /*042*/      _Static_assert(   16 == sizeof( (f128 = i8 || i32) ), \"(f128 = i8 || i32)\" );                                   \n");
+    sb.append(" /*029*/      _Static_assert(    4 == sizeof( ((_Bool)0 | (_Bool)0) ), \"((_Bool)0 | (_Bool)0)\" );                             \n");
+    sb.append(" /*030*/      _Static_assert(    4 == sizeof( ((int)0 & (char)0) ), \"((int)0 & (char)0)\" );                                   \n");
+    sb.append(" /*031*/      _Static_assert(    8 == sizeof( ((long long)0 & (char)0) ), \"((long long)0 & (char)0)\" );                       \n");
+    sb.append(" /*032*/      _Static_assert(    4 == sizeof( (!(_Bool)0) ), \"(!(_Bool)0)\" );                                                 \n");
+    sb.append(" /*033*/      _Static_assert(    4 == sizeof( (-(int)0) ), \"(-(int)0)\" );                                                     \n");
+    sb.append(" /*034*/      _Static_assert(    4 == sizeof( (+(char)0) ), \"(+(char)0)\" );                                                   \n");
+    sb.append(" /*035*/      _Static_assert(    8 == sizeof( (+(long long)0) ), \"(+(long long)0)\" );                                         \n");
+    sb.append(" /*036*/      _Static_assert(    1 == sizeof( (i8 += i16) ), \"(i8 += i16)\" );                                                 \n");
+    sb.append(" /*037*/      _Static_assert(    1 == sizeof( (i8 = f64+f128) ), \"(i8 = f64+f128)\" );                                         \n");
+    sb.append(" /*038*/      _Static_assert(    2 == sizeof( (i16 = i8+i16+i32+i64) ), \"(i16 = i8+i16+i32+i64)\" );                           \n");
+    sb.append(" /*039*/      _Static_assert(    2 == sizeof( (i16 = f64) ), \"(i16 = f64)\" );                                                 \n");
+    sb.append(" /*040*/      _Static_assert(    8 == sizeof( (f64 = i8) ), \"(f64 = i8)\" );                                                   \n");
+    sb.append(" /*041*/      _Static_assert(    8 == sizeof( (f64 = f128) ), \"(f64 = f128)\" );                                               \n");
+    sb.append(" /*042*/      _Static_assert(   16 == sizeof( (f128 = i8 || i32) ), \"(f128 = i8 || i32)\" );                                   \n");
 //    sb.append(" /*043*/      _Static_assert(    1 == sizeof( (i8++) ), \"(i8++)\" );                                                           \n");
 //    sb.append(" /*044*/      _Static_assert(    8 == sizeof( (++i64) ), \"(++i64)\" );                                                         \n");
 //    sb.append(" /*045*/      _Static_assert(    1 == sizeof( (f2(1, 2)) ), \"(f2(1, 2))\" );                                                   \n");

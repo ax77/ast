@@ -12,7 +12,6 @@ import java.util.List;
 import jscan.Tokenlist;
 import jscan.hashed.Hash_ident;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ast._entry.PreprocessSourceForParser;

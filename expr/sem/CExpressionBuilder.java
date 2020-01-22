@@ -4,12 +4,21 @@ import static ast._typesnew.CType.TYPE_INT;
 import static ast._typesnew.CType.TYPE_LONG_LONG;
 import static jscan.tokenize.T.T_AND;
 import static jscan.tokenize.T.T_AND_AND;
+import static jscan.tokenize.T.T_ASSIGN;
 import static jscan.tokenize.T.T_DIVIDE;
+import static jscan.tokenize.T.T_EQ;
+import static jscan.tokenize.T.T_GE;
+import static jscan.tokenize.T.T_GT;
+import static jscan.tokenize.T.T_LE;
+import static jscan.tokenize.T.T_LSHIFT;
+import static jscan.tokenize.T.T_LT;
 import static jscan.tokenize.T.T_MINUS;
+import static jscan.tokenize.T.T_NE;
 import static jscan.tokenize.T.T_OR;
 import static jscan.tokenize.T.T_OR_OR;
 import static jscan.tokenize.T.T_PERCENT;
-import static jscan.tokenize.T.*;
+import static jscan.tokenize.T.T_PLUS;
+import static jscan.tokenize.T.T_RSHIFT;
 import static jscan.tokenize.T.T_TIMES;
 import static jscan.tokenize.T.T_XOR;
 import jscan.cstrtox.C_strtox;
@@ -274,7 +283,7 @@ public abstract class CExpressionBuilder {
       }
       checkResultType(resRT, operator, lhs, rhs);
 
-      CExpression castExpr = new CExpression(lhsRT, rhs, operator, false);
+      CExpression castExpr = new CExpression(lhsRT, rhs, operator);
       castExpr.setResultType(lhsRT);
 
       CExpression resultExpression = new CExpression(CExpressionBase.EASSIGN, lhs, castExpr, operator);
@@ -311,9 +320,8 @@ public abstract class CExpressionBuilder {
     }
   }
 
-  //public CExpression(Token op, CExpression lhs, boolean isParameterStubToDestroyConstructorUsage) 
-  public static CExpression unary(Token op, CExpression operand, boolean isParameterStubToDestroyConstructorUsage) {
-    CExpression res = new CExpression(op, operand, isParameterStubToDestroyConstructorUsage);
+  public static CExpression unary(Token op, CExpression operand) {
+    CExpression res = new CExpression(op, operand);
     return res;
   }
 
@@ -326,14 +334,14 @@ public abstract class CExpressionBuilder {
   }
 
   public static CExpression comma(Token tok, T op, CExpression lhs, CExpression rhs) {
-    return new CExpression(CExpressionBase.ECOMMA, lhs, rhs, tok);
+    final CExpression res = new CExpression(CExpressionBase.ECOMMA, lhs, rhs, tok);
+    res.setResultType(rhs.getResultType());
+    return res;
   }
 
-  // public CExpression(C_strtox e, Token token, boolean isParameterStubToDestroyConstructorUsage)
-  public static CExpression number(C_strtox e, Token token, Parse parser,
-      boolean isParameterStubToDestroyConstructorUsage) {
+  public static CExpression number(C_strtox e, Token token, Parse parser) {
 
-    CExpression ret = new CExpression(e, token, isParameterStubToDestroyConstructorUsage);
+    CExpression ret = new CExpression(e, token);
 
     final NumType numtype = ret.getCnumber().getNumtype();
     ret.setResultType(CType.bindings.get(numtype));
@@ -341,20 +349,15 @@ public abstract class CExpressionBuilder {
     return ret;
   }
 
-  //public CExpression(CType typename, CExpression tocast, Token token, boolean isParameterStubToDestroyConstructorUsage)
-  public static CExpression doCast(Parse parser, CType typename, CExpression tocast, Token token,
-      boolean isParameterStubToDestroyConstructorUsage) {
-    CExpression ret = new CExpression(typename, tocast, token, isParameterStubToDestroyConstructorUsage);
+  public static CExpression doCast(Parse parser, CType typename, CExpression tocast, Token token) {
+    CExpression ret = new CExpression(typename, tocast, token);
     ret.setResultType(typename);
     return ret;
 
   }
 
-  //e.setResultType(e.getSymbol().getType());
-  // public CExpression(CSymbol e, Token token, boolean isParameterStubToDestroyConstructorUsage)
-  public static CExpression esymbol(Parse parser, CSymbol e, Token token,
-      boolean isParameterStubToDestroyConstructorUsage) {
-    CExpression ret = new CExpression(e, token, isParameterStubToDestroyConstructorUsage);
+  public static CExpression esymbol(Parse parser, CSymbol e, Token token) {
+    CExpression ret = new CExpression(e, token);
     if (!parser.isSemanticEnable()) {
       ret.setResultType(new CType(TypeKind.TP_INT, StorageKind.ST_NONE));
     } else {

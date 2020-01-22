@@ -25,26 +25,17 @@ public class BinaryBalancing {
     this.lhs = lhs;
     this.rhs = rhs;
 
-    boolean areTheSameType = this.lhs.getResultType().isEqualTo(this.rhs.getResultType());
+    // TODO: if type are the same, we actually need promote integers if it was here.
+    // for example: (_Bool)1 + (_Bool)0 :: sizeof(e) == 4, not 1
+    //
 
-    if (!areTheSameType) {
-
-      this.balancedResult = balanced();
-      this.castedLhs = cast(lhs, balancedResult);
-      this.castedRhs = cast(rhs, balancedResult);
-
-    } else {
-
-      this.balancedResult = this.lhs.getResultType();
-      this.castedLhs = this.lhs;
-      this.castedRhs = this.rhs;
-
-    }
-
+    this.balancedResult = balanced();
+    this.castedLhs = cast(lhs, balancedResult);
+    this.castedRhs = cast(rhs, balancedResult);
   }
 
   private CExpression cast(CExpression castThis, CType toThat) {
-    CExpression castTo = new CExpression(toThat, castThis, castThis.getToken(), false);
+    CExpression castTo = new CExpression(toThat, castThis, castThis.getToken());
     return castTo;
   }
 
