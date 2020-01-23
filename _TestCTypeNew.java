@@ -76,8 +76,8 @@ public class _TestCTypeNew {
 
     assertEquals("a", decl.getName().getName());
     assertEquals(TypeKind.TP_POINTER_TO, type.getKind());
-    assertEquals(TypeKind.TP_POINTER_TO, type.getPointerTo().getKind());
-    assertEquals(TypeKind.TP_INT, type.getPointerTo().getPointerTo().getKind());
+    assertEquals(TypeKind.TP_POINTER_TO, type.getTpPointer().getPointerTo().getKind());
+    assertEquals(TypeKind.TP_INT, type.getTpPointer().getPointerTo().getTpPointer().getPointerTo().getKind());
     assertEquals(3, type.chainLength());
   }
 
@@ -93,7 +93,7 @@ public class _TestCTypeNew {
 
     assertEquals("a", decl.getName().getName());
     assertEquals(TypeKind.TP_POINTER_TO, type.getKind());
-    assertEquals(TypeKind.TP_INT, type.getPointerTo().getKind());
+    assertEquals(TypeKind.TP_INT, type.getTpPointer().getPointerTo().getKind());
     assertEquals(2, type.chainLength());
   }
 
@@ -199,7 +199,8 @@ public class _TestCTypeNew {
     assertTrue(decl.isAstract());
     assertEquals(3, type.chainLength());
 
-    assertEquals("pointer_to(pointer_to(int))", type.toString());
+    //assertEquals("pointer_to(pointer_to(int))", type.toString());
+    assertEquals("int**", type.toString());
   }
 
   @Test
@@ -216,10 +217,10 @@ public class _TestCTypeNew {
     assertEquals(4, type.chainLength());
 
     assertEquals(TypeKind.TP_POINTER_TO, type.getKind());
-    final CType pointerToPointer = type.getPointerTo();
+    final CType pointerToPointer = type.getTpPointer().getPointerTo();
     assertEquals(TypeKind.TP_POINTER_TO, pointerToPointer.getKind());
 
-    final CType pointerToPointerToPointer = type.getPointerTo().getPointerTo();
+    final CType pointerToPointerToPointer = type.getTpPointer().getPointerTo().getTpPointer().getPointerTo();
     assertEquals(TypeKind.TP_POINTER_TO, pointerToPointerToPointer.getKind());
   }
 
@@ -237,8 +238,8 @@ public class _TestCTypeNew {
     assertEquals(3, type.chainLength());
 
     assertEquals(TypeKind.TP_POINTER_TO, type.getKind());
-    assertEquals(TypeKind.TP_ARRAY_OF, type.getPointerTo().getKind());
-    assertEquals(TypeKind.TP_INT, type.getPointerTo().getArrayElementType().getKind());
+    assertEquals(TypeKind.TP_ARRAY_OF, type.getTpPointer().getPointerTo().getKind());
+    assertEquals(TypeKind.TP_INT, type.getTpPointer().getPointerTo().getArrayElementType().getKind());
 
   }
 
@@ -256,8 +257,8 @@ public class _TestCTypeNew {
     assertEquals(3, type.chainLength());
 
     assertEquals(TypeKind.TP_POINTER_TO, type.getKind());
-    assertEquals(TypeKind.TP_FUNCTION, type.getPointerTo().getKind());
-    assertEquals(TypeKind.TP_INT, type.getPointerTo().getFunctionRetElementType().getKind());
+    assertEquals(TypeKind.TP_FUNCTION, type.getTpPointer().getPointerTo().getKind());
+    assertEquals(TypeKind.TP_INT, type.getTpPointer().getPointerTo().getFunctionRetElementType().getKind());
 
   }
 
@@ -990,10 +991,10 @@ public class _TestCTypeNew {
 
     assertEquals(TypeKind.TP_POINTER_TO, type.getKind());
     assertEquals(3, type.chainLength());
-    assertTrue(type.isConst());
+    assertTrue(type.getTpPointer().isConst());
 
-    assertEquals(TypeKind.TP_POINTER_TO, type.getPointerTo().getKind());
-    assertFalse(type.getPointerTo().isConst());
+    assertEquals(TypeKind.TP_POINTER_TO, type.getTpPointer().getPointerTo().getKind());
+    assertFalse(type.getTpPointer().getPointerTo().isConst());
     assertTrue(type.isStatic());
   }
 

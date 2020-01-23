@@ -60,7 +60,7 @@ public class CType implements CTypeApi {
   private final int size;
   private final int align;
 
-  private CType pointerTo;
+  private CPointerType tpPointer;
   private CArrayType tpArray;
   private CFunctionType tpFunction;
   private CStructType tpStruct;
@@ -83,9 +83,9 @@ public class CType implements CTypeApi {
     this.storage = storage;
   }
 
-  public CType(CType pointerTo, StorageKind storage) {
+  public CType(CPointerType tpPointer, StorageKind storage) {
     this.kind = TypeKind.TP_POINTER_TO;
-    this.pointerTo = pointerTo;
+    this.tpPointer = tpPointer;
     this.size = TypeSizes.get(TypeKind.TP_POINTER_TO);
     this.align = this.size;
     this.storage = storage;
@@ -137,7 +137,7 @@ public class CType implements CTypeApi {
     this.tpBitfield = from.tpBitfield;
     this.tpEnum = from.tpEnum;
     this.tpFunction = from.tpFunction;
-    this.pointerTo = from.pointerTo;
+    this.tpPointer = from.tpPointer;
     this.tpStruct = from.tpStruct;
     this.storage = storage;
     this.qualifiers = qualifiers;
@@ -183,11 +183,6 @@ public class CType implements CTypeApi {
     return storage;
   }
 
-  public CType getPointerTo() {
-    assertGetType(TypeKind.TP_POINTER_TO);
-    return pointerTo;
-  }
-
   public CArrayType getTpArray() {
     assertGetType(TypeKind.TP_ARRAY_OF);
     return tpArray;
@@ -217,7 +212,7 @@ public class CType implements CTypeApi {
     } else {
       if (kind == TypeKind.TP_POINTER_TO) {
         r++;
-        r += pointerTo.chainLength();
+        r += tpPointer.getPointerTo().chainLength();
       }
       if (kind == TypeKind.TP_ARRAY_OF) {
         r++;
@@ -239,7 +234,7 @@ public class CType implements CTypeApi {
     if (isBitfield()) {
       return tpBitfield.toString();
     } else if (kind == TypeKind.TP_POINTER_TO) {
-      return "pointer_to(" + pointerTo.toString() + ")";
+      return tpPointer.toString();
     } else if (kind == TypeKind.TP_ARRAY_OF) {
       return tpArray.toString();
     } else if (kind == TypeKind.TP_FUNCTION) {
@@ -372,17 +367,17 @@ public class CType implements CTypeApi {
 
   @Override
   public boolean isPointerToFunction() {
-    return isPointer() && pointerTo.isFunction();
+    return isPointer() && tpPointer.getPointerTo().isFunction();
   }
 
   @Override
   public boolean isPointerToObject() {
-    return isPointer() && pointerTo.isObject();
+    return isPointer() && tpPointer.getPointerTo().isObject();
   }
 
   @Override
   public boolean isPointerToIncomplete() {
-    return isPointer() && pointerTo.isIncomplete();
+    return isPointer() && tpPointer.getPointerTo().isIncomplete();
   }
 
   @Override
@@ -421,7 +416,7 @@ public class CType implements CTypeApi {
       return false;
     }
     if (isPointer()) {
-      return cmpPointers(another);
+      return cmpPointers(another.getTpPointer());
     }
     if (isFunction()) {
       return cmpFunctions(another);
@@ -429,9 +424,9 @@ public class CType implements CTypeApi {
     return true;
   }
 
-  private boolean cmpPointers(CType another) {
+  private boolean cmpPointers(CPointerType another) {
     final CType rhs = another.getPointerTo();
-    if (!pointerTo.isEqualTo(rhs)) {
+    if (!tpPointer.getPointerTo().isEqualTo(rhs)) {
       return false;
     }
     return true;
@@ -462,6 +457,14 @@ public class CType implements CTypeApi {
       }
     }
     return true;
+  }
+
+  public CPointerType getTpPointer() {
+    return tpPointer;
+  }
+
+  public void setTpPointer(CPointerType tpPointer) {
+    this.tpPointer = tpPointer;
   }
 
   @Override
@@ -530,7 +533,7 @@ public class CType implements CTypeApi {
   }
 
   public boolean isPointerToVoid() {
-    return isPointer() && getPointerTo().isVoid();
+    return isPointer() && tpPointer.getPointerTo().isVoid();
   }
 
   public boolean isAnObjectExceptBitField() {

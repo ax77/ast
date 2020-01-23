@@ -10,6 +10,7 @@ import static jscan.tokenize.T.T_PLUS;
 import static jscan.tokenize.T.T_TILDE;
 import static jscan.tokenize.T.T_TIMES;
 import jscan.tokenize.Token;
+import ast._typesnew.CPointerType;
 import ast._typesnew.CType;
 import ast._typesnew.main.StorageKind;
 import ast.expr.main.CExpression;
@@ -157,7 +158,7 @@ public abstract class UnaryTyped {
   }
 
   private static CType genPtrTo(CType lhsRT) {
-    return new CType(lhsRT, StorageKind.ST_NONE);
+    return new CType(new CPointerType(lhsRT, false), StorageKind.ST_NONE);
   }
 
   private static void errorUnknownUnaryOperator(Token operator) {

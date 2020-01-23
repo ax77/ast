@@ -7,6 +7,7 @@ import jscan.symtab.Ident;
 import jscan.tokenize.Token;
 import ast._typesnew.CArrayType;
 import ast._typesnew.CFunctionType;
+import ast._typesnew.CPointerType;
 import ast._typesnew.CType;
 import ast._typesnew.decl.CDecl;
 import ast._typesnew.decl.CDeclEntry;
@@ -45,11 +46,8 @@ public abstract class TypeMerger {
       return new CType(arr, type.getStorage());
     }
     if (base == TypeKind.TP_POINTER_TO) {
-      final CType ptrTo = new CType(type, type.getStorage());
-      if (e.isConstPointer()) {
-        ptrTo.applyTqual(CType.QCONST);
-      }
-      return ptrTo;
+      final CPointerType ptrTo = new CPointerType(type, e.isConstPointer());
+      return new CType(ptrTo, type.getStorage());
     }
     if (base == TypeKind.TP_FUNCTION) {
       CFunctionType fn = new CFunctionType(type, e.getParameters(), e.isVariadicFunction());
