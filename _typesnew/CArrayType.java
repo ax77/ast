@@ -6,13 +6,12 @@ import ast.parse.ParseException;
 public class CArrayType {
   private final CType arrayOf;
   private int arrayLen;
-  private boolean isIncomplete; // TODO:
 
   public CArrayType(CType arrayof, int arrayLen) {
     NullChecker.check(arrayof); // always must be present. but init-expression - optional, check it later. int x[][2];
 
-    if (arrayLen <= 0) {
-      //throw new ScanExc("zero or negative sized array. TODO:");
+    if (arrayLen < 0) {
+      throw new ParseException("negative sized array. TODO:");
     }
 
     if (arrayof.isBitfield()) {
@@ -38,10 +37,6 @@ public class CArrayType {
 
   public void setArrayLen(int arrayLen) {
     this.arrayLen = arrayLen;
-  }
-
-  public boolean isIncomplete() {
-    return isIncomplete;
   }
 
 }

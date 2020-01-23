@@ -37,7 +37,6 @@ public interface CTypeApi {
   
   // III)
   // incomplete
-  public boolean isCanBeIncomplete();
   public boolean isIncomplete();
   public boolean isVoid();
   public boolean isIncompleteStruct();

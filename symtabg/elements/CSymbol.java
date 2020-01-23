@@ -109,7 +109,6 @@ public class CSymbol implements CTypeApi, ILocation {
   @Override public boolean isPointerToFunction()           {  return type.isPointerToFunction()     ; }
   @Override public boolean isPointerToObject()             {  return type.isPointerToObject()       ; }
   @Override public boolean isPointerToIncomplete()         {  return type.isPointerToIncomplete()   ; }
-  @Override public boolean isCanBeIncomplete()             {  return type.isCanBeIncomplete()       ; }
   @Override public boolean isIncomplete()                  {  return type.isIncomplete()            ; }
   @Override public boolean isVoid()                        {  return type.isVoid()                  ; }
   @Override public boolean isIncompleteStruct()            {  return type.isIncompleteStruct()      ; }

@@ -10,7 +10,6 @@ public class CStructType {
   private final Ident tag;
   private final List<CStructField> fields; // list, because we need original declaration's order without sorting
   private final boolean isReference;
-  private boolean isIncomplete; // TODO:
 
   public CStructType(boolean isUnion, Ident tag) {
     this.isUnion = isUnion;
@@ -27,7 +26,7 @@ public class CStructType {
   }
 
   public boolean isHasConstFields() {
-    if (isReference || isIncomplete) {
+    if (isReference) {
       throw new ParseException("TODO: you want get fields from incomplete...");
     }
     for (CStructField f : fields) {
@@ -88,10 +87,6 @@ public class CStructType {
       }
     }
     return false;
-  }
-
-  public boolean isIncomplete() {
-    return isIncomplete;
   }
 
 }

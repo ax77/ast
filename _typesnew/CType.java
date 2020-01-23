@@ -17,6 +17,7 @@ public class CType implements CTypeApi {
   private final TypeKind kind;
   private final StorageKind storage;
   private int qualifiers;
+
   private final int size;
   private final int align;
 
@@ -26,6 +27,7 @@ public class CType implements CTypeApi {
   private CStructType tpStruct;
   private CEnumType tpEnum;
   private CBitfieldType tpBitfield;
+  private CIncompleteType tpIncomplete;
 
   public void applyTqual(int f) {
     qualifiers |= f;
@@ -37,6 +39,14 @@ public class CType implements CTypeApi {
     this.size = TypeSizes.get(kind);
     this.align = this.size;
     this.storage = storage;
+  }
+
+  public CType(CIncompleteType tpIncomplete) {
+    this.kind = TypeKind.TP_INCOMPLETE;
+    this.tpIncomplete = tpIncomplete;
+    this.size = -1;
+    this.align = -1;
+    this.storage = StorageKind.ST_NONE;
   }
 
   public CType(CPointerType tpPointer, StorageKind storage) {
@@ -203,16 +213,6 @@ public class CType implements CTypeApi {
     }
   }
 
-  public CType getArrayElementType() {
-    assertGetType(TypeKind.TP_ARRAY_OF);
-    return tpArray.getArrayOf();
-  }
-
-  public CType getFunctionRetElementType() {
-    assertGetType(TypeKind.TP_FUNCTION);
-    return tpFunction.getReturnType();
-  }
-
   public boolean isStrUnion() {
     return isStruct() || isUnion();
   }
@@ -316,53 +316,28 @@ public class CType implements CTypeApi {
   }
 
   @Override
-  public boolean isPointer() {
-    return kind == TypeKind.TP_POINTER_TO;
-  }
-
-  @Override
-  public boolean isPointerToFunction() {
-    return isPointer() && tpPointer.getPointerTo().isFunction();
-  }
-
-  @Override
-  public boolean isPointerToObject() {
-    return isPointer() && tpPointer.getPointerTo().isObject();
-  }
-
-  @Override
-  public boolean isPointerToIncomplete() {
-    return isPointer() && tpPointer.getPointerTo().isIncomplete();
-  }
-
-  @Override
-  public boolean isCanBeIncomplete() {
-    return isArray() || isStruct() || isUnion() || isVoid();
-  }
-
-  @Override
   public boolean isVoid() {
     return kind == TypeKind.TP_VOID;
   }
 
   @Override
   public boolean isIncompleteStruct() {
-    return isStruct() && tpStruct.isIncomplete();
+    return kind == TypeKind.TP_INCOMPLETE && tpIncomplete.isIncompleteStruct();
   }
 
   @Override
   public boolean isIncompleteUnion() {
-    return isUnion() && tpStruct.isIncomplete();
+    return kind == TypeKind.TP_INCOMPLETE && tpIncomplete.isIncompleteUnion();
   }
 
   @Override
   public boolean isIncompleteArray() {
-    return isArray() && tpArray.isIncomplete();
+    return kind == TypeKind.TP_INCOMPLETE && tpIncomplete.isIncompleteArray();
   }
 
   @Override
   public boolean isIncomplete() {
-    return isCanBeIncomplete() && (isIncompleteArray() || isIncompleteStruct() || isIncompleteUnion() || isVoid());
+    return isVoid() || isIncompleteArray() || isIncompleteStruct() || isIncompleteUnion();
   }
 
   @Override
@@ -416,10 +391,6 @@ public class CType implements CTypeApi {
 
   public CPointerType getTpPointer() {
     return tpPointer;
-  }
-
-  public void setTpPointer(CPointerType tpPointer) {
-    this.tpPointer = tpPointer;
   }
 
   @Override
@@ -485,6 +456,26 @@ public class CType implements CTypeApi {
   public boolean isPointerToCompat(CType lhsRT) {
     // TODO: XXX
     return true;
+  }
+
+  @Override
+  public boolean isPointer() {
+    return kind == TypeKind.TP_POINTER_TO;
+  }
+
+  @Override
+  public boolean isPointerToFunction() {
+    return isPointer() && tpPointer.getPointerTo().isFunction();
+  }
+
+  @Override
+  public boolean isPointerToObject() {
+    return isPointer() && tpPointer.getPointerTo().isObject();
+  }
+
+  @Override
+  public boolean isPointerToIncomplete() {
+    return isPointer() && tpPointer.getPointerTo().isIncomplete();
   }
 
   public boolean isPointerToVoid() {

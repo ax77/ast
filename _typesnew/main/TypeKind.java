@@ -9,6 +9,9 @@ public enum TypeKind {
  ,TP_ENUM
  ,TP_UNION
  ,TP_BITFIELD
+ //
+ ,TP_INCOMPLETE
+ //
  // builtin's
  ,TP_VOID
  ,TP_BOOL

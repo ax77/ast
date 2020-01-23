@@ -2,8 +2,8 @@ package ast._typesnew.parser;
 
 import static jscan.tokenize.T.TOKEN_IDENT;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
@@ -24,19 +24,19 @@ class EnumDto {
   private final Parse parser;
   private int minvalue;
   private int maxvalue;
-  private List<Ident> enumerators;
+  private Map<Ident, Integer> enumerators;
   private int curvalue;
 
   public EnumDto(Parse parser) {
     this.parser = parser;
-    this.enumerators = new ArrayList<Ident>(0);
+    this.enumerators = new HashMap<Ident, Integer>();
   }
 
   public void addEnumerator(Ident id, int curvalue) {
-    if (enumerators.contains(id)) {
+    if (enumerators.containsKey(id)) {
       parser.perror("duplicate enum value: " + id.getName()); // TODO: ambiguous with symDef()
     }
-    this.enumerators.add(id);
+    this.enumerators.put(id, curvalue);
     this.curvalue = curvalue;
 
     this.minvalue = Math.min(this.minvalue, this.curvalue);
@@ -47,6 +47,11 @@ class EnumDto {
   public int getCurvalue() {
     return curvalue;
   }
+
+  public Map<Ident, Integer> getEnumerators() {
+    return enumerators;
+  }
+
 }
 
 public class ParseEnum {
@@ -74,7 +79,7 @@ public class ParseEnum {
     if (parser.tp() != T.T_LEFT_BRACE) {
 
       checkTagNotNullForReference(tag);
-      final CEnumType enumref = new CEnumType(tag.getIdent(), true);
+      final CEnumType enumref = new CEnumType(tag.getIdent());
       return enumref;
     }
 
@@ -82,7 +87,7 @@ public class ParseEnum {
     // depends on max value by it value
     EnumDto dto = parseEnumeratorList();
 
-    final CEnumType enumdef = new CEnumType(TypeMerger.getIdentOrNull(tag), false);
+    final CEnumType enumdef = new CEnumType(TypeMerger.getIdentOrNull(tag), dto.getEnumerators());
     return enumdef;
   }
 
