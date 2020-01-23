@@ -4,6 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.List;
 
 import jscan.Tokenlist;
 
@@ -13,6 +14,7 @@ import ast._entry.PreprocessSourceForParser;
 import ast._entry.PreprocessSourceForParserVariant;
 import ast._typesnew.CArrayType;
 import ast._typesnew.CEnumType;
+import ast._typesnew.CFuncParam;
 import ast._typesnew.CFunctionType;
 import ast._typesnew.CPointerType;
 import ast._typesnew.CStructType;
@@ -21,6 +23,7 @@ import ast._typesnew.decl.CDecl;
 import ast._typesnew.parser.ParseBase;
 import ast._typesnew.parser.ParseDecl;
 import ast._typesnew.util.TypeMerger;
+import ast.expr.sem.CExpressionBuilderHelper;
 import ast.parse.Parse;
 
 public class _TestTypeCompat {
@@ -44,8 +47,17 @@ public class _TestTypeCompat {
   //  Structure and union members whose names match are declared with compatible types. 
   //  Enumeration constants whose names match have the same values.
 
+  // TODO: return special error-code with corresponding message, instead of true/false
+  //
+
   private boolean isTypeCompatible(CType lhs, CType rhs) {
     if (lhs.getKind() != rhs.getKind()) {
+      if (lhs.isInteger() && rhs.isEnumeration()) {
+        return true;
+      }
+      if (rhs.isEnumeration() && rhs.isInteger()) {
+        return true;
+      }
       return false;
     }
     if (lhs.isPointer()) {
@@ -76,8 +88,91 @@ public class _TestTypeCompat {
     return false;
   }
 
+  //  1)
+  //  Both are function types whose return types are compatible. 
+  //  2)
+  //  If both specify types for their parameters, both declare the same number of parameters (including ellipses) 
+  //  and the types of corresponding parameters are compatible. 
+  //  3)
+  //  Otherwise, at least one does not specify types for its parameters. 
+  //  If the other specifies types for its parameters, it specifies only a fixed number of parameters and does not specify 
+  //  parameters of type float or of any integer types that change when promoted.
+
   private boolean isFunctionCompatible(CFunctionType lhs, CFunctionType rhs) {
-    // TODO Auto-generated method stub
+
+    // 1)
+    if (!isTypeCompatible(lhs.getReturnType(), rhs.getReturnType())) {
+      return false;
+    }
+
+    // 2)
+    if (lhs.getArgc() > 0 && rhs.getArgc() > 0) {
+      if (lhs.getArgc() != rhs.getArgc()) {
+        return false;
+      }
+      if (lhs.isVariadic() != rhs.isVariadic()) {
+        return false;
+      }
+      List<CFuncParam> lhsParams = lhs.getParameters();
+      List<CFuncParam> rhsParams = rhs.getParameters();
+      for (int i = 0; i < lhsParams.size(); i++) {
+        CFuncParam lhsParam = lhsParams.get(i);
+        CFuncParam rhsParam = rhsParams.get(i);
+        if (!isTypeCompatible(lhsParam.getType(), rhsParam.getType())) {
+          return false;
+        }
+      }
+    }
+
+    // 3)
+    else {
+
+      // I)
+      // this ok.
+      // int f(int f);
+      // int f();
+
+      // but not this.
+      // int f(int f, ...); // a parameter list with an ellipsis can't match an empty parameter name list declaration
+      // int f();
+
+      if (lhs.isVariadic() || rhs.isVariadic()) {
+        return false;
+      }
+
+      // II)
+      // this ok.
+      // int f();
+      // int f(int);
+
+      // but not this.
+      // int f();
+      // int f(char); // an argument type that has a default promotion can't match an empty parameter name list declaration
+
+      if (lhs.getArgc() > 0) {
+        if (isHasPromotedParameters(lhs)) {
+          return false;
+        }
+      } else {
+        if (isHasPromotedParameters(rhs)) {
+          return false;
+        }
+      }
+
+    }
+
+    return true;
+  }
+
+  private boolean isHasPromotedParameters(CFunctionType func) {
+    List<CFuncParam> params = func.getParameters();
+    for (int i = 0; i < params.size(); i++) {
+      CType declaredType = params.get(i).getType();
+      CType promotedType = CExpressionBuilderHelper.ipromote(declaredType);
+      if (!declaredType.isEqualTo(promotedType)) {
+        return true;
+      }
+    }
     return false;
   }
 
@@ -234,4 +329,44 @@ public class _TestTypeCompat {
     assertFalse(thisTwoAreCompatible(ret));
   }
 
+  @Test
+  public void testEnumWithInt() throws IOException {
+    CType ret[] = toCompat("int", "enum t");
+    assertTrue(thisTwoAreCompatible(ret));
+  }
+
+  @Test
+  public void testFuncEmptyParamList() throws IOException {
+    CType ret[] = toCompat("int f()", "int f()");
+    assertTrue(thisTwoAreCompatible(ret));
+  }
+
+  // but not this.
+  // int f(int f, ...); // a parameter list with an ellipsis can't match an empty parameter name list declaration
+  // int f();
+
+  @Test
+  public void testFuncNotCompatVar() throws IOException {
+    CType ret[] = toCompat("int f(int f, ...)", "int f()");
+    assertFalse(thisTwoAreCompatible(ret));
+  }
+
+  // but not this.
+  // int f();
+  // int f(char);
+
+  @Test
+  public void testFuncNotCompatPromotion() throws IOException {
+    CType ret[] = toCompat("int f(char)", "int f()");
+    assertFalse(thisTwoAreCompatible(ret));
+  }
+
+  // int f();
+  // int f(int);
+
+  @Test
+  public void testFuncCompat() throws IOException {
+    CType ret[] = toCompat("int f()", "int f(int)");
+    assertTrue(thisTwoAreCompatible(ret));
+  }
 }
