@@ -130,7 +130,10 @@ public class ParseBase {
 
       StorageKind storagespec = TypeCombiner.combine_storage(st);
       basetype = new CType(str, sizeAlignDto.getSize(), sizeAlignDto.getAlign(), storagespec);
-
+      
+      if(!str.isReference() && str.isHasTag()) {
+        p.defineTag(str.getTag(), new CSymbol(str.getTag(), basetype, curtok));
+      }
     }
 
     else if (Pcheckers.isEnumSpecStart(curtok)) {

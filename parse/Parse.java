@@ -85,10 +85,12 @@ public class Parse {
   //TODO:SEMANTIC
   //
   public void pushscope() {
+    tags.pushscope(".");
     symbols.pushscope(".");
   }
 
   public void popscope() {
+    tags.popscope();
     symbols.popscope();
   }
 

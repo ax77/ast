@@ -18,6 +18,7 @@ import jscan.cstrtox.C_strtox;
 import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
 import jscan.tokenize.Token;
+import ast._typesnew.CStructField;
 import ast._typesnew.CType;
 import ast.declarations.InitializerList;
 import ast.parse.ILocation;
@@ -45,7 +46,7 @@ public class CExpression implements ILocation {
 
   private CType typename; // cast lhs to typename
   private InitializerList initializerList; // (typename) { initializer-list } compound literal
-  private Ident fieldName; //  field name (compsel) TODO: move to symbol.
+  private CStructField fieldName; //  field name (compsel)
   private CSymbol symbol; // primary ident
 
   private List<CExpression> arglist; // function-arguments
@@ -180,7 +181,7 @@ public class CExpression implements ILocation {
 
   // (*a) -> x
   // a . x
-  public CExpression(CExpression postfis, Token operator, Ident fieldName) {
+  public CExpression(CExpression postfis, Token operator, CStructField fieldName) {
     this.tname = NodeTemp.gettemp();
     this.location = new SourceLocation(operator);
     this.tree = emptyTree();
@@ -283,12 +284,8 @@ public class CExpression implements ILocation {
     this.initializerList = initializerList;
   }
 
-  public Ident getFieldName() {
+  public CStructField getFieldName() {
     return fieldName;
-  }
-
-  public void setFieldName(Ident fieldName) {
-    this.fieldName = fieldName;
   }
 
   public CSymbol getSymbol() {
@@ -353,7 +350,8 @@ public class CExpression implements ILocation {
       return "(" + getToken().getValue() + getOperand().toString() + ")";
     }
     case ECOMPSEL: {
-      return "(" + getPostfix().toString() + getToken().getValue() + fieldName.getName() + ")";
+      // TODO:
+      return "(" + getPostfix().toString() + "." + fieldName.getName().getName() + ")";
     }
     case ECAST: {
       return "(" + typename.toString() + ") " + "(" + getLhs().toString() + ")";

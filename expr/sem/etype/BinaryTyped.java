@@ -241,6 +241,10 @@ public abstract class BinaryTyped {
 
   public static CExpression sAssign(Token operator, CExpression lhs, CExpression rhs) {
 
+    if (lhs.getResultType() == null || rhs.getResultType() == null) {
+      System.out.println();
+    }
+
     NullChecker.check(operator, lhs, rhs, lhs.getResultType(), rhs.getResultType());
 
     // TODO: modLvalue and etc...
@@ -304,12 +308,12 @@ public abstract class BinaryTyped {
   }
 
   private static void errorExpr(String string, Token operator, CExpression lHS, CExpression rHS) {
-    throw new ParseException("errorExpr: " + operator.toString() + " " + lHS.toString() + " " + rHS.toString());
+    throw new ParseException("errorExpr: " + lHS.toString() + " " + operator.getValue() + " " + rHS.toString());
   }
 
   private static void checkResultType(CType resultType, Token operator, CExpression lHS, CExpression rHS) {
     if (resultType == null) {
-      throw new ParseException("checkResultType: " + operator.toString() + " " + lHS.toString() + " " + rHS.toString());
+      throw new ParseException("checkResultType: " + lHS.toString() + " " + operator.getValue() + " " + rHS.toString());
     }
   }
 

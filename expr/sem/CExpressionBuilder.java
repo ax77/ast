@@ -4,6 +4,7 @@ import jscan.cstrtox.C_strtox;
 import jscan.cstrtox.NumType;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import ast._typesnew.CStructField;
 import ast._typesnew.CType;
 import ast._typesnew.CTypeImpl;
 import ast._typesnew.main.StorageKind;
@@ -59,6 +60,13 @@ public abstract class CExpressionBuilder {
     } else {
       ret.setResultType(e.getType());
     }
+    return ret;
+  }
+
+  // public CExpression(CExpression postfis, Token operator, CStructField fieldName)
+  public static CExpression eStructFieldAccess(CExpression postfis, Token operator, CStructField fieldName) {
+    CExpression ret = new CExpression(postfis, operator, fieldName);
+    ret.setResultType(fieldName.getType());
     return ret;
   }
 

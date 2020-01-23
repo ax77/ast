@@ -9,10 +9,12 @@ import java.util.List;
 
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import ast._typesnew.CIncompleteType;
 import ast._typesnew.CStructField;
 import ast._typesnew.CStructType;
 import ast._typesnew.CType;
 import ast._typesnew.decl.CDecl;
+import ast._typesnew.main.StorageKind;
 import ast._typesnew.sem.SemanticBitfield;
 import ast._typesnew.util.TypeMerger;
 import ast.declarations.parser.ParseDeclarations;
@@ -20,6 +22,7 @@ import ast.expr.main.CExpression;
 import ast.expr.parser.ParseExpression;
 import ast.expr.sem.ConstexprEval;
 import ast.parse.Parse;
+import ast.symtabg.elements.CSymbol;
 
 public class ParseStruct {
   private final Parse parser;
@@ -48,12 +51,14 @@ public class ParseStruct {
 
       TypeMerger.checkTagNotNullForReference(tag);
       CStructType strref = new CStructType(isUnion, tag.getIdent());
+      
       return strref;
     }
 
     // def
     List<CStructField> fields = parseFields(parser);
     CStructType strdef = new CStructType(isUnion, TypeMerger.getIdentOrNull(tag), fields);
+    
     return strdef;
   }
 

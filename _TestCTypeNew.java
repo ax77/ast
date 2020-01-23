@@ -320,6 +320,7 @@ public class _TestCTypeNew {
     final String source = "struct x { int a,b,c; };";
     Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
     Parse p = new Parse(it);
+    p.pushscope();
 
     CType base = parseType(p);
     CDecl decl = parseDecl(p);
@@ -335,6 +336,7 @@ public class _TestCTypeNew {
     final String source = "struct x { int a; struct xx { int aa; } fname; };";
     Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
     Parse p = new Parse(it);
+    p.pushscope();
 
     CType base = parseType(p);
     CDecl decl = parseDecl(p);
@@ -350,6 +352,7 @@ public class _TestCTypeNew {
     final String source = "struct x { int a; struct { int aa; }; };";
     Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
     Parse p = new Parse(it);
+    p.pushscope();
 
     CType base = parseType(p);
     CDecl decl = parseDecl(p);
@@ -370,6 +373,7 @@ public class _TestCTypeNew {
     final String source = "struct x { int a; struct { int aa; }; struct ntag { int aaa; } field_name; };";
     Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
     Parse p = new Parse(it);
+    p.pushscope();
 
     CType base = parseType(p);
     CDecl decl = parseDecl(p);
@@ -390,6 +394,7 @@ public class _TestCTypeNew {
     final String source = "struct x { struct mustbe fieldname_struct_as_is; struct mustbe *fieldname_struct_ptr; };";
     Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
     Parse p = new Parse(it);
+    p.pushscope();
 
     CType base = parseType(p);
     CDecl decl = parseDecl(p);
@@ -446,6 +451,7 @@ public class _TestCTypeNew {
 
     Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
     Parse p = new Parse(it);
+    p.pushscope();
 
     CType base = parseType(p);
     CDecl decl = parseDecl(p);
@@ -477,6 +483,7 @@ public class _TestCTypeNew {
 
     Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
     Parse p = new Parse(it);
+    p.pushscope();
 
     CType base = parseType(p);
     CDecl decl = parseDecl(p);
@@ -520,6 +527,7 @@ public class _TestCTypeNew {
 
     Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
     Parse p = new Parse(it);
+    p.pushscope();
 
     CType base = parseType(p);
     CDecl decl = parseDecl(p);
@@ -582,6 +590,7 @@ public class _TestCTypeNew {
 
     Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
     Parse p = new Parse(it);
+    p.pushscope();
 
     CType base = parseType(p);
     CDecl decl = parseDecl(p);
@@ -736,6 +745,7 @@ public class _TestCTypeNew {
 
     Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
     Parse p = new Parse(it);
+    p.pushscope();
 
     CType base = parseType(p);
     CDecl decl = parseDecl(p);
@@ -773,6 +783,7 @@ public class _TestCTypeNew {
 
     Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
     Parse p = new Parse(it);
+    p.pushscope();
 
     CType base = parseType(p);
     CDecl decl = parseDecl(p);

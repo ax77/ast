@@ -48,8 +48,10 @@ import java.util.Map;
 
 import jscan.cstrtox.C_strtox;
 import jscan.hashed.Hash_ident;
+import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import ast._typesnew.CStructField;
 import ast._typesnew.CType;
 import ast.declarations.InitializerList;
 import ast.declarations.parser.ParseDeclarations;
@@ -456,19 +458,41 @@ public class ParseExpression {
         Token operator = parser.tok();
         parser.move(); // move . or ->
 
-        Token ident = parser.expectIdentifier();
+        Token fieldNameTok = parser.expectIdentifier();
+        Ident fieldName = fieldNameTok.getIdent();
 
         // a->b :: (*a).b
         if (operator.ofType(T_ARROW)) {
           final Token operatorDeref = CExpressionBuilderHelper.copyTokenAddNewType(operator, T_TIMES, "*");
           final Token operatorDot = CExpressionBuilderHelper.copyTokenAddNewType(operator, T_DOT, ".");
 
+          //////////////////////////////////////////////////////////////////////
+          final CType lhsRT = lhs.getResultType();
+          boolean isPointerToStructUnion = (lhsRT != null && lhsRT.isPointer())
+              && lhsRT.getTpPointer().getPointerTo().isStrUnion();
+          if (!isPointerToStructUnion) {
+            parser.perror("expect pointer to struct or union for '->' operator");
+          }
+          final Ident tagName = lhs.getSymbol().getType().getTpPointer().getPointerTo().getTpStruct().getTag();
+          CStructField field = getField(fieldNameTok, fieldName, tagName);
+          //////////////////////////////////////////////////////////////////////
+
           CExpression inBrace = CExpressionBuilder.unary(operatorDeref, lhs);
-          lhs = new CExpression(inBrace, operatorDot, ident.getIdent());
+          lhs = CExpressionBuilder.eStructFieldAccess(inBrace, operatorDot, field);
         }
 
         else {
-          lhs = new CExpression(lhs, operator, ident.getIdent());
+
+          //////////////////////////////////////////////////////////////////////
+          final CType lhsRT = lhs.getResultType();
+          boolean isStructUnion = lhsRT != null && lhsRT.isStrUnion();
+          if (!isStructUnion) {
+            parser.perror("expect pointer to struct or union for '.' operator");
+          }
+          final Ident tagName = lhs.getSymbol().getType().getTpStruct().getTag();
+          CStructField field = getField(fieldNameTok, fieldName, tagName);
+
+          lhs = CExpressionBuilder.eStructFieldAccess(lhs, operator, field);
         }
 
       }
@@ -504,6 +528,19 @@ public class ParseExpression {
     }
 
     return lhs;
+  }
+
+  private CStructField getField(Token fieldNameTok, Ident fieldName, final Ident tagName) {
+    CSymbol sym = parser.getTag(tagName);
+    if (sym == null || !sym.isStruct()) {
+      parser.perror("symbol " + fieldNameTok.getValue() + " not declared in this scope");
+    }
+
+    CStructField field = sym.getType().getTpStruct().findFiled(fieldName);
+    if (field == null) {
+      parser.perror("struct " + tagName + " has no member " + fieldName.getName());
+    }
+    return field;
   }
 
   //  primary_expression

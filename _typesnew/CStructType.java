@@ -89,4 +89,16 @@ public class CStructType {
     return false;
   }
 
+  public CStructField findFiled(Ident fieldName) {
+    if (isReference) {
+      throw new ParseException("struct ref. has no fields");
+    }
+    for (CStructField f : fields) {
+      if (f.getName().equals(fieldName)) {
+        return f;
+      }
+    }
+    return null;
+  }
+
 }
