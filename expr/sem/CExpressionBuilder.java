@@ -5,6 +5,7 @@ import jscan.cstrtox.NumType;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import ast._typesnew.CType;
+import ast._typesnew.CTypeImpl;
 import ast._typesnew.main.StorageKind;
 import ast._typesnew.main.TypeKind;
 import ast.expr.main.CExpression;
@@ -40,7 +41,7 @@ public abstract class CExpressionBuilder {
     CExpression ret = new CExpression(e, token);
 
     final NumType numtype = ret.getCnumber().getNumtype();
-    ret.setResultType(CType.bindings.get(numtype));
+    ret.setResultType(CTypeImpl.bindings.get(numtype));
 
     return ret;
   }

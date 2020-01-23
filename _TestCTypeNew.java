@@ -1072,4 +1072,23 @@ public class _TestCTypeNew {
     assertTrue(rtype.isInline());
   }
 
+  @Test
+  public void testConstPointer2() throws IOException {
+
+    //@formatter:off
+    StringBuilder sb = new StringBuilder();
+    sb.append("int *const *pi; ");
+    //@formatter:on
+
+    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Parse p = new Parse(it);
+
+    CType base = parseType(p);
+    CDecl decl = parseDecl(p);
+    CType type = build(base, decl);
+
+    assertTrue(type.getTpPointer().isConst());
+    assertFalse(type.getTpPointer().getPointerTo().getTpPointer().isConst());
+  }
+
 }

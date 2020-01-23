@@ -1,7 +1,7 @@
 package ast.expr.sem.etype;
 
-import static ast._typesnew.CType.TYPE_INT;
-import static ast._typesnew.CType.TYPE_LONG_LONG;
+import static ast._typesnew.CTypeImpl.TYPE_INT;
+import static ast._typesnew.CTypeImpl.TYPE_LONG_LONG;
 import static jscan.tokenize.T.T_AND;
 import static jscan.tokenize.T.T_AND_AND;
 import static jscan.tokenize.T.T_ASSIGN;

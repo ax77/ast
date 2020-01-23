@@ -1,11 +1,12 @@
 package ast.expr.sem;
 
-import static ast._typesnew.CType.TYPE_INT;
+import static ast._typesnew.CTypeImpl.TYPE_INT;
 import static jscan.tokenize.T.TOKEN_NUMBER;
 import jscan.cstrtox.NumType;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import ast._typesnew.CType;
+import ast._typesnew.CTypeImpl;
 import ast.expr.main.CExpression;
 import ast.parse.NullChecker;
 import ast.symtabg.elements.NumericConstant;
@@ -27,7 +28,7 @@ public abstract class CExpressionBuilderHelper {
     NumericConstant number = new NumericConstant(0, NumType.N_INT);
     CExpression ret = new CExpression(number, copyTokenAddNewType(from, TOKEN_NUMBER, "0"));
 
-    ret.setResultType(CType.TYPE_INT);
+    ret.setResultType(CTypeImpl.TYPE_INT);
     return ret;
   }
 
@@ -37,7 +38,7 @@ public abstract class CExpressionBuilderHelper {
     NumericConstant number = new NumericConstant(1, NumType.N_INT);
     CExpression ret = new CExpression(number, copyTokenAddNewType(from, TOKEN_NUMBER, "1"));
 
-    ret.setResultType(CType.TYPE_INT);
+    ret.setResultType(CTypeImpl.TYPE_INT);
     return ret;
   }
 

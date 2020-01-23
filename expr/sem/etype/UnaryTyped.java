@@ -1,8 +1,8 @@
 package ast.expr.sem.etype;
 
-import static ast._typesnew.CType.FUNC_DESIGNATOR_TODO_STUB;
-import static ast._typesnew.CType.TYPE_INT;
-import static ast._typesnew.CType.VOID_TYPE;
+import static ast._typesnew.CTypeImpl.FUNC_DESIGNATOR_TODO_STUB;
+import static ast._typesnew.CTypeImpl.TYPE_INT;
+import static ast._typesnew.CTypeImpl.VOID_TYPE;
 import static jscan.tokenize.T.T_AND;
 import static jscan.tokenize.T.T_EXCLAMATION;
 import static jscan.tokenize.T.T_MINUS;

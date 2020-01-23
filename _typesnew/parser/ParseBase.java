@@ -1,5 +1,8 @@
 package ast._typesnew.parser;
 
+import static ast._typesnew.CTypeImpl.FINLIN;
+import static ast._typesnew.CTypeImpl.FNORET;
+import static ast._typesnew.CTypeImpl.QCONST;
 import static jscan.tokenize.T.TOKEN_IDENT;
 
 import java.util.ArrayList;
@@ -59,24 +62,19 @@ public class ParseBase {
     return sb.toString();
   }
 
-  private int getQual(Set<Token> tq) {
+  private int getQual(Set<Token> tq, Set<Token> fs) {
     int f = 0;
     for (Token t : tq) {
       if (Pcheckers.isConstIdent(t)) {
-        f |= CType.QCONST;
+        f |= QCONST;
       }
     }
-    return f;
-  }
-
-  private int getFspec(Set<Token> fs) {
-    int f = 0;
     for (Token t : fs) {
       if (Pcheckers.isInlineIdent(t)) {
-        f |= CType.FINLIN;
+        f |= FINLIN;
       }
       if (Pcheckers.isNoreturnIdent(t)) {
-        f |= CType.FNORET;
+        f |= FNORET;
       }
     }
     return f;
@@ -110,7 +108,7 @@ public class ParseBase {
 
           tail(st, ts, tq, fs, true);
           StorageKind storagespec = TypeCombiner.combine_storage(st);
-          basetype = new CType(typeFromStab, storagespec, getQual(tq), getFspec(fs));
+          basetype = new CType(typeFromStab, storagespec, getQual(tq, fs));
 
         } else {
           p.restoreState(parseState);
@@ -157,8 +155,7 @@ public class ParseBase {
       }
     }
 
-    basetype.applyTqual(getQual(tq));
-    basetype.applyFspec(getFspec(fs));
+    basetype.applyTqual(getQual(tq, fs));
     return basetype;
   }
 
@@ -166,115 +163,6 @@ public class ParseBase {
 
     return findType();
 
-    //    List<Token> st = new ArrayList<Token>();
-    //    Set<Token> tq = new HashSet<Token>();
-    //    Set<Token> fs = new HashSet<Token>();
-    //    List<Token> ts = new ArrayList<Token>();
-    //
-    //    tail(st, ts, tq, fs, true);
-    //
-    //    boolean fromtypedef = false;
-    //    CType typespec = null;
-    //    Ident symname = null;
-    //    boolean isPlainIdent = p.tok().ofType(TOKEN_IDENT) && !p.tok().getIdent().isBuiltin();
-    //
-    //    if (isPlainIdent) {
-    //      Token saved = p.tok();
-    //
-    //      symname = saved.getIdent();
-    //      if (p.isTypedefName(symname)) {
-    //        if (ts.isEmpty()) {
-    //          p.move();
-    //        }
-    //        tail(st, ts, tq, fs, false);
-    //        fromtypedef = true;
-    //      }
-    //    }
-    //
-    //    else {
-    //
-    //      if (p.isStructOrUnionSpecStart()) {
-    //
-    //        Token saved = p.tok();
-    //        p.move();
-    //
-    //        boolean isUnion = (saved.isIdent(Hash_ident.union_ident));
-    //
-    //        CStructType str = new ParseStruct(p).parseStruct(isUnion);
-    //        CStructUnionSizeAlign sizeAlignDto = new SemanticStruct(p).finalizeStructType(str);
-    //
-    //        StorageKind storagespec = TypeCombiner.combine_storage(st);
-    //        typespec = new CType(str, sizeAlignDto.getSize(), sizeAlignDto.getAlign(), storagespec);
-    //
-    //      }
-    //
-    //      else if (p.isEnumSpecStart()) {
-    //        if (!ts.isEmpty()) {
-    //          p.perror("type recognize...");
-    //        }
-    //
-    //        if (!ts.isEmpty()) {
-    //          p.perror("type already recognized...");
-    //        }
-    //
-    //        Token saved = p.tok();
-    //        p.move();
-    //
-    //        CEnumType en = new ParseEnum(p).parseEnum();
-    //
-    //        if (!en.isReference()) {
-    //          new SemanticEnum(p).finalizeEnumerators(en.getEnumerators());
-    //        }
-    //
-    //        StorageKind storagespec = TypeCombiner.combine_storage(st);
-    //        typespec = new CType(en, storagespec);
-    //
-    //      }
-    //
-    //      else {
-    //        if (ts.isEmpty()) {
-    //          p.perror("can't find the type in decl-specs");
-    //        }
-    //
-    //        TypeKind bts = TypeCombiner.combine_typespec(ts);
-    //        StorageKind storagespec = TypeCombiner.combine_storage(st);
-    //
-    //        typespec = new CType(bts, storagespec);
-    //      }
-    //
-    //    }
-    //
-    //    StorageKind storagespec = TypeCombiner.combine_storage(st);
-    //
-    //    if (typespec == null) {
-    //      if (fromtypedef) {
-    //        if (!ts.isEmpty()) {
-    //          TypeKind bts = TypeCombiner.combine_typespec(ts);
-    //          typespec = new CType(bts, storagespec);
-    //        } else {
-    //          CSymbol sym = p.getSym(symname);
-    //          if (sym == null) {
-    //            p.perror("no sym found.");
-    //          } else {
-    //            typespec = sym.getType();
-    //          }
-    //        }
-    //      } else {
-    //        if (ts.isEmpty()) {
-    //          p.pwarning("empty type-specifier. default INT.");
-    //          typespec = new CType(TypeKind.TP_INT, storagespec);
-    //        } else {
-    //          TypeKind bts = TypeCombiner.combine_typespec(ts);
-    //          typespec = new CType(bts, storagespec);
-    //        }
-    //      }
-    //    }
-    //
-    //    if (typespec == null) {
-    //      p.perror("no type-spec at all... paranoia... ");
-    //    }
-    //
-    //    return typespec;
   }
 
   private void tail(List<Token> st, List<Token> ts, Set<Token> tq, Set<Token> fs, boolean allowTS) {
