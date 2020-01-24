@@ -102,19 +102,33 @@ public class ParseStruct {
             type.setAlign(sizeAlignDto.getAlign());
           }
 
+          // is complete.
+          // TODO:XXX:?
           else {
             if (paranoia) {
-              System.out.println("1.1 : rewrite not incomplete?");
+              System.out.println("1.1");
             }
+
+            CStructType newstruct = new CStructType(isUnion, tag.getIdent());
+            newstruct.setFields(fields);
+
+            CStructUnionSizeAlign sizeAlignDto = new SemanticStruct(parser).finalizeStructType(newstruct);
+            CType newtype = new CType(newstruct, sizeAlignDto.getSize(), sizeAlignDto.getAlign(), storagespec);
+
+            parser.defineTag(tag.getIdent(), new CSymbol(tag.getIdent(), newtype, tag));
+            return newtype;
           }
 
           return type;
         }
 
-        // tag not found in symtab
+        // not a brace '{'
         //
         else {
           CType type = parser.getTag(tag.getIdent()).getType();
+
+          if (type.isIncomplete()) {
+          }
 
           if (paranoia) {
             System.out.println("2");
@@ -135,13 +149,15 @@ public class ParseStruct {
 
         if (parser.tp() == T.T_LEFT_BRACE) {
 
-          CStructType newstruct = new CStructType(isUnion, tag.getIdent());
-          newstruct.setFields(parseFields(parser));
+          // TODO:XXX:?
+          // rewrite...???
+          CType type = parser.getTag(tag.getIdent()).getType();
 
-          CStructUnionSizeAlign sizeAlignDto = new SemanticStruct(parser).finalizeStructType(newstruct);
-          CType type = new CType(newstruct, sizeAlignDto.getSize(), sizeAlignDto.getAlign(), storagespec);
+          type.getTpStruct().setFields(parseFields(parser));
+          CStructUnionSizeAlign sizeAlignDto = new SemanticStruct(parser).finalizeStructType(type.getTpStruct());
 
-          parser.defineTag(tag.getIdent(), new CSymbol(tag.getIdent(), type, tag));
+          type.setSize(sizeAlignDto.getSize());
+          type.setAlign(sizeAlignDto.getAlign());
 
           if (paranoia) {
             System.out.println("3");

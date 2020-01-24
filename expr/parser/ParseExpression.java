@@ -476,9 +476,6 @@ public class ParseExpression {
             parser.perror("expect pointer to struct or union for '->' operator");
           }
           final CStructType tpStruct = lhsRT.getTpPointer().getPointerTo().getTpStruct();
-          if (tpStruct.isIncomplete()) {
-            System.out.println(lhs.toString());
-          }
           CStructField field = tpStruct.findFiled(fieldName);
           if (field == null) {
             parser.perror("error: struct has no field: " + fieldName.getName());

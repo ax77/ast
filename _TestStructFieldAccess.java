@@ -232,6 +232,24 @@ public class _TestStructFieldAccess {
     sb12.append(" /*024*/      return go()()->zerofunc(); \n");
     sb12.append(" /*025*/  }                              \n");
 
+    //@formatter:off
+    StringBuilder sb13 = new StringBuilder();
+    sb13.append(" /*001*/  int main() {                 \n");
+    sb13.append(" /*002*/      struct s {               \n");
+    sb13.append(" /*003*/          struct r {           \n");
+    sb13.append(" /*004*/              char rc;         \n");
+    sb13.append(" /*005*/          } *p;                \n");
+    sb13.append(" /*006*/          char sc;             \n");
+    sb13.append(" /*007*/      };                       \n");
+    sb13.append(" /*008*/      struct s varname;        \n");
+    sb13.append(" /*009*/      struct r rvarname;       \n");
+    sb13.append(" /*010*/      varname.p = &rvarname;   \n");
+    sb13.append(" /*011*/      varname.p->rc = 0;       \n");
+    sb13.append(" /*012*/      varname.sc = 0;          \n");
+    sb13.append(" /*013*/      return 0;                \n");
+    sb13.append(" /*014*/  }                            \n");
+    //@formatter:on
+
     List<StringBuilder> tests = new ArrayList<StringBuilder>();
     tests.add(sb0);
     tests.add(sb1);
@@ -243,9 +261,10 @@ public class _TestStructFieldAccess {
     tests.add(sb7);
     tests.add(sb8);
     tests.add(sb9);
-    //    tests.add(sb10);
-    //    tests.add(sb11);
-    //    tests.add(sb12);
+    tests.add(sb10);
+    tests.add(sb11);
+    //tests.add(sb12);
+    tests.add(sb13);
 
     for (StringBuilder sb : tests) {
       Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();

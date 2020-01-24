@@ -50,6 +50,10 @@ public class Parse {
   //for easy unit-testing, like printing, and parse some parts
   private boolean isSemanticEnable;
 
+  public Symtab<Ident, CSymbol> getTags() {
+    return tags;
+  }
+
   public boolean isSemanticEnable() {
     return isSemanticEnable;
   }
