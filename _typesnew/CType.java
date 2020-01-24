@@ -15,7 +15,7 @@ import ast.parse.ParseException;
 public class CType implements CTypeApi {
 
   private final TypeKind kind;
-  private final StorageKind storage;
+  private StorageKind storage;
   private int qualifiers;
 
   private int size;
@@ -30,6 +30,10 @@ public class CType implements CTypeApi {
 
   public void applyTqual(int f) {
     qualifiers |= f;
+  }
+
+  public void setStorage(StorageKind storage) {
+    this.storage = storage;
   }
 
   // for primitives

@@ -133,7 +133,8 @@ public class ParseStruct {
           if (paranoia) {
             System.out.println("2");
           }
-
+          
+          type.setStorage(storagespec);
           return type;
         }
       }

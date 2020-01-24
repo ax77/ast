@@ -201,6 +201,18 @@ public class ParseStatement {
 
   private BlockItem parse_one_block() {
 
+    // TODO: doe's it correct, or maybe clean way exists?
+    // different scope between names of labels and all other names.
+    // why ??? 
+    if (parser.tok().ofType(TOKEN_IDENT) || !parser.tok().isBuiltinIdent()) {
+      Token peek = parser.getTokenlist().peek();
+      if (peek.ofType(T_COLON)) {
+        BlockItem block = new BlockItem();
+        block.setStatement(parse_label());
+        return block;
+      }
+    }
+
     if (parser.isDeclSpecStart()) {
       Declaration dec = new ParseDeclarations(parser).parseDeclaration();
 

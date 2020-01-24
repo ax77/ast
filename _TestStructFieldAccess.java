@@ -250,6 +250,60 @@ public class _TestStructFieldAccess {
     sb13.append(" /*014*/  }                            \n");
     //@formatter:on
 
+    //@formatter:off
+    StringBuilder sb14 = new StringBuilder();
+    sb14.append(" /*001*/  int main() {                \n");
+    sb14.append(" /*002*/      typedef signed int t;   \n");
+    sb14.append(" /*003*/      t f(t (t));             \n");
+    sb14.append(" /*004*/      {                       \n");
+    sb14.append(" /*005*/          long t;             \n");
+    sb14.append(" /*006*/      }                       \n");
+    sb14.append(" /*007*/      return 0;               \n");
+    sb14.append(" /*008*/  }                           \n");
+    //@formatter:on
+
+    //@formatter:off
+    StringBuilder sb15 = new StringBuilder();
+    sb15.append(" /*001*/  void foo (void) { return; } // ordinary name space, file scope                       \n");
+    sb15.append(" /*002*/  struct foo {      // tag name space, file scope                                      \n");
+    sb15.append(" /*003*/      int foo;      // member name space for this struct foo, file scope               \n");
+    sb15.append(" /*004*/      enum bar {    // tag name space, file scope                                      \n");
+    sb15.append(" /*005*/          RED       // ordinary name space, file scope                                 \n");
+    sb15.append(" /*006*/      } bar;        // member name space for this struct foo, file scope               \n");
+    sb15.append(" /*007*/      struct foo* p; // OK: uses tag/file scope name \"foo\"                           \n");
+    sb15.append(" /*008*/  };                                                                                   \n");
+    sb15.append(" /*009*/  enum bar x; // OK: uses tag/file-scope bar                                           \n");
+    sb15.append(" /*010*/  // int foo; // Error: ordinary name space foo already in scope                       \n");
+    sb15.append(" /*011*/  //union foo { int a, b; }; // Error: tag name space foo in scope                     \n");
+    sb15.append(" /*012*/  int main(void)                                                                       \n");
+    sb15.append(" /*013*/  {                                                                                    \n");
+    sb15.append(" /*014*/      goto foo; // OK uses \"foo\" from label name space/function scope                \n");
+    sb15.append(" /*015*/      struct foo { // tag name space, block scope (hides file scope)                   \n");
+    sb15.append(" /*016*/         enum bar x; // OK, uses \"bar\" from tag name space/file scope                \n");
+    sb15.append(" /*017*/      };                                                                               \n");
+    sb15.append(" /*018*/      typedef struct foo foo; // OK: uses foo from tag name space/block scope          \n");
+    sb15.append(" /*019*/                              // defines block-scope ordinary foo (hides file scope)   \n");
+    sb15.append(" /*020*/      (foo){.x=RED}; // uses ordinary/block-scope foo and ordinary/file-scope RED      \n");
+    sb15.append(" /*021*/  //foo:; // label name space, function scope                                            \n");
+    sb15.append(" /*022*/  }                                                                                    \n");
+    //@formatter:on
+
+    //@formatter:off
+    StringBuilder sb16 = new StringBuilder();
+    sb16.append(" /*001*/  struct s* p = 0; // tag naming an unknown struct declares it              \n");
+    sb16.append(" /*002*/  struct s { int a; }; // definition for the struct pointed to by p         \n");
+    sb16.append(" /*003*/  int main()                                                                \n");
+    sb16.append(" /*004*/  {                                                                         \n");
+    sb16.append(" /*005*/      struct s; // forward declaration of a new, local struct s             \n");
+    sb16.append(" /*006*/                // this hides global struct s until the end of this block   \n");
+    sb16.append(" /*007*/      struct s *p;  // pointer to local struct s                            \n");
+    sb16.append(" /*008*/                    // without the forward declaration above,               \n");
+    sb16.append(" /*009*/                    // this would point at the file-scope s                 \n");
+    sb16.append(" /*010*/      struct s { char* p; }; // definitions of the local struct s           \n");
+    sb16.append(" /*011*/      return 0;                                                             \n");
+    sb16.append(" /*012*/  }                                                                         \n");
+    //@formatter:on
+
     List<StringBuilder> tests = new ArrayList<StringBuilder>();
     tests.add(sb0);
     tests.add(sb1);
@@ -263,13 +317,17 @@ public class _TestStructFieldAccess {
     tests.add(sb9);
     tests.add(sb10);
     tests.add(sb11);
-    //tests.add(sb12);
+    tests.add(sb12);
     tests.add(sb13);
+    tests.add(sb14);
+    tests.add(sb15);
+    tests.add(sb16);
 
     for (StringBuilder sb : tests) {
       Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
       Parse p = new Parse(it);
       TranslationUnit unit = p.parse_unit();
+      System.out.println();
     }
 
   }
