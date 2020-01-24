@@ -83,13 +83,20 @@ public abstract class CExpressionBuilder {
 
     final CType resultType = function.getResultType();
 
-    if (!resultType.isFunction()) {
+    final boolean isFunction = resultType.isFunction();
+    final boolean isPointerToFunction = resultType.isPointerToFunction();
+    final boolean isFuncOk = isFunction || isPointerToFunction;
+    if (!isFuncOk) {
 
       throw new ParseException("expect function: " + resultType.toString());
 
     }
 
-    fcall.setResultType(resultType.getTpFunction().getReturnType());
+    if (isFunction) {
+      fcall.setResultType(resultType.getTpFunction().getReturnType());
+    } else {
+      fcall.setResultType(resultType.getTpPointer().getPointerTo().getTpFunction().getReturnType());
+    }
 
     return fcall;
 

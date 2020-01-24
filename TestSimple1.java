@@ -8,7 +8,6 @@ import java.util.List;
 import jscan.tokenize.Stream;
 import jscan.tokenize.Token;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ast.parse.Parse;
@@ -20,7 +19,6 @@ public class TestSimple1 {
     return new Stream("<utest>", source);
   }
 
-  @Ignore
   @Test
   public void test() throws IOException {
     //@formatter:off

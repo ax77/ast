@@ -11,7 +11,6 @@ import java.util.TreeMap;
 import jscan.tokenize.Stream;
 import jscan.tokenize.Token;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ast.expr.main.CExpression;
@@ -43,7 +42,6 @@ public class TestCompoundLiteral {
     }
   }
 
-  @Ignore
   @Test
   public void testCompoundLiteral_2() throws IOException {
     Map<String, String> tests = new TreeMap<String, String>();
@@ -55,14 +53,14 @@ public class TestCompoundLiteral {
 
       List<Token> tokenlist = getHashedStream(e).getTokenlist();
       Parse p = new Parse(tokenlist);
+      p.pushscope();
+
       CExpression expr = new ParseExpression(p).e_expression();
 
       assertEquals(CExpressionBase.EUNARY, expr.getBase());
-      //      assertEquals(CExpressionBase.ECOMPLITERAL, expr.getEunary().getOperand().getBase());
     }
   }
 
-  @Ignore
   @Test
   public void testCompoundLiteral_3() throws IOException {
     StringBuilder sb = new StringBuilder();

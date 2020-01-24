@@ -419,7 +419,10 @@ public class ParseExpression {
         Token saved = parser.tok();
 
         InitializerList initializerList = new ParseDeclarations(parser).parseInitializerList();
-        return new CExpression(typename, initializerList, saved);
+        CExpression compliteral = new CExpression(typename, initializerList, saved);
+
+        compliteral.setResultType(typename);
+        return compliteral;
       }
 
       parser.restoreState(state);
@@ -488,6 +491,11 @@ public class ParseExpression {
           if (!lhsRT.isStrUnion()) {
             parser.perror("expect struct or union for '.' operator");
           }
+
+          if (lhsRT.getTpStruct().isIncomplete()) {
+            System.out.printf("");
+          }
+
           CStructField field = lhsRT.getTpStruct().findFiled(fieldName);
           if (field == null) {
             parser.perror("error: struct has no field: " + fieldName.getName());

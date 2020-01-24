@@ -83,13 +83,29 @@ public class ParseStruct {
         if (parser.tp() == T.T_LEFT_BRACE) {
           CType type = parser.getTag(tag.getIdent()).getType();
 
-          // this is warning: declaration was not declare anything???
+          // TODO:
+          // 1) this is warning: declaration was not declare anything???
+          // 2) complete previous incompleted
+          // 3) ... ??? 
 
-          @SuppressWarnings("unused")
           List<CStructField> fields = parseFields(parser);
 
           if (paranoia) {
             System.out.println("1");
+          }
+
+          if (type.isIncomplete()) {
+            type.getTpStruct().setFields(fields);
+            CStructUnionSizeAlign sizeAlignDto = new SemanticStruct(parser).finalizeStructType(type.getTpStruct());
+
+            type.setSize(sizeAlignDto.getSize());
+            type.setAlign(sizeAlignDto.getAlign());
+          }
+
+          else {
+            if (paranoia) {
+              System.out.println("1.1 : rewrite not incomplete?");
+            }
           }
 
           return type;

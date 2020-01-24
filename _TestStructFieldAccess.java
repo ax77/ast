@@ -149,6 +149,37 @@ public class _TestStructFieldAccess {
     sb7.append(" /*012*/  }                                  \n");
     //@formatter:on
 
+    //@formatter:off
+    StringBuilder sb8 = new StringBuilder();
+    sb8.append(" /*001*/  int main() {                                                       \n");
+    sb8.append(" /*002*/      struct s {                                                     \n");
+    sb8.append(" /*003*/          struct { char c1; };                                       \n");
+    sb8.append(" /*004*/          struct { struct { char c2; }; };                           \n");
+    sb8.append(" /*005*/          struct { struct { struct { char c3; }; }; };               \n");
+    sb8.append(" /*006*/          struct { struct { struct { struct { char c4; }; }; }; };   \n");
+    sb8.append(" /*007*/      };                                                             \n");
+    sb8.append(" /*008*/      struct s varname;                                              \n");
+    sb8.append(" /*009*/      varname.c1 = 0;                                                \n");
+    sb8.append(" /*010*/      varname.c2 = 0;                                                \n");
+    sb8.append(" /*011*/      varname.c3 = varname.c4 = 0;                                   \n");
+    sb8.append(" /*012*/      return 0;                                                      \n");
+    sb8.append(" /*013*/  }                                                                  \n");
+    //@formatter:on
+
+    //@formatter:off
+    StringBuilder sb9 = new StringBuilder();
+    sb9.append(" /*001*/  struct empty;         \n");
+    sb9.append(" /*002*/  struct empty;         \n");
+    sb9.append(" /*003*/  struct empty {        \n");
+    sb9.append(" /*004*/      char c;           \n");
+    sb9.append(" /*005*/  };                    \n");
+    sb9.append(" /*006*/  int main() {          \n");
+    sb9.append(" /*007*/      struct empty e;   \n");
+    sb9.append(" /*008*/      e.c = 32;         \n");
+    sb9.append(" /*009*/      return 0;         \n");
+    sb9.append(" /*010*/  }                     \n");
+    //@formatter:on
+
     List<StringBuilder> tests = new ArrayList<StringBuilder>();
     tests.add(sb0);
     tests.add(sb1);
@@ -158,6 +189,8 @@ public class _TestStructFieldAccess {
     tests.add(sb5);
     tests.add(sb6);
     tests.add(sb7);
+    tests.add(sb8);
+    tests.add(sb9);
 
     for (StringBuilder sb : tests) {
       Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();

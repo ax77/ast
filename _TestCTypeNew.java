@@ -12,7 +12,6 @@ import java.util.List;
 import jscan.Tokenlist;
 import jscan.hashed.Hash_ident;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ast._entry.PreprocessSourceForParser;
@@ -390,30 +389,6 @@ public class _TestCTypeNew {
 
   }
 
-  @Ignore
-  @Test
-  public void testStructRefMaybe() throws IOException {
-    final String source = "struct x { struct mustbe fieldname_struct_as_is; struct mustbe *fieldname_struct_ptr; };";
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
-    Parse p = new Parse(it);
-    p.pushscope();
-
-    CType base = parseType(p);
-    CDecl decl = parseDecl(p);
-    CType type = build(base, decl);
-
-    assertEquals(TypeKind.TP_STRUCT, type.getKind());
-
-    final List<CStructField> fields = type.getTpStruct().getFields();
-    assertEquals(2, fields.size());
-
-    assertEquals("fieldname_struct_as_is", fields.get(0).getName().getName());
-    assertEquals("fieldname_struct_ptr", fields.get(1).getName().getName());
-
-    assertEquals(TypeKind.TP_STRUCT, fields.get(0).getType().getKind());
-    assertEquals(TypeKind.TP_POINTER_TO, fields.get(1).getType().getKind());
-  }
-
   @Test
   public void testFuncParamsPtr() throws IOException {
     final String source = "int f(int *pi, int **ppi, int ***pppi)";
@@ -434,10 +409,6 @@ public class _TestCTypeNew {
     assertEquals(2, params.get(0).getType().chainLength());
     assertEquals(3, params.get(1).getType().chainLength());
     assertEquals(4, params.get(2).getType().chainLength());
-
-    //    System.out.println(params.get(0).getType().toString());
-    //    System.out.println(params.get(1).getType().toString());
-    //    System.out.println(params.get(2).getType().toString());
 
   }
 
