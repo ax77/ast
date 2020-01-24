@@ -304,6 +304,72 @@ public class _TestStructFieldAccess {
     sb16.append(" /*012*/  }                                                                         \n");
     //@formatter:on
 
+    //@formatter:off
+    StringBuilder sb17 = new StringBuilder();
+    sb17.append(" /*001*/  typedef signed int t;                                                                    \n");
+    sb17.append(" /*002*/  t f(t(t));                                                                               \n");
+    sb17.append(" /*003*/  int main() {                                                                             \n");
+    sb17.append(" /*004*/      long t = 0;                                                                          \n");
+    sb17.append(" /*005*/      goto t;                                                                              \n");
+    sb17.append(" /*006*/      struct t { int t; };                                                                 \n");
+    sb17.append(" /*007*/      { struct t { int t; }; goto t; struct t t; struct t *pt = &(struct t) { .t=1, }; }   \n");
+    sb17.append(" /*008*/      t:                                                                                   \n");
+    sb17.append(" /*009*/      return t;                                                                            \n");
+    sb17.append(" /*010*/  }                                                                                        \n");
+    //@formatter:on
+
+    //@formatter:off
+    StringBuilder sb18 = new StringBuilder();
+    sb18.append(" /*001*/  typedef char alias; alias x;                                                         \n");
+    sb18.append(" /*002*/  void f() {                                                                           \n");
+    sb18.append(" /*003*/    typedef short int alias; alias x;                                                  \n");
+    sb18.append(" /*004*/  }                                                                                    \n");
+    sb18.append(" /*005*/  int main()                                                                           \n");
+    sb18.append(" /*006*/  {                                                                                    \n");
+    sb18.append(" /*007*/    typedef int alias; alias x;                                                        \n");
+    sb18.append(" /*008*/    {                                                                                  \n");
+    sb18.append(" /*009*/      typedef long alias; alias x;                                                     \n");
+    sb18.append(" /*010*/      {                                                                                \n");
+    sb18.append(" /*011*/        typedef long double alias; alias x;                                            \n");
+    sb18.append(" /*012*/      }                                                                                \n");
+    sb18.append(" /*013*/    }                                                                                  \n");
+    sb18.append(" /*014*/    typedef alias alias; //define(alias, typedef, int(comes from alias td-name))       \n");
+    sb18.append(" /*015*/    int typedef alias;   //define(alias, typedef, int)                                 \n");
+    sb18.append(" /*016*/    alias typedef alias; //define(alias, typedef, int(comes from alias td-name))       \n");
+    sb18.append(" /*017*/    typedef alias alias; //define(alias, typedef, int(comes from alias td-name))       \n");
+    sb18.append(" /*018*/    signed typedef alias, (*ptrto_funcret_alias)();                                    \n");
+    sb18.append(" /*019*/    int signed typedef alias, *ptrto_alias, arrof_alias[3], (*ptrto_arrof_alias)[3];   \n");
+    sb18.append(" /*020*/    static const alias a;                                                              \n");
+    sb18.append(" /*021*/    struct test {                                                                      \n");
+    sb18.append(" /*022*/      alias a;                                                                         \n");
+    sb18.append(" /*023*/      unsigned alias : 4;                                                              \n");
+    sb18.append(" /*024*/      alias : 1; // unnamed bitfield                                                   \n");
+    sb18.append(" /*025*/      struct {                                                                         \n");
+    sb18.append(" /*026*/        alias a;                                                                       \n");
+    sb18.append(" /*027*/        alias alias;                                                                   \n");
+    sb18.append(" /*028*/        const alias b;                                                                 \n");
+    sb18.append(" /*029*/      } s;                                                                             \n");
+    sb18.append(" /*030*/    };                                                                                 \n");
+    sb18.append(" /*031*/    struct test strtest;                                                               \n");
+    sb18.append(" /*032*/    strtest.alias = 1;                                                                 \n");
+    sb18.append(" /*033*/    // $6.7.8.6                                                                        \n");
+    sb18.append(" /*034*/    typedef signed int t;                                                              \n");
+    sb18.append(" /*035*/      typedef int plain;                                                               \n");
+    sb18.append(" /*036*/    struct tag {                                                                       \n");
+    sb18.append(" /*037*/        unsigned t;                                                                    \n");
+    sb18.append(" /*038*/        const t:5; // unnamed bitfield                                                 \n");
+    sb18.append(" /*039*/        plain r;                                                                       \n");
+    sb18.append(" /*040*/    };                                                                                 \n");
+    sb18.append(" /*041*/    struct tag str;                                                                    \n");
+    sb18.append(" /*042*/    str.t = 1; // f1                                                                   \n");
+    sb18.append(" /*043*/    str.r = 2; // f3                                                                   \n");
+    sb18.append(" /*044*/    typedef int i32;                                                                   \n");
+    sb18.append(" /*045*/    //static const i32; // warning: declaration does not declare anything              \n");
+    sb18.append(" /*046*/    static const i32 xx;                                                               \n");
+    sb18.append(" /*047*/    return sizeof(a);                                                                  \n");
+    sb18.append(" /*048*/  }                                                                                    \n");
+    //@formatter:on
+
     List<StringBuilder> tests = new ArrayList<StringBuilder>();
     tests.add(sb0);
     tests.add(sb1);
@@ -322,12 +388,14 @@ public class _TestStructFieldAccess {
     tests.add(sb14);
     tests.add(sb15);
     tests.add(sb16);
+    tests.add(sb17);
+    //tests.add(sb18);
 
     for (StringBuilder sb : tests) {
       Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
       Parse p = new Parse(it);
       TranslationUnit unit = p.parse_unit();
-      System.out.println();
+      //System.out.println();
     }
 
   }

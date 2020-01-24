@@ -14,7 +14,6 @@ import ast.unit.TranslationUnit;
 
 public class _TestSymtabLevels {
 
-  @Ignore
   @Test
   public void testSymbolsEasy() throws IOException {
     //@formatter:off

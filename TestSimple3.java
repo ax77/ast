@@ -1395,7 +1395,7 @@ public class TestSimple3 {
     tests.add(new UtilTestDto(false, "015", sb_015));
     tests.add(new UtilTestDto(false, "016", sb_016));
     tests.add(new UtilTestDto(false, "017", sb_017));
-    tests.add(new UtilTestDto(true, "018", sb_018));
+    tests.add(new UtilTestDto(false, "018", sb_018));
     tests.add(new UtilTestDto(false, "019", sb_019));
     tests.add(new UtilTestDto(false, "020", sb_020));
     tests.add(new UtilTestDto(false, "021", sb_021));
@@ -1430,7 +1430,7 @@ public class TestSimple3 {
     tests.add(new UtilTestDto(false, "050", sb_050));
     tests.add(new UtilTestDto(false, "051", sb_051));
     tests.add(new UtilTestDto(false, "052", sb_052));
-    tests.add(new UtilTestDto(true, "053", sb_053));
+    tests.add(new UtilTestDto(false, "053", sb_053));
     tests.add(new UtilTestDto(false, "054", sb_054));
     tests.add(new UtilTestDto(false, "055", sb_055));
     tests.add(new UtilTestDto(true, "056", sb_056));
@@ -1447,7 +1447,7 @@ public class TestSimple3 {
     tests.add(new UtilTestDto(false, "068", sb_068));
     tests.add(new UtilTestDto(true, "069", sb_069));
     tests.add(new UtilTestDto(false, "070", sb_070));
-    tests.add(new UtilTestDto(true, "071", sb_071));
+    tests.add(new UtilTestDto(false, "071", sb_071));
     tests.add(new UtilTestDto(false, "072", sb_072));
     tests.add(new UtilTestDto(false, "073", sb_073));
     tests.add(new UtilTestDto(false, "074", sb_074));
@@ -1481,6 +1481,7 @@ public class TestSimple3 {
     }
 
     assertEquals(tests.size()-ignore,  others);
+    System.out.println(ignore);
   }
 
 }

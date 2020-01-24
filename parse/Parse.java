@@ -374,8 +374,7 @@ public class Parse {
         || isEnumSpecStart()
         || isStructOrUnionSpecStart()
         || isStaticAssert()
-        || isTypedefName(tok()) ;
-        //|| (tok.ofType(TOKEN_IDENT) && !tok.isBuiltinIdent() && tags.getsym(tok.getIdent()) != null);
+        || isTypedefName(tok());
   }
   
   // this one need for cast expression and compound literal
@@ -389,7 +388,6 @@ public class Parse {
         || Pcheckers.isStructOrUnionSpecStart(what)
         || Pcheckers.isStaticAssert(what)
         || isTypedefName(what);
-        //|| (what.ofType(TOKEN_IDENT) && !what.isBuiltinIdent() && tags.getsym(what.getIdent()) != null);
   }
   //@formatter:on
 
@@ -432,7 +430,7 @@ public class Parse {
     CType type = TypeMerger.build(base, decl);
 
     if (!decl.isAstract()) {
-      //perror("expect abstract declarator.");
+      perror("expect abstract declarator.");
     }
     return type;
 
