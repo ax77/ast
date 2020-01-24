@@ -74,6 +74,10 @@ public class Parse {
     tags.addsym(key, sym);
   }
 
+  public boolean isHasTag(Ident name) {
+    return getTag(name) != null;
+  }
+
   public CSymbol getSym(Ident name) {
     return symbols.getsym(name);
   }

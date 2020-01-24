@@ -138,7 +138,11 @@ public class CSymbol implements CTypeApi, ILocation {
   @Override public boolean isFloat()           { return type.isFloat()        ; }
   @Override public boolean isDouble()          { return type.isDouble()       ; }
   @Override public boolean isLongDouble()      { return type.isLongDouble()   ; }
+  @Override public boolean isStrUnion()        { return type.isStrUnion()   ; }
   
+  @Override public boolean isPointerToVoid()            { return type.isPointerToVoid()   ; }
+  @Override public boolean isPointerToStructUnion()     { return type.isPointerToStructUnion()   ; }
+  @Override public boolean isPointerToCompat(CType lhs) { return type.isPointerToCompat(lhs)   ; }
   //@formatter:on
 
   @Override

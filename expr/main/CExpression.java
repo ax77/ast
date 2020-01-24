@@ -16,7 +16,6 @@ import java.util.List;
 
 import jscan.cstrtox.C_strtox;
 import jscan.sourceloc.SourceLocation;
-import jscan.symtab.Ident;
 import jscan.tokenize.Token;
 import ast._typesnew.CStructField;
 import ast._typesnew.CType;

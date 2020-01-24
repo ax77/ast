@@ -18,8 +18,8 @@ public class CType implements CTypeApi {
   private final StorageKind storage;
   private int qualifiers;
 
-  private final int size;
-  private final int align;
+  private int size;
+  private int align;
 
   private CPointerType tpPointer;
   private CArrayType tpArray;
@@ -27,7 +27,6 @@ public class CType implements CTypeApi {
   private CStructType tpStruct;
   private CEnumType tpEnum;
   private CBitfieldType tpBitfield;
-  private CIncompleteType tpIncomplete;
 
   public void applyTqual(int f) {
     qualifiers |= f;
@@ -39,14 +38,6 @@ public class CType implements CTypeApi {
     this.size = TypeSizes.get(kind);
     this.align = this.size;
     this.storage = storage;
-  }
-
-  public CType(CIncompleteType tpIncomplete) {
-    this.kind = TypeKind.TP_INCOMPLETE;
-    this.tpIncomplete = tpIncomplete;
-    this.size = -1;
-    this.align = -1;
-    this.storage = StorageKind.ST_NONE;
   }
 
   public CType(CPointerType tpPointer, StorageKind storage) {
@@ -213,6 +204,7 @@ public class CType implements CTypeApi {
     }
   }
 
+  @Override
   public boolean isStrUnion() {
     return isStruct() || isUnion();
   }
@@ -322,17 +314,17 @@ public class CType implements CTypeApi {
 
   @Override
   public boolean isIncompleteStruct() {
-    return kind == TypeKind.TP_INCOMPLETE && tpIncomplete.isIncompleteStruct();
+    return isStruct() && tpStruct.isIncomplete();
   }
 
   @Override
   public boolean isIncompleteUnion() {
-    return kind == TypeKind.TP_INCOMPLETE && tpIncomplete.isIncompleteUnion();
+    return isUnion() && tpStruct.isIncomplete();
   }
 
   @Override
   public boolean isIncompleteArray() {
-    return kind == TypeKind.TP_INCOMPLETE && tpIncomplete.isIncompleteArray();
+    return false; // TODO:
   }
 
   @Override
@@ -453,6 +445,7 @@ public class CType implements CTypeApi {
   @Override public boolean isLongDouble() { return kind == TypeKind.TP_LONG_DOUBLE; }
 //@formatter:on
 
+  @Override
   public boolean isPointerToCompat(CType lhsRT) {
     // TODO: XXX
     return true;
@@ -478,12 +471,26 @@ public class CType implements CTypeApi {
     return isPointer() && tpPointer.getPointerTo().isIncomplete();
   }
 
+  @Override
   public boolean isPointerToVoid() {
     return isPointer() && tpPointer.getPointerTo().isVoid();
   }
 
+  @Override
+  public boolean isPointerToStructUnion() {
+    return isPointer() && tpPointer.getPointerTo().isStrUnion();
+  }
+
   public boolean isAnObjectExceptBitField() {
     return isObject() && !isBitfield();
+  }
+
+  public void setSize(int size) {
+    this.size = size;
+  }
+
+  public void setAlign(int align) {
+    this.align = align;
   }
 
 }

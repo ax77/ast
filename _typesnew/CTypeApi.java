@@ -17,6 +17,7 @@ public interface CTypeApi {
   // object, no-scalar, may be incomplete
   public boolean isStruct();
   public boolean isUnion();
+  public boolean isStrUnion();
   public boolean isArray();
   
   // arithmetic, scalar
@@ -34,6 +35,10 @@ public interface CTypeApi {
   public boolean isPointerToFunction();
   public boolean isPointerToObject();
   public boolean isPointerToIncomplete();
+  
+  public boolean isPointerToVoid();
+  public boolean isPointerToStructUnion();
+  public boolean isPointerToCompat(CType lhs);
   
   // III)
   // incomplete

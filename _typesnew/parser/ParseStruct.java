@@ -9,13 +9,14 @@ import java.util.List;
 
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import ast._typesnew.CIncompleteType;
 import ast._typesnew.CStructField;
 import ast._typesnew.CStructType;
 import ast._typesnew.CType;
 import ast._typesnew.decl.CDecl;
 import ast._typesnew.main.StorageKind;
+import ast._typesnew.sem.CStructUnionSizeAlign;
 import ast._typesnew.sem.SemanticBitfield;
+import ast._typesnew.sem.SemanticStruct;
 import ast._typesnew.util.TypeMerger;
 import ast.declarations.parser.ParseDeclarations;
 import ast.expr.main.CExpression;
@@ -31,7 +32,9 @@ public class ParseStruct {
     this.parser = parser;
   }
 
-  public CStructType parseStruct(boolean isUnion) {
+  // TODO: incomplete fields
+
+  public CType parseStruct(boolean isUnion, StorageKind storagespec) {
     //struct ...
     //       ^
 
@@ -46,20 +49,135 @@ public class ParseStruct {
       parser.move();
     }
 
-    // ref
-    if (parser.tp() != T.T_LEFT_BRACE) {
+    // 1: struct S
+    // 2: struct {
+    // 3: struct S {
+    // 4: struct S *sP;
 
-      TypeMerger.checkTagNotNullForReference(tag);
-      CStructType strref = new CStructType(isUnion, tag.getIdent());
-      
-      return strref;
+    // linearize it as well
+
+    //    if (tag != null) {
+    //      if (parser.isHasTag(tag.getIdent())) {
+    //        if (parser.tp() == T.T_LEFT_BRACE) {
+    //        } else {
+    //        }
+    //      } else {
+    //        if (parser.tp() == T.T_LEFT_BRACE) {
+    //        } else {
+    //        }
+    //      }
+    //    } else {
+    //      if (parser.tp() == T.T_LEFT_BRACE) {
+    //      } else {
+    //      }
+    //    }
+
+    boolean paranoia = false;
+
+    if (tag != null) {
+
+      if (parser.isHasTag(tag.getIdent())) {
+
+        // tag was in symtab
+        //
+        if (parser.tp() == T.T_LEFT_BRACE) {
+          CType type = parser.getTag(tag.getIdent()).getType();
+
+          // this is warning: declaration was not declare anything???
+
+          @SuppressWarnings("unused")
+          List<CStructField> fields = parseFields(parser);
+
+          if (paranoia) {
+            System.out.println("1");
+          }
+
+          return type;
+        }
+
+        // tag not found in symtab
+        //
+        else {
+          CType type = parser.getTag(tag.getIdent()).getType();
+
+          if (paranoia) {
+            System.out.println("2");
+          }
+
+          return type;
+        }
+      }
+
+      else {
+        // tag present, but not found.
+        // register incomplete forward.
+        //
+        CStructType incomplete = new CStructType(isUnion, tag.getIdent());
+        final CType structIncompleteType = new CType(incomplete, -1, -1, storagespec);
+        final CSymbol structSymbol = new CSymbol(tag.getIdent(), structIncompleteType, tag);
+        parser.defineTag(tag.getIdent(), structSymbol);
+
+        if (parser.tp() == T.T_LEFT_BRACE) {
+
+          CStructType newstruct = new CStructType(isUnion, tag.getIdent());
+          newstruct.setFields(parseFields(parser));
+
+          CStructUnionSizeAlign sizeAlignDto = new SemanticStruct(parser).finalizeStructType(newstruct);
+          CType type = new CType(newstruct, sizeAlignDto.getSize(), sizeAlignDto.getAlign(), storagespec);
+
+          parser.defineTag(tag.getIdent(), new CSymbol(tag.getIdent(), type, tag));
+
+          if (paranoia) {
+            System.out.println("3");
+          }
+
+          return type;
+
+        }
+
+        else {
+          if (paranoia) {
+            System.out.println("4");
+          }
+
+          return structIncompleteType;
+
+        }
+      }
+
     }
 
-    // def
-    List<CStructField> fields = parseFields(parser);
-    CStructType strdef = new CStructType(isUnion, TypeMerger.getIdentOrNull(tag), fields);
-    
-    return strdef;
+    else {
+
+      // all cases if (tag == null)
+
+      if (parser.tp() == T.T_LEFT_BRACE) {
+
+        CStructType newstruct = new CStructType(isUnion, null);
+        newstruct.setFields(parseFields(parser));
+
+        CStructUnionSizeAlign sizeAlignDto = new SemanticStruct(parser).finalizeStructType(newstruct);
+        CType type = new CType(newstruct, sizeAlignDto.getSize(), sizeAlignDto.getAlign(), storagespec);
+
+        if (paranoia) {
+          System.out.println("5");
+        }
+
+        return type;
+
+      }
+
+      else {
+
+        if (paranoia) {
+          System.out.println("6");
+        }
+      }
+    }
+
+    parser.perror("paranoia");
+    return null;
+
   }
 
   //////////////////////////////////////////////

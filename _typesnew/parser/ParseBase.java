@@ -15,12 +15,9 @@ import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import ast._typesnew.CEnumType;
-import ast._typesnew.CStructType;
 import ast._typesnew.CType;
 import ast._typesnew.main.StorageKind;
 import ast._typesnew.main.TypeKind;
-import ast._typesnew.sem.CStructUnionSizeAlign;
-import ast._typesnew.sem.SemanticStruct;
 import ast._typesnew.util.TypeCombiner;
 import ast.parse.Parse;
 import ast.parse.ParseState;
@@ -125,15 +122,9 @@ public class ParseBase {
       p.move();
       boolean isUnion = (curtok.isIdent(Hash_ident.union_ident));
 
-      CStructType str = new ParseStruct(p).parseStruct(isUnion);
-      CStructUnionSizeAlign sizeAlignDto = new SemanticStruct(p).finalizeStructType(str);
-
       StorageKind storagespec = TypeCombiner.combine_storage(st);
-      basetype = new CType(str, sizeAlignDto.getSize(), sizeAlignDto.getAlign(), storagespec);
-      
-      if(!str.isReference() && str.isHasTag()) {
-        p.defineTag(str.getTag(), new CSymbol(str.getTag(), basetype, curtok));
-      }
+      basetype = new ParseStruct(p).parseStruct(isUnion, storagespec);
+
     }
 
     else if (Pcheckers.isEnumSpecStart(curtok)) {

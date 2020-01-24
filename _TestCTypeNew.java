@@ -12,6 +12,7 @@ import java.util.List;
 import jscan.Tokenlist;
 import jscan.hashed.Hash_ident;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ast._entry.PreprocessSourceForParser;
@@ -389,6 +390,7 @@ public class _TestCTypeNew {
 
   }
 
+  @Ignore
   @Test
   public void testStructRefMaybe() throws IOException {
     final String source = "struct x { struct mustbe fieldname_struct_as_is; struct mustbe *fieldname_struct_ptr; };";

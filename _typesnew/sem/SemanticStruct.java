@@ -16,10 +16,10 @@ public class SemanticStruct {
 
   public CStructUnionSizeAlign finalizeStructType(CStructType tpStruct) {
     List<CStructField> fields = null;
-    if (!tpStruct.isReference()) {
+    if (!tpStruct.isIncomplete()) {
       fields = tpStruct.getFields();
     }
-    return new CStructUnionSizeAlign(tpStruct.isUnion(), tpStruct.isReference(), fields);
+    return new CStructUnionSizeAlign(tpStruct.isUnion(), tpStruct.isIncomplete(), fields);
   }
 
 }

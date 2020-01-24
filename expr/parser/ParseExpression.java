@@ -468,13 +468,13 @@ public class ParseExpression {
 
           //////////////////////////////////////////////////////////////////////
           final CType lhsRT = lhs.getResultType();
-          boolean isPointerToStructUnion = (lhsRT != null && lhsRT.isPointer())
-              && lhsRT.getTpPointer().getPointerTo().isStrUnion();
-          if (!isPointerToStructUnion) {
+          if (!lhsRT.isPointerToStructUnion()) {
             parser.perror("expect pointer to struct or union for '->' operator");
           }
-          final Ident tagName = lhs.getSymbol().getType().getTpPointer().getPointerTo().getTpStruct().getTag();
-          CStructField field = getField(fieldNameTok, fieldName, tagName);
+          CStructField field = lhsRT.getTpPointer().getPointerTo().getTpStruct().findFiled(fieldName);
+          if (field == null) {
+            parser.perror("error: struct has no field: " + fieldName.getName());
+          }
           //////////////////////////////////////////////////////////////////////
 
           CExpression inBrace = CExpressionBuilder.unary(operatorDeref, lhs);
@@ -485,12 +485,14 @@ public class ParseExpression {
 
           //////////////////////////////////////////////////////////////////////
           final CType lhsRT = lhs.getResultType();
-          boolean isStructUnion = lhsRT != null && lhsRT.isStrUnion();
-          if (!isStructUnion) {
-            parser.perror("expect pointer to struct or union for '.' operator");
+          if (!lhsRT.isStrUnion()) {
+            parser.perror("expect struct or union for '.' operator");
           }
-          final Ident tagName = lhs.getSymbol().getType().getTpStruct().getTag();
-          CStructField field = getField(fieldNameTok, fieldName, tagName);
+          CStructField field = lhsRT.getTpStruct().findFiled(fieldName);
+          if (field == null) {
+            parser.perror("error: struct has no field: " + fieldName.getName());
+          }
+          //////////////////////////////////////////////////////////////////////
 
           lhs = CExpressionBuilder.eStructFieldAccess(lhs, operator, field);
         }
@@ -528,19 +530,6 @@ public class ParseExpression {
     }
 
     return lhs;
-  }
-
-  private CStructField getField(Token fieldNameTok, Ident fieldName, final Ident tagName) {
-    CSymbol sym = parser.getTag(tagName);
-    if (sym == null || !sym.isStruct()) {
-      parser.perror("symbol " + fieldNameTok.getValue() + " not declared in this scope");
-    }
-
-    CStructField field = sym.getType().getTpStruct().findFiled(fieldName);
-    if (field == null) {
-      parser.perror("struct " + tagName + " has no member " + fieldName.getName());
-    }
-    return field;
   }
 
   //  primary_expression

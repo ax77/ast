@@ -6,29 +6,27 @@ import jscan.symtab.Ident;
 import ast.parse.ParseException;
 
 public class CStructType {
-  private final boolean isUnion;
-  private final Ident tag;
-  private final List<CStructField> fields; // list, because we need original declaration's order without sorting
-  private final boolean isReference;
+  private boolean isUnion;
+  private Ident tag;
+  private List<CStructField> fields; // list, because we need original declaration's order without sorting
+  private boolean isIncomplete;
 
   public CStructType(boolean isUnion, Ident tag) {
     this.isUnion = isUnion;
     this.tag = tag;
     this.fields = null;
-    this.isReference = true;
+    this.isIncomplete = true;
   }
 
   public CStructType(boolean isUnion, Ident tag, List<CStructField> fields) {
     this.isUnion = isUnion;
     this.tag = tag;
     this.fields = fields;
-    this.isReference = false;
+    this.isIncomplete = true;
   }
 
   public boolean isHasConstFields() {
-    if (isReference) {
-      throw new ParseException("TODO: you want get fields from incomplete...");
-    }
+    checkHasFields();
     for (CStructField f : fields) {
       final CType type = f.getType();
       if (type.isConst()) {
@@ -36,6 +34,14 @@ public class CStructType {
       }
     }
     return false;
+  }
+
+  public boolean isIncomplete() {
+    return isIncomplete;
+  }
+
+  public void setIncomplete(boolean isIncomplete) {
+    this.isIncomplete = isIncomplete;
   }
 
   public boolean isUnion() {
@@ -52,8 +58,8 @@ public class CStructType {
   }
 
   private void checkHasFields() {
-    if (isReference) {
-      throw new ParseException("internal error: struct reference has no fields.");
+    if (isIncomplete) {
+      throw new ParseException("internal error: incomplete struct has no fields.");
     }
   }
 
@@ -62,7 +68,7 @@ public class CStructType {
     StringBuilder sb = new StringBuilder();
     final String str = tag == null ? "<no-tag>" : "tag=" + tag.getName() + " ";
     sb.append((isUnion ? "UNION " : "STRUCT ") + str);
-    if (!isReference) {
+    if (!isIncomplete) {
       sb.append(fields.toString());
     }
     return sb.toString();
@@ -70,10 +76,6 @@ public class CStructType {
 
   public boolean isHasTag() {
     return tag != null;
-  }
-
-  public boolean isReference() {
-    return isReference;
   }
 
   public boolean isHasField(String s) {
@@ -90,15 +92,26 @@ public class CStructType {
   }
 
   public CStructField findFiled(Ident fieldName) {
-    if (isReference) {
-      throw new ParseException("struct ref. has no fields");
-    }
+    checkHasFields();
     for (CStructField f : fields) {
       if (f.getName().equals(fieldName)) {
         return f;
       }
     }
     return null;
+  }
+
+  public void setUnion(boolean isUnion) {
+    this.isUnion = isUnion;
+  }
+
+  public void setTag(Ident tag) {
+    this.tag = tag;
+  }
+
+  public void setFields(List<CStructField> fields) {
+    this.isIncomplete = false;
+    this.fields = fields;
   }
 
 }
