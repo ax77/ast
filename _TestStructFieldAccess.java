@@ -180,6 +180,58 @@ public class _TestStructFieldAccess {
     sb9.append(" /*010*/  }                     \n");
     //@formatter:on
 
+    StringBuilder sb10 = new StringBuilder();
+    sb10.append(" /*001*/  int                                      \n");
+    sb10.append(" /*002*/  main()                                   \n");
+    sb10.append(" /*003*/  {                                        \n");
+    sb10.append(" /*004*/      struct S { struct S *p; int x; } s;  \n");
+    sb10.append(" /*005*/      s.x = 0;                             \n");
+    sb10.append(" /*006*/      s.p = &s;                            \n");
+    sb10.append(" /*007*/      return s.p->p->p->p->p->x;           \n");
+    sb10.append(" /*008*/  }                                        \n");
+
+    StringBuilder sb11 = new StringBuilder();
+    sb11.append(" /*001*/  int                              \n");
+    sb11.append(" /*002*/  main()                           \n");
+    sb11.append(" /*003*/  {                                \n");
+    sb11.append(" /*004*/      struct T { int x; } s1;      \n");
+    sb11.append(" /*005*/      s1.x = 1;                    \n");
+    sb11.append(" /*006*/      {                            \n");
+    sb11.append(" /*007*/          struct T { int y; } s2;  \n");
+    sb11.append(" /*008*/          s2.y = 1;                \n");
+    sb11.append(" /*009*/          if (s1.x - s2.y != 0)    \n");
+    sb11.append(" /*010*/              return 1;            \n");
+    sb11.append(" /*011*/      }                            \n");
+    sb11.append(" /*012*/      return 0;                    \n");
+    sb11.append(" /*013*/  }                                \n");
+
+    StringBuilder sb12 = new StringBuilder();
+    sb12.append(" /*001*/  int                            \n");
+    sb12.append(" /*002*/  zero()                         \n");
+    sb12.append(" /*003*/  {                              \n");
+    sb12.append(" /*004*/      return 0;                  \n");
+    sb12.append(" /*005*/  }                              \n");
+    sb12.append(" /*006*/  struct S                       \n");
+    sb12.append(" /*007*/  {                              \n");
+    sb12.append(" /*008*/      int (*zerofunc)();         \n");
+    sb12.append(" /*009*/  } s = { &zero };               \n");
+    sb12.append(" /*010*/  struct S *                     \n");
+    sb12.append(" /*011*/  anon()                         \n");
+    sb12.append(" /*012*/  {                              \n");
+    sb12.append(" /*013*/      return &s;                 \n");
+    sb12.append(" /*014*/  }                              \n");
+    sb12.append(" /*015*/  typedef struct S * (*fty)();   \n");
+    sb12.append(" /*016*/  fty                            \n");
+    sb12.append(" /*017*/  go()                           \n");
+    sb12.append(" /*018*/  {                              \n");
+    sb12.append(" /*019*/      return &anon;              \n");
+    sb12.append(" /*020*/  }                              \n");
+    sb12.append(" /*021*/  int                            \n");
+    sb12.append(" /*022*/  main()                         \n");
+    sb12.append(" /*023*/  {                              \n");
+    sb12.append(" /*024*/      return go()()->zerofunc(); \n");
+    sb12.append(" /*025*/  }                              \n");
+
     List<StringBuilder> tests = new ArrayList<StringBuilder>();
     tests.add(sb0);
     tests.add(sb1);
@@ -191,6 +243,9 @@ public class _TestStructFieldAccess {
     tests.add(sb7);
     tests.add(sb8);
     tests.add(sb9);
+    //    tests.add(sb10);
+    //    tests.add(sb11);
+    //    tests.add(sb12);
 
     for (StringBuilder sb : tests) {
       Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();

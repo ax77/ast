@@ -66,7 +66,6 @@ public abstract class CExpressionBuilder {
     return ret;
   }
 
-  // public CExpression(CExpression postfis, Token operator, CStructField fieldName)
   public static CExpression eStructFieldAccess(CExpression postfis, Token operator, CStructField fieldName) {
     CExpression ret = new CExpression(postfis, operator, fieldName);
     ret.setResultType(fieldName.getType());
@@ -75,21 +74,15 @@ public abstract class CExpressionBuilder {
 
   // TODO: FuncTyped
 
-  // public CExpression(CExpression function, List<CExpression> arguments, Token token)
-
   public static CExpression efcall(CExpression function, List<CExpression> arguments, Token token) {
-
     CExpression fcall = new CExpression(function, arguments, token);
-
     final CType resultType = function.getResultType();
 
     final boolean isFunction = resultType.isFunction();
     final boolean isPointerToFunction = resultType.isPointerToFunction();
     final boolean isFuncOk = isFunction || isPointerToFunction;
     if (!isFuncOk) {
-
       throw new ParseException("expect function: " + resultType.toString());
-
     }
 
     if (isFunction) {
@@ -97,9 +90,16 @@ public abstract class CExpressionBuilder {
     } else {
       fcall.setResultType(resultType.getTpPointer().getPointerTo().getTpFunction().getReturnType());
     }
-
     return fcall;
 
+  }
+
+  public static CExpression incdec(CExpressionBase base, Token op, CExpression lhs) {
+    CExpression ret = new CExpression(base, op, lhs);
+    //TODO: scalar's
+    //TODO: mod lvalue's
+    ret.setResultType(lhs.getResultType());
+    return ret;
   }
 
 }

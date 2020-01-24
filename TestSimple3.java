@@ -8,7 +8,6 @@ import java.util.List;
 
 import jscan.Tokenlist;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ast._entry.PreprocessSourceForParser;
@@ -18,7 +17,7 @@ import ast.unit.TranslationUnit;
 
 public class TestSimple3 {
 
-  @Ignore
+  //  @Ignore
   @Test
   public void testJustParse() throws IOException {
     //@formatter:off
@@ -1396,15 +1395,15 @@ public class TestSimple3 {
     tests.add(new UtilTestDto(false, "015", sb_015));
     tests.add(new UtilTestDto(false, "016", sb_016));
     tests.add(new UtilTestDto(false, "017", sb_017));
-    tests.add(new UtilTestDto(false, "018", sb_018));
+    tests.add(new UtilTestDto(true, "018", sb_018));
     tests.add(new UtilTestDto(false, "019", sb_019));
     tests.add(new UtilTestDto(false, "020", sb_020));
     tests.add(new UtilTestDto(false, "021", sb_021));
     tests.add(new UtilTestDto(false, "022", sb_022));
     tests.add(new UtilTestDto(false, "023", sb_023));
-    tests.add(new UtilTestDto(false, "024", sb_024));
-    tests.add(new UtilTestDto(false, "025", sb_025));
-    tests.add(new UtilTestDto(false, "026", sb_026));
+    tests.add(new UtilTestDto(true, "024", sb_024));
+    tests.add(new UtilTestDto(true, "025", sb_025));
+    tests.add(new UtilTestDto(true, "026", sb_026));
     tests.add(new UtilTestDto(false, "027", sb_027));
     tests.add(new UtilTestDto(false, "028", sb_028));
     tests.add(new UtilTestDto(false, "029", sb_029));
@@ -1431,24 +1430,24 @@ public class TestSimple3 {
     tests.add(new UtilTestDto(false, "050", sb_050));
     tests.add(new UtilTestDto(false, "051", sb_051));
     tests.add(new UtilTestDto(false, "052", sb_052));
-    tests.add(new UtilTestDto(false, "053", sb_053));
+    tests.add(new UtilTestDto(true, "053", sb_053));
     tests.add(new UtilTestDto(false, "054", sb_054));
     tests.add(new UtilTestDto(false, "055", sb_055));
-    tests.add(new UtilTestDto(false, "056", sb_056));
+    tests.add(new UtilTestDto(true, "056", sb_056));
     tests.add(new UtilTestDto(false, "057", sb_057));
-    tests.add(new UtilTestDto(false, "058", sb_058));
+    tests.add(new UtilTestDto(true, "058", sb_058));
     tests.add(new UtilTestDto(false, "059", sb_059));
     tests.add(new UtilTestDto(false, "060", sb_060));
     tests.add(new UtilTestDto(false, "061", sb_061));
     tests.add(new UtilTestDto(false, "062", sb_062));
-    tests.add(new UtilTestDto(false, "063", sb_063));
+    tests.add(new UtilTestDto(true, "063", sb_063));
     tests.add(new UtilTestDto(false, "065", sb_065));
     tests.add(new UtilTestDto(false, "066", sb_066));
     tests.add(new UtilTestDto(false, "067", sb_067));
     tests.add(new UtilTestDto(false, "068", sb_068));
-    tests.add(new UtilTestDto(false, "069", sb_069));
+    tests.add(new UtilTestDto(true, "069", sb_069));
     tests.add(new UtilTestDto(false, "070", sb_070));
-    tests.add(new UtilTestDto(false, "071", sb_071));
+    tests.add(new UtilTestDto(true, "071", sb_071));
     tests.add(new UtilTestDto(false, "072", sb_072));
     tests.add(new UtilTestDto(false, "073", sb_073));
     tests.add(new UtilTestDto(false, "074", sb_074));
@@ -1466,9 +1465,11 @@ public class TestSimple3 {
     tests.add(new UtilTestDto(false, "086", sb_086));
 
     int others = 0;
+    int ignore = 0;
     
     for (UtilTestDto dto : tests) {
       if (dto.isIgnoge()) {
+        ++ignore;
         continue;
       }
 
@@ -1479,7 +1480,7 @@ public class TestSimple3 {
       others++;
     }
 
-    assertEquals(tests.size(),  others);
+    assertEquals(tests.size()-ignore,  others);
   }
 
 }

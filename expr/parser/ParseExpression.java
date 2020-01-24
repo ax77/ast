@@ -52,6 +52,7 @@ import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import ast._typesnew.CStructField;
+import ast._typesnew.CStructType;
 import ast._typesnew.CType;
 import ast.declarations.InitializerList;
 import ast.declarations.parser.ParseDeclarations;
@@ -352,7 +353,7 @@ public class ParseExpression {
     if (parser.tp() == T.T_PLUS_PLUS || parser.tp() == T_MINUS_MINUS) {
       Token operator = parser.tok();
       parser.move();
-      return new CExpression(CExpressionBase.EPREINCDEC, operator, e_unary());
+      return CExpressionBuilder.incdec(CExpressionBase.EPREINCDEC, operator, e_unary());
     }
 
     if (parser.tok().isIdent(Hash_ident.sizeof_ident)) {
@@ -474,7 +475,11 @@ public class ParseExpression {
           if (!lhsRT.isPointerToStructUnion()) {
             parser.perror("expect pointer to struct or union for '->' operator");
           }
-          CStructField field = lhsRT.getTpPointer().getPointerTo().getTpStruct().findFiled(fieldName);
+          final CStructType tpStruct = lhsRT.getTpPointer().getPointerTo().getTpStruct();
+          if (tpStruct.isIncomplete()) {
+            System.out.println(lhs.toString());
+          }
+          CStructField field = tpStruct.findFiled(fieldName);
           if (field == null) {
             parser.perror("error: struct has no field: " + fieldName.getName());
           }
@@ -512,7 +517,7 @@ public class ParseExpression {
       else if (parser.tp() == T.T_PLUS_PLUS || parser.tp() == T_MINUS_MINUS) {
         Token operator = parser.tok();
         parser.move();
-        lhs = new CExpression(CExpressionBase.EPOSTINCDEC, operator, lhs);
+        lhs = CExpressionBuilder.incdec(CExpressionBase.EPOSTINCDEC, operator, lhs);
       }
 
       // array-subscript

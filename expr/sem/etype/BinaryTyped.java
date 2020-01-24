@@ -248,6 +248,8 @@ public abstract class BinaryTyped {
     NullChecker.check(operator, lhs, rhs, lhs.getResultType(), rhs.getResultType());
 
     // TODO: modLvalue and etc...
+    // TODO: cast
+    // TODO: convert lhs to pointer ONLY for function-designator
 
     checkModLvalue(lhs);
 

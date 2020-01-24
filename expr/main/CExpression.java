@@ -350,7 +350,7 @@ public class CExpression implements ILocation {
     }
     case ECOMPSEL: {
       // TODO:
-      return "(" + getPostfix().toString() + "." + fieldName.getName().getName() + ")";
+      return "(" + getPostfix().toString() + ")." + fieldName.getName().getName();
     }
     case ECAST: {
       return "(" + typename.toString() + ") " + "(" + getLhs().toString() + ")";
