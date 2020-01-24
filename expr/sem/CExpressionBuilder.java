@@ -1,5 +1,7 @@
 package ast.expr.sem;
 
+import java.util.List;
+
 import jscan.cstrtox.C_strtox;
 import jscan.cstrtox.NumType;
 import jscan.tokenize.T;
@@ -14,6 +16,7 @@ import ast.expr.main.CExpressionBase;
 import ast.expr.sem.etype.BinaryTyped;
 import ast.expr.sem.etype.UnaryTyped;
 import ast.parse.Parse;
+import ast.parse.ParseException;
 import ast.symtabg.elements.CSymbol;
 
 public abstract class CExpressionBuilder {
@@ -68,6 +71,28 @@ public abstract class CExpressionBuilder {
     CExpression ret = new CExpression(postfis, operator, fieldName);
     ret.setResultType(fieldName.getType());
     return ret;
+  }
+
+  // TODO: FuncTyped
+
+  // public CExpression(CExpression function, List<CExpression> arguments, Token token)
+
+  public static CExpression efcall(CExpression function, List<CExpression> arguments, Token token) {
+
+    CExpression fcall = new CExpression(function, arguments, token);
+
+    final CType resultType = function.getResultType();
+
+    if (!resultType.isFunction()) {
+
+      throw new ParseException("expect function: " + resultType.toString());
+
+    }
+
+    fcall.setResultType(resultType.getTpFunction().getReturnType());
+
+    return fcall;
+
   }
 
 }

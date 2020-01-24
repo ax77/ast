@@ -27,7 +27,7 @@ public abstract class UnaryTyped {
 
     NullChecker.check(operator, operand, operand.getResultType());
 
-    // T_EXCLAMATION
+    // !
     //
     if (operator.ofType(T_EXCLAMATION)) {
       CType lhsRT = CExpressionBuilderHelper.ipromote(operand.getResultType());
@@ -44,9 +44,9 @@ public abstract class UnaryTyped {
       return resultExpression;
     }
 
-    // T_UMINUS
+    // [- + ~]
     //
-    else if (operator.ofType(T_MINUS)) {
+    else if (operator.ofType(T_MINUS) || operator.ofType(T_PLUS) || operator.ofType(T_TILDE)) {
       CType lhsRT = CExpressionBuilderHelper.ipromote(operand.getResultType());
       CType resRT = null;
       if (lhsRT.isArithmetic()) {
@@ -61,52 +61,24 @@ public abstract class UnaryTyped {
       return resultExpression;
     }
 
-    // T_UPLUS
-    //
-    else if (operator.ofType(T_PLUS)) {
-      CType lhsRT = CExpressionBuilderHelper.ipromote(operand.getResultType());
-      CType resRT = null;
-      if (lhsRT.isArithmetic()) {
-        resRT = lhsRT;
-      } else {
-        errorUnaryExpr("Unary expression error: ", operator, operand);
-      }
-
-      checkResultType(resRT, operator, operand);
-      CExpression resultExpression = new CExpression(operator, operand);
-      resultExpression.setResultType(resRT);
-      return resultExpression;
-    }
-
-    // T_UTILDE
-    //
-    else if (operator.ofType(T_TILDE)) {
-      CType lhsRT = CExpressionBuilderHelper.ipromote(operand.getResultType());
-      CType resRT = null;
-      if (lhsRT.isInteger()) {
-        resRT = lhsRT;
-      } else {
-        errorUnaryExpr("Unary expression error: ", operator, operand);
-      }
-
-      checkResultType(resRT, operator, operand);
-      CExpression resultExpression = new CExpression(operator, operand);
-      resultExpression.setResultType(resRT);
-      return resultExpression;
-    }
-
-    // T_UADDRESS
+    // address-of
     //
     else if (operator.ofType(T_AND)) {
       CType lhsRT = operand.getResultType();
       CType resRT = null;
       if (lhsRT.isAnObjectExceptBitField()) {
         resRT = genPtrTo(lhsRT);
-      } else if (lhsRT.isIncomplete()) {
+      }
+
+      else if (lhsRT.isIncomplete()) {
         resRT = genPtrTo(lhsRT);
-      } else if (lhsRT.isFunction()) {
+      }
+
+      else if (lhsRT.isFunction()) {
         resRT = genPtrTo(lhsRT);
-      } else {
+      }
+
+      else {
         errorUnaryExpr("Unary expression error: ", operator, operand);
       }
 
@@ -116,18 +88,24 @@ public abstract class UnaryTyped {
       return resultExpression;
     }
 
-    // T_UTIMES
+    // dereference
     //
     else if (operator.ofType(T_TIMES)) {
       CType lhsRT = operand.getResultType();
       CType resRT = null;
       if (lhsRT.isPointerToObject()) {
-        resRT = lhsRT;
-      } else if (lhsRT.isPointerToFunction()) {
+        resRT = lhsRT.getTpPointer().getPointerTo(); // XXX:
+      }
+
+      else if (lhsRT.isPointerToFunction()) {
         resRT = FUNC_DESIGNATOR_TODO_STUB;
-      } else if (lhsRT.isPointerToVoid()) {
+      }
+
+      else if (lhsRT.isPointerToVoid()) {
         resRT = VOID_TYPE;
-      } else {
+      }
+
+      else {
         errorUnaryExpr("Unary expression error: ", operator, operand);
       }
 

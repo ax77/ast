@@ -448,7 +448,7 @@ public class ParseExpression {
           }
         }
 
-        lhs = new CExpression(lhs, arglist, lparen);
+        lhs = CExpressionBuilder.efcall(lhs, arglist, lparen);
         parser.rparen();
       }
 
