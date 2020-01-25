@@ -3,6 +3,10 @@ package ast.declarations.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.graalvm.compiler.lir.StandardOp.NullCheck;
+
+import ast._typesnew.CEnumType;
+import ast._typesnew.CStructType;
 import ast._typesnew.CType;
 import ast._typesnew.decl.CDecl;
 import ast._typesnew.parser.ParseBase;
@@ -18,6 +22,7 @@ import ast.declarations.main.Declaration;
 import ast.expr.main.CExpression;
 import ast.expr.parser.ParseExpression;
 import ast.expr.sem.ConstexprEval;
+import ast.parse.NullChecker;
 import ast.parse.Parse;
 import ast.symtabg.elements.CSymbol;
 import jscan.hashed.Hash_ident;
@@ -102,6 +107,14 @@ public class ParseDeclarations {
     if (p.tp() == T.T_SEMI_COLON) {
       Token endLocation = p.semicolon();
 
+      boolean isStructUnionEnum = basetype.isStrUnion() || basetype.isEnumeration();
+      if (!isStructUnionEnum) {
+        p.perror("expect struct/union/enum declaration. but was: " + basetype.toString());
+      }
+
+      // semicolon after mean: this declaration has no name, no declarator after...
+      // if this aggregate declared without name in function-scope, it NOT change stack-size.
+
       final Declaration agregate = new Declaration(startLocation, endLocation, basetype);
       return agregate;
     }
@@ -177,7 +190,6 @@ public class ParseDeclarations {
     Initializer initializer = parseInitializer();
 
     if (decl.isAstract()) {
-      System.out.println();
     }
 
     final CSymbol sym = new CSymbol(decl.getName(), type, initializer, saved);

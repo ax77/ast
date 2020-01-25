@@ -262,6 +262,7 @@ public class _TestTypeCompat {
   private CType parseOne(String s) throws IOException {
     Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(s, false)).pp();
     Parse p = new Parse(it);
+    p.pushscope();
     return build(parseType(p), parseDecl(p));
   }
 

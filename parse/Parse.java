@@ -81,6 +81,10 @@ public class Parse {
         perror("redefinition"); // TODO: normal error message.
       }
     }
+    
+    if(currentFn != null) {
+      currentFn.addLoca(sym);
+    }
 
     symbols.addsym(key, sym);
   }
@@ -99,6 +103,10 @@ public class Parse {
 
   public CSymbol getTag(Ident name) {
     return tags.getsym(name);
+  }
+  
+  public boolean isFileScope() {
+    return symbols.isFileScope();
   }
 
   //TODO:SEMANTIC
@@ -489,11 +497,10 @@ public class Parse {
       pushscope();
 
       Scompound cst = new ParseStatement(this).parse_coumpound_stmt();
-      CStatement compst = new CStatement(cst);
-
-      fd.setCompoundStatement(compst);
+      fd.setCompoundStatement(cst);
       ExternalDeclaration ret = new ExternalDeclaration(fd);
 
+      currentFn = null;
       popscope();
       return ret;
     }

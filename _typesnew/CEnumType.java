@@ -6,28 +6,35 @@ import java.util.Map;
 import jscan.symtab.Ident;
 
 public class CEnumType {
-  private final Ident tag;
-  private final boolean isReference;
-  private final Map<Ident, Integer> enumerators; // need only for type-compatible routine.
+  private Ident tag;
+  private boolean isIncomplete;
+  private Map<Ident, Integer> enumerators; // need only for type-compatible routine.
 
   public CEnumType(Ident tag) {
     this.tag = tag;
-    this.isReference = true;
+    this.isIncomplete = true;
     this.enumerators = new HashMap<Ident, Integer>();
   }
 
-  public CEnumType(Ident tag, Map<Ident, Integer> enumerators) {
+  public boolean isIncomplete() {
+    return isIncomplete;
+  }
+
+  public void setIncomplete(boolean isIncomplete) {
+    this.isIncomplete = isIncomplete;
+  }
+
+  public void setTag(Ident tag) {
     this.tag = tag;
-    this.isReference = false;
+  }
+
+  public void setEnumerators(Map<Ident, Integer> enumerators) {
     this.enumerators = enumerators;
+    this.isIncomplete = false;
   }
 
   public boolean isHasTag() {
     return tag != null;
-  }
-
-  public boolean isReference() {
-    return isReference;
   }
 
   public Ident getTag() {

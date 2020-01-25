@@ -133,9 +133,8 @@ public class ParseBase {
       }
       p.move();
 
-      CEnumType en = new ParseEnum(p).parseEnum();
       StorageKind storagespec = TypeCombiner.combine_storage(st);
-      basetype = new CType(en, storagespec);
+      basetype = new ParseEnum(p).parseEnum(storagespec);
     }
 
     StorageKind storagespec = TypeCombiner.combine_storage(st);

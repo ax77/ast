@@ -9,8 +9,6 @@ import ast._typesnew.CEnumType;
 import ast._typesnew.CType;
 import ast._typesnew.main.StorageKind;
 import ast._typesnew.main.TypeKind;
-import ast._typesnew.util.TypeMerger;
-import ast.errors.ParseException;
 import ast.expr.main.CExpression;
 import ast.expr.parser.ParseExpression;
 import ast.expr.sem.ConstexprEval;
@@ -61,7 +59,7 @@ public class ParseEnum {
     this.parser = parser;
   }
 
-  public CEnumType parseEnum() {
+  public CType parseEnum(StorageKind storagespec) {
     //enum ...
     //     ^
 
@@ -76,25 +74,162 @@ public class ParseEnum {
       parser.move();
     }
 
-    if (parser.tp() != T.T_LEFT_BRACE) {
+    // 1: struct S
+    // 2: struct {
+    // 3: struct S {
+    // 4: struct S *sP;
 
-      checkTagNotNullForReference(tag);
-      final CEnumType enumref = new CEnumType(tag.getIdent());
-      return enumref;
+    // linearize it as well
+
+    //    if (tag != null) {
+    //      if (parser.isHasTag(tag.getIdent())) {
+    //        if (parser.tp() == T.T_LEFT_BRACE) {
+    //        } else {
+    //        }
+    //      } else {
+    //        if (parser.tp() == T.T_LEFT_BRACE) {
+    //        } else {
+    //        }
+    //      }
+    //    } else {
+    //      if (parser.tp() == T.T_LEFT_BRACE) {
+    //      } else {
+    //      }
+    //    }
+
+    boolean paranoia = false;
+
+    if (tag != null) {
+
+      if (parser.isHasTag(tag.getIdent())) {
+
+        // tag was in symtab
+        //
+        if (parser.tp() == T.T_LEFT_BRACE) {
+          CType type = parser.getTag(tag.getIdent()).getType();
+
+          // TODO:
+          // 1) this is warning: declaration was not declare anything???
+          // 2) complete previous incompleted
+          // 3) ... ??? 
+
+          EnumDto dto = parseEnumeratorList();
+
+          if (paranoia) {
+            System.out.println("1");
+          }
+
+          if (type.isIncomplete()) {
+            // TODO: max size, align.
+            type.getTpEnum().setEnumerators(dto.getEnumerators());
+          }
+
+          // is complete.
+          // TODO:XXX:?
+          else {
+            if (paranoia) {
+              System.out.println("1.1");
+            }
+
+            CEnumType newenum = new CEnumType(tag.getIdent());
+            newenum.setEnumerators(dto.getEnumerators());
+
+            CType newtype = new CType(newenum, storagespec);
+
+            parser.defineTag(tag.getIdent(), new CSymbol(tag.getIdent(), newtype, tag));
+            return newtype;
+          }
+
+          return type;
+        }
+
+        // not a brace '{'
+        //
+        else {
+          CType type = parser.getTag(tag.getIdent()).getType();
+
+          if (type.isIncomplete()) {
+          }
+
+          if (paranoia) {
+            System.out.println("2");
+          }
+
+          type.setStorage(storagespec);
+          return type;
+        }
+      }
+
+      else {
+        // tag present, but not found.
+        // register incomplete forward.
+        //
+
+        CEnumType incomplete = new CEnumType(tag.getIdent());
+        final CType structIncompleteType = new CType(incomplete, storagespec);
+        final CSymbol structSymbol = new CSymbol(tag.getIdent(), structIncompleteType, tag);
+        parser.defineTag(tag.getIdent(), structSymbol);
+
+        if (parser.tp() == T.T_LEFT_BRACE) {
+
+          // TODO:XXX:?
+          // rewrite...???
+
+          EnumDto dto = parseEnumeratorList();
+          CType type = parser.getTag(tag.getIdent()).getType();
+          type.getTpEnum().setEnumerators(dto.getEnumerators());
+
+          if (paranoia) {
+            System.out.println("3");
+          }
+
+          return type;
+
+        }
+
+        else {
+          if (paranoia) {
+            System.out.println("4");
+          }
+
+          return structIncompleteType;
+
+        }
+      }
+
     }
 
-    // TODO: dto semantic, enum size and align
-    // depends on max value by it value
-    EnumDto dto = parseEnumeratorList();
+    else {
 
-    final CEnumType enumdef = new CEnumType(TypeMerger.getIdentOrNull(tag), dto.getEnumerators());
-    return enumdef;
-  }
+      // all cases if (tag == null)
 
-  private void checkTagNotNullForReference(Token tag) {
-    if (tag == null) {
-      throw new ParseException("for struct/union/enum reference tag must be present always");
+      if (parser.tp() == T.T_LEFT_BRACE) {
+
+        EnumDto dto = parseEnumeratorList();
+        CEnumType newenum = new CEnumType(null);
+
+        newenum.setEnumerators(dto.getEnumerators());
+        CType type = new CType(newenum, storagespec);
+
+        if (paranoia) {
+          System.out.println("5");
+        }
+
+        return type;
+
+      }
+
+      else {
+
+        if (paranoia) {
+          System.out.println("6");
+        }
+      }
     }
+
+    parser.perror("paranoia");
+    return null;
+
   }
 
   private EnumDto parseEnumeratorList() {
