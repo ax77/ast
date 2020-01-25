@@ -183,7 +183,6 @@ public class TestTypedefs {
     TranslationUnit unit = p.parse_unit();
   }
 
-  @Ignore
   @Test(expected = ParseException.class)
   public void testTypedefs5() throws IOException {
     StringBuilder sb = new StringBuilder();
@@ -200,7 +199,6 @@ public class TestTypedefs {
     TranslationUnit unit = p.parse_unit();
   }
 
-  @Ignore
   @Test
   public void testTypedefs6() throws IOException {
 

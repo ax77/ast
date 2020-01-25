@@ -71,6 +71,15 @@ public class Parse {
   }
 
   public void defineSym(Ident key, CSymbol sym) {
+    
+    // check redef.
+    CSymbol prevsym = symbols.getsymFromCurrentScope(key);
+    if(prevsym != null) {
+      if(!prevsym.getType().isEqualTo(sym.getType())) {
+        perror("redefinition"); // TODO: normal error message.
+      }
+    }
+    
     symbols.addsym(key, sym);
   }
 

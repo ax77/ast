@@ -389,7 +389,7 @@ public class _TestStructFieldAccess {
     tests.add(sb15);
     tests.add(sb16);
     tests.add(sb17);
-    //tests.add(sb18);
+    tests.add(sb18);
 
     for (StringBuilder sb : tests) {
       Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();

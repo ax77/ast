@@ -94,6 +94,9 @@ public class CStructType {
   public CStructField findFiled(Ident fieldName) {
     checkHasFields();
     for (CStructField f : fields) {
+      if(!f.isHasName()) {
+        continue; // unnamed bf. TODO:
+      }
       if (f.getName().equals(fieldName)) {
         return f;
       }

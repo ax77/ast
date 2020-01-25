@@ -494,7 +494,7 @@ public class ParseExpression {
             parser.perror("expect struct or union for '.' operator");
           }
 
-          if (lhsRT.getTpStruct().isIncomplete()) {
+          if (lhsRT.getTpStruct() == null || lhsRT.getTpStruct().isIncomplete()) {
             System.out.printf("");
           }
 
