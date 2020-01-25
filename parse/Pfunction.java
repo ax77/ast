@@ -22,6 +22,7 @@ import ast.declarations.main.Declaration;
 import ast.declarations.parser.ParseDeclarations;
 import ast.expr.main.CExpression;
 import ast.symtabg.elements.CSymbol;
+import ast.symtabg.elements.CSymbolBase;
 import ast.unit.FunctionDefinition;
 import jscan.hashed.Hash_ident;
 import jscan.symtab.Ident;
@@ -112,7 +113,7 @@ public class Pfunction {
       alllyTypes(decllist, decl);
 
       CType newsign = TypeMerger.build(declspecs, decl);
-      CSymbol sym = new CSymbol(decl.getName(), newsign, p.tok());
+      CSymbol sym = new CSymbol(CSymbolBase.SYM_FUNC, decl.getName(), newsign, p.tok());
       p.defineSym(decl.getName(), sym);
       define__func__(decl.getName());
 
@@ -127,7 +128,7 @@ public class Pfunction {
       p.perror("expect function definition...");
     }
 
-    CSymbol sym = new CSymbol(decl.getName(), signature, p.tok());
+    CSymbol sym = new CSymbol(CSymbolBase.SYM_FUNC, decl.getName(), signature, p.tok());
     p.defineSym(decl.getName(), sym);
     define__func__(decl.getName());
 
@@ -140,7 +141,7 @@ public class Pfunction {
     CArrayType arr = new CArrayType(chartype, funcName.getName().length() + 1);
     final Ident __func__ = Hash_ident.__func___ident;
 
-    CSymbol sym = new CSymbol(__func__, new CType(arr, StorageKind.ST_STATIC), p.tok());
+    CSymbol sym = new CSymbol(CSymbolBase.SYM_VAR, __func__, new CType(arr, StorageKind.ST_STATIC), p.tok());
     CExpression init = new CExpression(funcName.getName(), p.tok());
     sym.setInitializer(new Initializer(init));
 
@@ -159,7 +160,7 @@ public class Pfunction {
     }
 
     for (CFuncParam fparam : parameters) {
-      CSymbol paramsym = new CSymbol(fparam.getName(), fparam.getType(), p.tok());
+      CSymbol paramsym = new CSymbol(CSymbolBase.SYM_VAR, fparam.getName(), fparam.getType(), p.tok());
       p.defineSym(fparam.getName(), paramsym);
     }
   }

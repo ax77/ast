@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ast._entry.PreprocessSourceForParser;
 import ast._entry.PreprocessSourceForParserVariant;
 import ast.errors.ParseException;
 import ast.parse.Parse;
+import ast.symtabg.elements.CSymbol;
 import ast.unit.TranslationUnit;
 import jscan.Tokenlist;
 
@@ -369,7 +371,7 @@ public class _TestStructFieldAccess {
     sb18.append(" /*047*/    return sizeof(a);                                                                  \n");
     sb18.append(" /*048*/  }                                                                                    \n");
     //@formatter:on
-    
+
     //@formatter:off
     StringBuilder sb19 = new StringBuilder();
     sb19.append(" /*001*/  int main() {                      \n");
@@ -394,6 +396,30 @@ public class _TestStructFieldAccess {
     sb19.append(" /*020*/  }                                 \n");
     //@formatter:on
 
+    //@formatter:off
+    StringBuilder sb20 = new StringBuilder();
+    sb20.append(" /*001*/  int main() {                                  \n");
+    sb20.append(" /*002*/      typedef struct s {                        \n");
+    sb20.append(" /*003*/          char c;                               \n");
+    sb20.append(" /*004*/      } tdname;                                 \n");
+    sb20.append(" /*005*/      tdname *varname = &(tdname){ .c = 0, };   \n");
+    sb20.append(" /*006*/      return 0;                                 \n");
+    sb20.append(" /*007*/  }                                             \n");
+    //@formatter:on
+
+    //@formatter:off
+    StringBuilder sb21 = new StringBuilder();
+    sb21.append(" /*001*/  int main () {                  \n");
+    sb21.append(" /*002*/    typedef enum e tde, *ptde;   \n");
+    sb21.append(" /*003*/    enum e; enum e { e = 1 };    \n");
+    sb21.append(" /*004*/    {                            \n");
+    sb21.append(" /*005*/      int e = e;                 \n");
+    sb21.append(" /*006*/      ptde x = (tde*) &e;        \n");
+    sb21.append(" /*007*/    }                            \n");
+    sb21.append(" /*008*/    return 0;                    \n");
+    sb21.append(" /*009*/  }                              \n");
+    //@formatter:on
+
     List<StringBuilder> tests = new ArrayList<StringBuilder>();
     tests.add(sb0);
     tests.add(sb1);
@@ -414,13 +440,19 @@ public class _TestStructFieldAccess {
     tests.add(sb16);
     tests.add(sb17);
     tests.add(sb18);
-    //tests.add(sb19);
+    tests.add(sb19);
+    tests.add(sb20);
+    tests.add(sb21);
 
     for (StringBuilder sb : tests) {
       Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
       Parse p = new Parse(it);
       TranslationUnit unit = p.parse_unit();
-      //System.out.println();
+
+      //      final List<CSymbol> locals = unit.getExternalDeclarations().get(0).getFunctionDefinition().getLocals();
+      //      for(CSymbol sym : locals) {
+      //        System.out.println(sym.toString());
+      //      }
     }
 
   }

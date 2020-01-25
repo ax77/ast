@@ -331,9 +331,13 @@ public class CType implements CTypeApi {
     return isArray() && tpArray.isIncomplete();
   }
 
+  public boolean isIncompleteEnum() {
+    return isEnumeration() && tpEnum.isIncomplete();
+  }
+
   @Override
   public boolean isIncomplete() {
-    return isVoid() || isIncompleteArray() || isIncompleteStruct() || isIncompleteUnion();
+    return isVoid() || isIncompleteArray() || isIncompleteStruct() || isIncompleteUnion() || isIncompleteEnum();
   }
 
   @Override

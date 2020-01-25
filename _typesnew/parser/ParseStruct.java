@@ -23,6 +23,7 @@ import ast.expr.parser.ParseExpression;
 import ast.expr.sem.ConstexprEval;
 import ast.parse.Parse;
 import ast.symtabg.elements.CSymbol;
+import ast.symtabg.elements.CSymbolBase;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 
@@ -116,7 +117,7 @@ public class ParseStruct {
             CStructUnionSizeAlign sizeAlignDto = new SemanticStruct(parser).finalizeStructType(newstruct);
             CType newtype = new CType(newstruct, sizeAlignDto.getSize(), sizeAlignDto.getAlign(), storagespec);
 
-            parser.defineTag(tag.getIdent(), new CSymbol(tag.getIdent(), newtype, tag));
+            parser.defineTag(tag.getIdent(), new CSymbol(CSymbolBase.SYM_STRUCT, tag.getIdent(), newtype, tag));
             return newtype;
           }
 
@@ -146,7 +147,7 @@ public class ParseStruct {
         //
         CStructType incomplete = new CStructType(isUnion, tag.getIdent());
         final CType structIncompleteType = new CType(incomplete, -1, -1, storagespec);
-        final CSymbol structSymbol = new CSymbol(tag.getIdent(), structIncompleteType, tag);
+        final CSymbol structSymbol = new CSymbol(CSymbolBase.SYM_STRUCT, tag.getIdent(), structIncompleteType, tag);
         parser.defineTag(tag.getIdent(), structSymbol);
 
         if (parser.tp() == T.T_LEFT_BRACE) {
@@ -245,6 +246,13 @@ public class ParseStruct {
     while (parser.isDeclSpecStart()) {
       List<CStructField> structDeclarationSeq = parseStructDeclaration();
       structDeclarationList.addAll(structDeclarationSeq);
+    }
+    
+    if(parser.tp() != T.T_RIGHT_BRACE && parser.tok().ofType(TOKEN_IDENT)) {
+      CSymbol sym = parser.getSym(parser.tok().getIdent()) ;
+      if(sym != null) {
+        System.out.println();
+      }
     }
 
     parser.checkedMove(T.T_RIGHT_BRACE);

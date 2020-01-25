@@ -23,6 +23,7 @@ import ast.expr.sem.ConstexprEval;
 import ast.parse.NullChecker;
 import ast.parse.Parse;
 import ast.symtabg.elements.CSymbol;
+import ast.symtabg.elements.CSymbolBase;
 import jscan.hashed.Hash_ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
@@ -179,7 +180,7 @@ public class ParseDeclarations {
     CType type = TypeMerger.build(basetype, decl);
 
     if (p.tp() != T.T_ASSIGN) {
-      final CSymbol sym = new CSymbol(decl.getName(), type, saved);
+      final CSymbol sym = new CSymbol(CSymbolBase.SYM_VAR, decl.getName(), type, saved);
       p.defineSym(decl.getName(), sym);
       return sym;
     }
@@ -190,7 +191,7 @@ public class ParseDeclarations {
     if (decl.isAstract()) {
     }
 
-    final CSymbol sym = new CSymbol(decl.getName(), type, initializer, saved);
+    final CSymbol sym = new CSymbol(CSymbolBase.SYM_VAR, decl.getName(), type, initializer, saved);
     p.defineSym(decl.getName(), sym);
 
     return sym;

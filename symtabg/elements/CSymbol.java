@@ -14,6 +14,7 @@ import jscan.tokenize.Token;
 public class CSymbol implements CTypeApi, ILocation {
   private final SourceLocation location;
 
+  private final CSymbolBase base;
   private final Ident name;
   private final CType type;
 
@@ -21,14 +22,16 @@ public class CSymbol implements CTypeApi, ILocation {
   private NumericConstant numericConstant;
   private Initializer initializer;
 
-  public CSymbol(Ident name, CType type, Token from) {
+  public CSymbol(CSymbolBase base, Ident name, CType type, Token from) {
     this.location = new SourceLocation(from);
+    this.base = base;
     this.name = name;
     this.type = type;
   }
 
-  public CSymbol(Ident name, CType type, Initializer initializer, Token from) {
+  public CSymbol(CSymbolBase base, Ident name, CType type, Initializer initializer, Token from) {
     this.location = new SourceLocation(from);
+    this.base = base;
     this.name = name;
     this.type = type;
     this.initializer = initializer;
@@ -49,12 +52,12 @@ public class CSymbol implements CTypeApi, ILocation {
   }
 
   public int getEnumvalue() {
-    assertType(TypeKind.TP_ENUM);
+//    assertType(TypeKind.TP_ENUM);
     return (int) numericConstant.getClong();
   }
 
   public void setEnumvalue(int enumvalue) {
-    assertType(TypeKind.TP_ENUM);
+//    assertType(TypeKind.TP_ENUM);
     this.numericConstant = new NumericConstant(enumvalue, NumType.N_INT); // TODO:
   }
 
@@ -168,6 +171,10 @@ public class CSymbol implements CTypeApi, ILocation {
   @Override
   public String getLocationFile() {
     return location.getFilename();
+  }
+
+  public CSymbolBase getBase() {
+    return base;
   }
 
 }

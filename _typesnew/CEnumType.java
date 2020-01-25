@@ -45,4 +45,9 @@ public class CEnumType {
     return enumerators;
   }
 
+  @Override
+  public String toString() {
+    return "(enum " + (isHasTag() ? tag.getName() : "<no-tag>") + ": " + enumerators.size() + ")";
+  }
+
 }
