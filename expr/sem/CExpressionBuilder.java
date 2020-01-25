@@ -2,22 +2,22 @@ package ast.expr.sem;
 
 import java.util.List;
 
-import jscan.cstrtox.C_strtox;
-import jscan.cstrtox.NumType;
-import jscan.tokenize.T;
-import jscan.tokenize.Token;
 import ast._typesnew.CStructField;
 import ast._typesnew.CType;
 import ast._typesnew.CTypeImpl;
 import ast._typesnew.main.StorageKind;
 import ast._typesnew.main.TypeKind;
+import ast.errors.ParseException;
 import ast.expr.main.CExpression;
 import ast.expr.main.CExpressionBase;
 import ast.expr.sem.etype.BinaryTyped;
 import ast.expr.sem.etype.UnaryTyped;
 import ast.parse.Parse;
-import ast.parse.ParseException;
 import ast.symtabg.elements.CSymbol;
+import jscan.cstrtox.C_strtox;
+import jscan.cstrtox.NumType;
+import jscan.tokenize.T;
+import jscan.tokenize.Token;
 
 public abstract class CExpressionBuilder {
 

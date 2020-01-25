@@ -3,8 +3,8 @@ package ast.stmt;
 import java.util.ArrayList;
 import java.util.List;
 
+import ast.errors.ParseException;
 import ast.expr.main.CExpression;
-import ast.parse.ParseException;
 import ast.stmt.main.CStatement;
 import ast.stmt.main.TempLabel;
 

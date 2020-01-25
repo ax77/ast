@@ -2,8 +2,8 @@ package ast.parse;
 
 import java.util.List;
 
-import jscan.tokenize.Token;
 import ast.unit.FunctionDefinition;
+import jscan.tokenize.Token;
 
 public class ParseState {
   private final int tokenlistOffset;

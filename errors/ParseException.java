@@ -1,4 +1,4 @@
-package ast.parse;
+package ast.errors;
 
 public class ParseException extends RuntimeException {
 

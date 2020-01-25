@@ -9,9 +9,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import jscan.Tokenlist;
-import jscan.hashed.Hash_ident;
-
 import org.junit.Test;
 
 import ast._entry.PreprocessSourceForParser;
@@ -28,10 +25,12 @@ import ast._typesnew.parser.ParseBase;
 import ast._typesnew.parser.ParseDecl;
 import ast._typesnew.util.TypeMerger;
 import ast.declarations.main.Declaration;
+import ast.errors.ParseException;
 import ast.parse.Parse;
-import ast.parse.ParseException;
 import ast.symtabg.elements.CSymbol;
 import ast.unit.TranslationUnit;
+import jscan.Tokenlist;
+import jscan.hashed.Hash_ident;
 
 public class _TestCTypeNew {
 
@@ -311,8 +310,8 @@ public class _TestCTypeNew {
     assertEquals(TypeKind.TP_ARRAY_OF, type.getKind());
     assertEquals(TypeKind.TP_ARRAY_OF, type.getTpArray().getArrayOf().getKind());
     assertEquals(TypeKind.TP_ARRAY_OF, type.getTpArray().getArrayOf().getTpArray().getArrayOf().getKind());
-    assertEquals(TypeKind.TP_INT, type.getTpArray().getArrayOf().getTpArray().getArrayOf().getTpArray().getArrayOf()
-        .getKind());
+    assertEquals(TypeKind.TP_INT,
+        type.getTpArray().getArrayOf().getTpArray().getArrayOf().getTpArray().getArrayOf().getKind());
   }
 
   @Test

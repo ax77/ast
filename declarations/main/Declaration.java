@@ -2,11 +2,11 @@ package ast.declarations.main;
 
 import java.util.List;
 
-import jscan.sourceloc.SourceLocationRange;
-import jscan.tokenize.Token;
 import ast._typesnew.CType;
 import ast.parse.ILocationRange;
 import ast.symtabg.elements.CSymbol;
+import jscan.sourceloc.SourceLocationRange;
+import jscan.tokenize.Token;
 
 public class Declaration implements ILocationRange {
 

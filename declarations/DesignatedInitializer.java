@@ -1,6 +1,6 @@
 package ast.declarations;
 
-import ast.parse.ParseException;
+import ast.errors.ParseException;
 
 public class DesignatedInitializer {
 

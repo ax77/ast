@@ -5,13 +5,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
-import jscan.Tokenlist;
-import jscan.tokenize.Token;
-
 import org.junit.Test;
 
 import ast._entry.PreprocessSourceForParser;
 import ast._entry.PreprocessSourceForParserVariant;
+import jscan.Tokenlist;
+import jscan.tokenize.Token;
 
 public class TestStrConcatPP {
 

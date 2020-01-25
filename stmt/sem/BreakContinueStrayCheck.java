@@ -1,9 +1,9 @@
 package ast.stmt.sem;
 
-import jscan.tokenize.Token;
 import ast.parse.Parse;
 import ast.stmt.main.CStatement;
 import ast.stmt.main.CStatementBase;
+import jscan.tokenize.Token;
 
 public class BreakContinueStrayCheck {
   private final Parse parser;

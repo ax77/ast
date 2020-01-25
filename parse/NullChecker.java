@@ -1,5 +1,7 @@
 package ast.parse;
 
+import ast.errors.ParseException;
+
 public abstract class NullChecker {
 
   public static void check(Object... what) {

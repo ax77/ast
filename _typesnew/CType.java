@@ -10,7 +10,7 @@ import ast._typesnew.main.StorageKind;
 import ast._typesnew.main.TypeKind;
 import ast._typesnew.main.TypeSizes;
 import ast._typesnew.util.TypePrinter;
-import ast.parse.ParseException;
+import ast.errors.ParseException;
 
 public class CType implements CTypeApi {
 
@@ -328,7 +328,7 @@ public class CType implements CTypeApi {
 
   @Override
   public boolean isIncompleteArray() {
-    return false; // TODO:
+    return isArray() && tpArray.isIncomplete();
   }
 
   @Override

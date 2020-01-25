@@ -2,14 +2,15 @@ package ast.expr.sem;
 
 import static ast._typesnew.CTypeImpl.TYPE_INT;
 import static jscan.tokenize.T.TOKEN_NUMBER;
-import jscan.cstrtox.NumType;
-import jscan.tokenize.T;
-import jscan.tokenize.Token;
+
 import ast._typesnew.CType;
 import ast._typesnew.CTypeImpl;
 import ast.expr.main.CExpression;
 import ast.parse.NullChecker;
 import ast.symtabg.elements.NumericConstant;
+import jscan.cstrtox.NumType;
+import jscan.tokenize.T;
+import jscan.tokenize.Token;
 
 public abstract class CExpressionBuilderHelper {
 

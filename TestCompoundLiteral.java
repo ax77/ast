@@ -8,9 +8,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import jscan.tokenize.Stream;
-import jscan.tokenize.Token;
-
 import org.junit.Test;
 
 import ast.expr.main.CExpression;
@@ -18,6 +15,8 @@ import ast.expr.main.CExpressionBase;
 import ast.expr.parser.ParseExpression;
 import ast.parse.Parse;
 import ast.unit.TranslationUnit;
+import jscan.tokenize.Stream;
+import jscan.tokenize.Token;
 
 public class TestCompoundLiteral {
 

@@ -1,7 +1,7 @@
 package ast._typesnew;
 
-import jscan.symtab.Ident;
 import ast.parse.NullChecker;
+import jscan.symtab.Ident;
 
 public class CStructField {
   private final Ident name;

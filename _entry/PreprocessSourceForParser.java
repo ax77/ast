@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import ast.errors.ParseException;
+import ast.parse.NullChecker;
 import jscan.Tokenlist;
 import jscan.hashed.HashStreamBufferVariant;
 import jscan.hashed.Hash_all;
@@ -12,8 +14,6 @@ import jscan.preprocess.Scan;
 import jscan.tokenize.Stream;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import ast.parse.NullChecker;
-import ast.parse.ParseException;
 
 public class PreprocessSourceForParser {
 

@@ -1,10 +1,10 @@
 package ast.expr.sem;
 
-import jscan.tokenize.T;
+import ast.errors.ParseException;
 import ast.expr.main.CExpression;
 import ast.expr.main.CExpressionBase;
 import ast.parse.Parse;
-import ast.parse.ParseException;
+import jscan.tokenize.T;
 
 public class ConstexprEval {
 

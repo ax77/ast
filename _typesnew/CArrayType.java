@@ -1,11 +1,12 @@
 package ast._typesnew;
 
+import ast.errors.ParseException;
 import ast.parse.NullChecker;
-import ast.parse.ParseException;
 
 public class CArrayType {
   private final CType arrayOf;
   private int arrayLen;
+  private boolean isIncomplete;
 
   public CArrayType(CType arrayof, int arrayLen) {
     NullChecker.check(arrayof); // always must be present. but init-expression - optional, check it later. int x[][2];
@@ -20,6 +21,15 @@ public class CArrayType {
 
     this.arrayOf = arrayof;
     this.arrayLen = arrayLen;
+    this.isIncomplete = (arrayLen == 0);
+  }
+
+  public boolean isIncomplete() {
+    return isIncomplete;
+  }
+
+  public void setIncomplete(boolean isIncomplete) {
+    this.isIncomplete = isIncomplete;
   }
 
   public CType getArrayOf() {

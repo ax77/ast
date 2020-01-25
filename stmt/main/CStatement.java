@@ -1,7 +1,5 @@
 package ast.stmt.main;
 
-import jscan.sourceloc.SourceLocation;
-import jscan.tokenize.Token;
 import ast.parse.ILocation;
 import ast.stmt.Sasm;
 import ast.stmt.Scase;
@@ -16,6 +14,8 @@ import ast.stmt.Slabel;
 import ast.stmt.Sreturn;
 import ast.stmt.Sswitch;
 import ast.stmt.Swhile;
+import jscan.sourceloc.SourceLocation;
+import jscan.tokenize.Token;
 
 public class CStatement implements ILocation {
   private final CStatementBase base;

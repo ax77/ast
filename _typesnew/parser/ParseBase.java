@@ -10,10 +10,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import jscan.hashed.Hash_ident;
-import jscan.symtab.Ident;
-import jscan.tokenize.T;
-import jscan.tokenize.Token;
 import ast._typesnew.CEnumType;
 import ast._typesnew.CType;
 import ast._typesnew.main.StorageKind;
@@ -23,6 +19,10 @@ import ast.parse.Parse;
 import ast.parse.ParseState;
 import ast.parse.Pcheckers;
 import ast.symtabg.elements.CSymbol;
+import jscan.hashed.Hash_ident;
+import jscan.symtab.Ident;
+import jscan.tokenize.T;
+import jscan.tokenize.Token;
 
 public class ParseBase {
   private final Parse p;
@@ -185,7 +185,8 @@ public class ParseBase {
 
   // TODO:
 
-  private void checkds(int variant, List<Token> st, List<Token> ts, Set<Token> tq, Set<Token> fs, StringBuilder buffer) {
+  private void checkds(int variant, List<Token> st, List<Token> ts, Set<Token> tq, Set<Token> fs,
+      StringBuilder buffer) {
     boolean expectTypeSpec = (variant & f_expect_typespec) == f_expect_typespec;
     boolean expectStorage = (variant & f_expect_storage_class) == f_expect_storage_class;
     boolean expectTypeQual = (variant & f_expect_typequal) == f_expect_typequal;

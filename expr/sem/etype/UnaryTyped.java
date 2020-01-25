@@ -2,21 +2,22 @@ package ast.expr.sem.etype;
 
 import static ast._typesnew.CTypeImpl.FUNC_DESIGNATOR_TODO_STUB;
 import static ast._typesnew.CTypeImpl.TYPE_INT;
-import static ast._typesnew.CTypeImpl.VOID_TYPE;
+import static ast._typesnew.CTypeImpl.TYPE_VOID;
 import static jscan.tokenize.T.T_AND;
 import static jscan.tokenize.T.T_EXCLAMATION;
 import static jscan.tokenize.T.T_MINUS;
 import static jscan.tokenize.T.T_PLUS;
 import static jscan.tokenize.T.T_TILDE;
 import static jscan.tokenize.T.T_TIMES;
-import jscan.tokenize.Token;
+
 import ast._typesnew.CPointerType;
 import ast._typesnew.CType;
 import ast._typesnew.main.StorageKind;
+import ast.errors.ParseException;
 import ast.expr.main.CExpression;
 import ast.expr.sem.CExpressionBuilderHelper;
 import ast.parse.NullChecker;
-import ast.parse.ParseException;
+import jscan.tokenize.Token;
 
 public abstract class UnaryTyped {
   public static CExpression sUnary(Token operator, CExpression operand) {
@@ -102,7 +103,7 @@ public abstract class UnaryTyped {
       }
 
       else if (lhsRT.isPointerToVoid()) {
-        resRT = VOID_TYPE;
+        resRT = TYPE_VOID;
       }
 
       else {

@@ -6,8 +6,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.List;
 
-import jscan.Tokenlist;
-
 import org.junit.Test;
 
 import ast._entry.PreprocessSourceForParser;
@@ -25,6 +23,7 @@ import ast._typesnew.parser.ParseDecl;
 import ast._typesnew.util.TypeMerger;
 import ast.expr.sem.CExpressionBuilderHelper;
 import ast.parse.Parse;
+import jscan.Tokenlist;
 
 public class _TestTypeCompat {
 

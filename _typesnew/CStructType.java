@@ -2,8 +2,8 @@ package ast._typesnew;
 
 import java.util.List;
 
+import ast.errors.ParseException;
 import jscan.symtab.Ident;
-import ast.parse.ParseException;
 
 public class CStructType {
   private boolean isUnion;
@@ -94,7 +94,7 @@ public class CStructType {
   public CStructField findFiled(Ident fieldName) {
     checkHasFields();
     for (CStructField f : fields) {
-      if(!f.isHasName()) {
+      if (!f.isHasName()) {
         continue; // unnamed bf. TODO:
       }
       if (f.getName().equals(fieldName)) {

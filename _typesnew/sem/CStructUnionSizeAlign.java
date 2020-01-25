@@ -4,10 +4,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import jscan.symtab.Ident;
 import ast._typesnew.CStructField;
+import ast.errors.ParseException;
 import ast.parse.NullChecker;
-import ast.parse.ParseException;
+import jscan.symtab.Ident;
 
 public class CStructUnionSizeAlign {
 

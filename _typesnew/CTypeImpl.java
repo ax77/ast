@@ -3,12 +3,13 @@ package ast._typesnew;
 import java.util.HashMap;
 import java.util.Map;
 
-import jscan.cstrtox.NumType;
 import ast._typesnew.main.StorageKind;
 import ast._typesnew.main.TypeKind;
+import jscan.cstrtox.NumType;
 
 public class CTypeImpl {
   //@formatter:off
+  public static final CType TYPE_VOID = new CType(TypeKind.TP_VOID, StorageKind.ST_NONE);
   public static final CType TYPE_BOOL = new CType(TypeKind.TP_BOOL, StorageKind.ST_NONE);
   public static final CType TYPE_CHAR = new CType(TypeKind.TP_CHAR, StorageKind.ST_NONE);
   public static final CType TYPE_UCHAR = new CType(TypeKind.TP_UCHAR, StorageKind.ST_NONE);
@@ -24,7 +25,6 @@ public class CTypeImpl {
   public static final CType TYPE_DOUBLE = new CType(TypeKind.TP_DOUBLE, StorageKind.ST_NONE);
   public static final CType TYPE_LONG_DOUBLE = new CType(TypeKind.TP_LONG_DOUBLE, StorageKind.ST_NONE);
   
-  public static final CType VOID_TYPE = new CType(TypeKind.TP_VOID, StorageKind.ST_NONE);
   public static final CType FUNC_DESIGNATOR_TODO_STUB = null; // TODO:
   
   public static Map<NumType, CType> bindings = new HashMap<NumType, CType>();

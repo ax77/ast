@@ -1,8 +1,8 @@
 package ast.stmt;
 
-import jscan.symtab.Ident;
 import ast.stmt.main.CStatement;
 import ast.unit.FunctionDefinition;
+import jscan.symtab.Ident;
 
 public class Slabel {
   private final FunctionDefinition function;

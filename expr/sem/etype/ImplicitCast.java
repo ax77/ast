@@ -3,7 +3,7 @@ package ast.expr.sem.etype;
 import static jscan.tokenize.T.T_AND;
 import static jscan.tokenize.T.T_PLUS;
 import static jscan.tokenize.T.T_TIMES;
-import jscan.tokenize.Token;
+
 import ast._typesnew.CPointerType;
 import ast._typesnew.CType;
 import ast._typesnew.main.StorageKind;
@@ -11,6 +11,7 @@ import ast.expr.main.CExpression;
 import ast.expr.main.CExpressionBase;
 import ast.expr.sem.CExpressionBuilderHelper;
 import ast.parse.NullChecker;
+import jscan.tokenize.Token;
 
 public abstract class ImplicitCast {
 

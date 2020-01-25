@@ -3,8 +3,8 @@ package ast.declarations;
 import java.util.ArrayList;
 import java.util.List;
 
+import ast.errors.ParseException;
 import ast.expr.main.CExpression;
-import ast.parse.ParseException;
 
 public class Initializer {
 

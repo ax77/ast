@@ -4,14 +4,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import jscan.Tokenlist;
-
 import org.junit.Test;
 
 import ast._entry.PreprocessSourceForParser;
 import ast._entry.PreprocessSourceForParserVariant;
+import ast.errors.ParseException;
 import ast.parse.Parse;
 import ast.unit.TranslationUnit;
+import jscan.Tokenlist;
 
 public class _TestStructFieldAccess {
 
@@ -397,6 +397,40 @@ public class _TestStructFieldAccess {
       TranslationUnit unit = p.parse_unit();
       //System.out.println();
     }
+
+  }
+
+  @Test(expected = ParseException.class)
+  public void testDoesNotContainsIncomplete_0() throws IOException {
+    //@formatter:off
+    StringBuilder sb = new StringBuilder();
+    sb.append(" /*001*/  int main() {               \n");
+    sb.append(" /*002*/    struct s {               \n");
+    sb.append(" /*003*/      struct s incomplete;   \n");
+    sb.append(" /*004*/    };                       \n");
+    sb.append(" /*005*/  }                          \n");
+    //@formatter:on
+
+    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Parse p = new Parse(it);
+    TranslationUnit unit = p.parse_unit();
+
+  }
+
+  @Test(expected = ParseException.class)
+  public void testDoesNotContainsIncomplete_1() throws IOException {
+    //@formatter:off
+    StringBuilder sb = new StringBuilder();
+    sb.append(" /*001*/  int main() {               \n");
+    sb.append(" /*002*/    struct s {               \n");
+    sb.append(" /*003*/      int incomplete[];      \n");
+    sb.append(" /*004*/    };                       \n");
+    sb.append(" /*005*/  }                          \n");
+    //@formatter:on
+
+    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Parse p = new Parse(it);
+    TranslationUnit unit = p.parse_unit();
 
   }
 

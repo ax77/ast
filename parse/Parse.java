@@ -10,10 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import jscan.Tokenlist;
-import jscan.symtab.Ident;
-import jscan.tokenize.T;
-import jscan.tokenize.Token;
 import ast._typesnew.CType;
 import ast._typesnew.decl.CDecl;
 import ast._typesnew.main.StorageKind;
@@ -22,6 +18,8 @@ import ast._typesnew.parser.ParseDecl;
 import ast._typesnew.util.TypeMerger;
 import ast.declarations.main.Declaration;
 import ast.declarations.parser.ParseDeclarations;
+import ast.errors.ParseErrors;
+import ast.errors.ParseException;
 import ast.stmt.Scompound;
 import ast.stmt.Sswitch;
 import ast.stmt.main.CStatement;
@@ -31,6 +29,10 @@ import ast.symtabg.elements.CSymbol;
 import ast.unit.ExternalDeclaration;
 import ast.unit.FunctionDefinition;
 import ast.unit.TranslationUnit;
+import jscan.Tokenlist;
+import jscan.symtab.Ident;
+import jscan.tokenize.T;
+import jscan.tokenize.Token;
 
 public class Parse {
 
@@ -71,15 +73,15 @@ public class Parse {
   }
 
   public void defineSym(Ident key, CSymbol sym) {
-    
+
     // check redef.
     CSymbol prevsym = symbols.getsymFromCurrentScope(key);
-    if(prevsym != null) {
-      if(!prevsym.getType().isEqualTo(sym.getType())) {
+    if (prevsym != null) {
+      if (!prevsym.getType().isEqualTo(sym.getType())) {
         perror("redefinition"); // TODO: normal error message.
       }
     }
-    
+
     symbols.addsym(key, sym);
   }
 
@@ -239,6 +241,10 @@ public class Parse {
     sb.append(ringBufferToStringLines() + "\n");
 
     //System.out.println(sb.toString());
+  }
+
+  public void perror(ParseErrors code) {
+    perror(code.toString());
   }
 
   public void checkedMove(T expected) {

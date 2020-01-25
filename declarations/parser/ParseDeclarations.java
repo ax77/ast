@@ -3,9 +3,6 @@ package ast.declarations.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-import jscan.hashed.Hash_ident;
-import jscan.tokenize.T;
-import jscan.tokenize.Token;
 import ast._typesnew.CType;
 import ast._typesnew.decl.CDecl;
 import ast._typesnew.parser.ParseBase;
@@ -23,6 +20,9 @@ import ast.expr.parser.ParseExpression;
 import ast.expr.sem.ConstexprEval;
 import ast.parse.Parse;
 import ast.symtabg.elements.CSymbol;
+import jscan.hashed.Hash_ident;
+import jscan.tokenize.T;
+import jscan.tokenize.Token;
 
 public class ParseDeclarations {
   private final Parse p;

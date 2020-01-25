@@ -10,9 +10,6 @@ import static jscan.tokenize.T.T_SEMI_COLON;
 import java.util.ArrayList;
 import java.util.List;
 
-import jscan.hashed.Hash_ident;
-import jscan.tokenize.T;
-import jscan.tokenize.Token;
 import ast.declarations.main.Declaration;
 import ast.declarations.parser.ParseDeclarations;
 import ast.expr.main.CExpression;
@@ -35,6 +32,9 @@ import ast.stmt.main.CStatement;
 import ast.stmt.main.CStatementBase;
 import ast.stmt.sem.BreakContinueStrayCheck;
 import ast.unit.BlockItem;
+import jscan.hashed.Hash_ident;
+import jscan.tokenize.T;
+import jscan.tokenize.Token;
 
 public class ParseStatement {
   private final Parse parser;

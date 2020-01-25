@@ -3,13 +3,12 @@ package ast;
 import java.io.IOException;
 import java.util.List;
 
-import jscan.tokenize.Stream;
-import jscan.tokenize.Token;
-
 import org.junit.Test;
 
 import ast.parse.Parse;
 import ast.unit.TranslationUnit;
+import jscan.tokenize.Stream;
+import jscan.tokenize.Token;
 
 public class TestStructs {
 
@@ -129,30 +128,54 @@ public class TestStructs {
   @Test
   public void testStructsNew3() throws IOException {
     StringBuilder sb = new StringBuilder();
-    sb.append(" /*001*/  struct test_anon {                                                                                \n");
-    sb.append(" /*002*/    int a;                                                                                          \n");
-    sb.append(" /*003*/    union {                                                                                         \n");
-    sb.append(" /*004*/      int b;                                                                                        \n");
-    sb.append(" /*005*/      char c;                                                                                       \n");
-    sb.append(" /*006*/      float d;                                                                                      \n");
-    sb.append(" /*007*/      double e;                                                                                     \n");
-    sb.append(" /*008*/    };                                                                                              \n");
-    sb.append(" /*009*/    struct tag1 { // has a tag, but no name, is not ANONYMOUS... is NOT change size...              \n");
-    sb.append(" /*010*/      int f;    // and members is not a members of parent struct... is just a struct-declaration.   \n");
-    sb.append(" /*011*/      int g;                                                                                        \n");
-    sb.append(" /*012*/      int a;    // is not redeclarations. is nested struct field.                                   \n");
-    sb.append(" /*013*/    };                                                                                              \n");
-    sb.append(" /*014*/    struct {   // has no tag, but has name... is a normal field...                                  \n");
-    sb.append(" /*015*/      int a; // is not redeclarations. is nested struct field.                                      \n");
-    sb.append(" /*016*/      int i;                                                                                        \n");
-    sb.append(" /*017*/      int j;                                                                                        \n");
-    sb.append(" /*018*/    } h;                                                                                            \n");
-    sb.append(" /*019*/    struct {      // has no tag and no name... is ANONYM.                                           \n");
-    sb.append(" /*020*/      // int a; // error: member of anonymous struct redeclares 'a'                                 \n");
-    sb.append(" /*021*/      int k;                                                                                        \n");
-    sb.append(" /*022*/      int l;                                                                                        \n");
-    sb.append(" /*023*/    };                                                                                              \n");
-    sb.append(" /*024*/  };                                                                                                \n");
+    sb.append(
+        " /*001*/  struct test_anon {                                                                                \n");
+    sb.append(
+        " /*002*/    int a;                                                                                          \n");
+    sb.append(
+        " /*003*/    union {                                                                                         \n");
+    sb.append(
+        " /*004*/      int b;                                                                                        \n");
+    sb.append(
+        " /*005*/      char c;                                                                                       \n");
+    sb.append(
+        " /*006*/      float d;                                                                                      \n");
+    sb.append(
+        " /*007*/      double e;                                                                                     \n");
+    sb.append(
+        " /*008*/    };                                                                                              \n");
+    sb.append(
+        " /*009*/    struct tag1 { // has a tag, but no name, is not ANONYMOUS... is NOT change size...              \n");
+    sb.append(
+        " /*010*/      int f;    // and members is not a members of parent struct... is just a struct-declaration.   \n");
+    sb.append(
+        " /*011*/      int g;                                                                                        \n");
+    sb.append(
+        " /*012*/      int a;    // is not redeclarations. is nested struct field.                                   \n");
+    sb.append(
+        " /*013*/    };                                                                                              \n");
+    sb.append(
+        " /*014*/    struct {   // has no tag, but has name... is a normal field...                                  \n");
+    sb.append(
+        " /*015*/      int a; // is not redeclarations. is nested struct field.                                      \n");
+    sb.append(
+        " /*016*/      int i;                                                                                        \n");
+    sb.append(
+        " /*017*/      int j;                                                                                        \n");
+    sb.append(
+        " /*018*/    } h;                                                                                            \n");
+    sb.append(
+        " /*019*/    struct {      // has no tag and no name... is ANONYM.                                           \n");
+    sb.append(
+        " /*020*/      // int a; // error: member of anonymous struct redeclares 'a'                                 \n");
+    sb.append(
+        " /*021*/      int k;                                                                                        \n");
+    sb.append(
+        " /*022*/      int l;                                                                                        \n");
+    sb.append(
+        " /*023*/    };                                                                                              \n");
+    sb.append(
+        " /*024*/  };                                                                                                \n");
 
     List<Token> tokenlist = getHashedStream("struct_2", sb.toString()).getTokenlist();
 

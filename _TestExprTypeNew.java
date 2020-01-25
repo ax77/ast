@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import jscan.Tokenlist;
-
 import org.junit.Test;
 
 import ast._entry.PreprocessSourceForParser;
@@ -17,6 +15,7 @@ import ast.expr.main.CExpression;
 import ast.expr.parser.ParseExpression;
 import ast.expr.sem.ConstexprEval;
 import ast.parse.Parse;
+import jscan.Tokenlist;
 
 public class _TestExprTypeNew {
 

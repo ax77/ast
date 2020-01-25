@@ -3,8 +3,6 @@ package ast._typesnew.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import jscan.symtab.Ident;
-import jscan.tokenize.Token;
 import ast._typesnew.CArrayType;
 import ast._typesnew.CFunctionType;
 import ast._typesnew.CPointerType;
@@ -12,7 +10,9 @@ import ast._typesnew.CType;
 import ast._typesnew.decl.CDecl;
 import ast._typesnew.decl.CDeclEntry;
 import ast._typesnew.main.TypeKind;
-import ast.parse.ParseException;
+import ast.errors.ParseException;
+import jscan.symtab.Ident;
+import jscan.tokenize.Token;
 
 public abstract class TypeMerger {
 
@@ -53,10 +53,8 @@ public abstract class TypeMerger {
       CFunctionType fn = new CFunctionType(type, e.getParameters(), e.isVariadicFunction());
       return new CType(fn, type.getStorage());
     }
-    throw new ParseException("build from declarator fail: entry="
-        + e.getBase().toString()
-        + "; type="
-        + type.toString());
+    throw new ParseException(
+        "build from declarator fail: entry=" + e.getBase().toString() + "; type=" + type.toString());
   }
 
   public static void checkTagNotNullForReference(Token tag) {

@@ -3,7 +3,7 @@ package ast.declarations;
 import java.util.ArrayList;
 import java.util.List;
 
-import ast.parse.ParseException;
+import ast.errors.ParseException;
 
 public class Designation {
   private final List<Designator> designators;

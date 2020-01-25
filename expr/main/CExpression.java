@@ -14,17 +14,17 @@ import static ast.expr.main.CExpressionBase.EUNARY;
 
 import java.util.List;
 
-import jscan.cstrtox.C_strtox;
-import jscan.sourceloc.SourceLocation;
-import jscan.tokenize.Token;
 import ast._typesnew.CStructField;
 import ast._typesnew.CType;
 import ast.declarations.InitializerList;
+import ast.errors.ParseException;
 import ast.parse.ILocation;
 import ast.parse.NodeTemp;
-import ast.parse.ParseException;
 import ast.symtabg.elements.CSymbol;
 import ast.symtabg.elements.NumericConstant;
+import jscan.cstrtox.C_strtox;
+import jscan.sourceloc.SourceLocation;
+import jscan.tokenize.Token;
 
 public class CExpression implements ILocation {
 
@@ -337,12 +337,7 @@ public class CExpression implements ILocation {
       return getLhs().toString() + tokenTos(getToken()) + getRhs().toString();
     }
     case ETERNARY: {
-      return "("
-          + getCnd().toString().trim()
-          + " ? "
-          + getLhs().toString().trim()
-          + " : "
-          + getRhs().toString().trim()
+      return "(" + getCnd().toString().trim() + " ? " + getLhs().toString().trim() + " : " + getRhs().toString().trim()
           + ")";
     }
     case EUNARY: {
