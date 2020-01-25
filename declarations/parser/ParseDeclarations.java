@@ -3,8 +3,6 @@ package ast.declarations.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.graalvm.compiler.lir.StandardOp.NullCheck;
-
 import ast._typesnew.CEnumType;
 import ast._typesnew.CStructType;
 import ast._typesnew.CType;

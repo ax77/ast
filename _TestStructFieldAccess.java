@@ -369,6 +369,30 @@ public class _TestStructFieldAccess {
     sb18.append(" /*047*/    return sizeof(a);                                                                  \n");
     sb18.append(" /*048*/  }                                                                                    \n");
     //@formatter:on
+    
+    //@formatter:off
+    StringBuilder sb19 = new StringBuilder();
+    sb19.append(" /*001*/  int main() {                      \n");
+    sb19.append(" /*002*/      typedef enum e tde, *ptde;    \n");
+    sb19.append(" /*003*/      enum e;                       \n");
+    sb19.append(" /*004*/      enum e { e = 1 };             \n");
+    sb19.append(" /*005*/      struct s {                    \n");
+    sb19.append(" /*006*/          // enum e incomplete;     \n");
+    sb19.append(" /*007*/          enum e e;                 \n");
+    sb19.append(" /*008*/          tde tde;                  \n");
+    sb19.append(" /*009*/      };                            \n");
+    sb19.append(" /*010*/      {                             \n");
+    sb19.append(" /*011*/          typedef enum e tde;       \n");
+    sb19.append(" /*012*/          enum e;                   \n");
+    sb19.append(" /*013*/          enum e { e = 2 };         \n");
+    sb19.append(" /*014*/          {                         \n");
+    sb19.append(" /*015*/              int e = e;            \n");
+    sb19.append(" /*016*/              ptde x = (tde*) &e;   \n");
+    sb19.append(" /*017*/          }                         \n");
+    sb19.append(" /*018*/      }                             \n");
+    sb19.append(" /*019*/      return e;                     \n");
+    sb19.append(" /*020*/  }                                 \n");
+    //@formatter:on
 
     List<StringBuilder> tests = new ArrayList<StringBuilder>();
     tests.add(sb0);
@@ -390,6 +414,7 @@ public class _TestStructFieldAccess {
     tests.add(sb16);
     tests.add(sb17);
     tests.add(sb18);
+    //tests.add(sb19);
 
     for (StringBuilder sb : tests) {
       Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
