@@ -105,17 +105,19 @@ public class Parse {
 
   public void defineSym(Ident key, CSymbol sym) {
 
-    // check redef.
     CSymbol prevsym = symbols.getsymFromCurrentScope(key);
     if (prevsym != null) {
-      if (!prevsym.getType().isEqualTo(sym.getType())) {
-        System.out.println();
-        perror("redefinition"); // TODO: normal error message.
+      if (prevsym.getBase() == CSymbolBase.SYM_TYPEDEF) {
+        if (!prevsym.getType().isEqualTo(sym.getType())) {
+          perror("redefinition, previous defined here: " + prevsym.getLocationToString());
+        }
+      } else {
+        perror("redefinition, previous defined here: " + prevsym.getLocationToString());
       }
     }
 
     if (currentFn != null) {
-      currentFn.addLoca(sym);
+      currentFn.addLocal(sym);
     }
 
     symbols.addsym(key, sym);
@@ -507,11 +509,6 @@ public class Parse {
 
     //TODO:
     //this.lastloc = parseState.getLastloc();
-
-    this.symbols = parseState.getSymbols();
-    this.tags = parseState.getTags();
-    this.switches = parseState.getSwitches();
-    this.loops = parseState.getLoops();
   }
 
   ///////////////////////////////////////////////////////////////////

@@ -17,7 +17,7 @@ public class FunctionDefinition {
     this.locals = new ArrayList<CSymbol>();
   }
 
-  public void addLoca(CSymbol e) {
+  public void addLocal(CSymbol e) {
     locals.add(e);
   }
 

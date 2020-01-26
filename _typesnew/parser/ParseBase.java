@@ -109,10 +109,7 @@ public class ParseBase {
           }
 
           storageSpec = TypeCombiner.combine_storage(storage);
-
-          CType basetype = new CType(typeFromStab, 0);
-          return basetype;
-
+          return typeFromStab;
         }
       }
     }

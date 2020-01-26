@@ -129,14 +129,10 @@ public class ParseStruct {
         else {
           CType type = parser.getTag(tag.getIdent()).getType();
 
-          if (type.isIncomplete()) {
-          }
-
           if (paranoia) {
             System.out.println("2");
           }
 
-          //type.setStorage(storagespec);
           return type;
         }
       }

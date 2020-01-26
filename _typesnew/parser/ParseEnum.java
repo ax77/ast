@@ -7,6 +7,7 @@ import java.util.Map;
 
 import ast._typesnew.CEnumType;
 import ast._typesnew.CType;
+import ast._typesnew.CTypeImpl;
 import ast._typesnew.main.StorageKind;
 import ast._typesnew.main.TypeKind;
 import ast.expr.main.CExpression;
@@ -166,15 +167,10 @@ public class ParseEnum {
         else {
           CType type = parser.getTag(tag.getIdent()).getType();
 
-          if (type.isIncomplete()) {
-          }
-
           if (paranoia) {
             System.out.println("2");
           }
 
-          //TODO: think about
-          //type.setStorage(storagespec);
           return type;
         }
       }
@@ -284,7 +280,7 @@ public class ParseEnum {
     int enumvalue = enumdto.getCurvalue();
 
     if (parser.tp() != T.T_ASSIGN) {
-      final CSymbol symbol = new CSymbol(CSymbolBase.SYM_ENUM_CONST, identifier, new CType(TypeKind.TP_INT), tok); // TODO:Storage
+      final CSymbol symbol = new CSymbol(CSymbolBase.SYM_ENUM_CONST, identifier, CTypeImpl.TYPE_INT, tok); // TODO:Storage
       symbol.setEnumvalue(enumvalue);
 
       parser.defineSym(identifier, symbol);
@@ -298,7 +294,7 @@ public class ParseEnum {
     CExpression constexpr = new ParseExpression(parser).e_const_expr();
     enumvalue = (int) new ConstexprEval(parser).ce(constexpr);
 
-    final CSymbol symbol = new CSymbol(CSymbolBase.SYM_ENUM_CONST, identifier, new CType(TypeKind.TP_INT), tok); // TODO:Storage
+    final CSymbol symbol = new CSymbol(CSymbolBase.SYM_ENUM_CONST, identifier, CTypeImpl.TYPE_INT, tok); // TODO:Storage
     symbol.setEnumvalue(enumvalue);
 
     parser.defineSym(identifier, symbol);

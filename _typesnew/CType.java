@@ -78,26 +78,6 @@ public class CType implements CTypeApi {
 
   }
 
-  // when we copy the type, building it from typedef name,
-  // we apply to this new type all qualifiers we have:
-  // typedef int i32;
-  // static const i32 x;
-  // x is int, and static and const
-  //
-  public CType(CType from, int qualifiers) {
-    this.kind = from.kind;
-    this.size = from.size;
-    this.align = from.align;
-    this.tpArray = from.tpArray;
-    this.tpBitfield = from.tpBitfield;
-    this.tpEnum = from.tpEnum;
-    this.tpFunction = from.tpFunction;
-    this.tpPointer = from.tpPointer;
-    this.tpStruct = from.tpStruct;
-
-    this.qualifiers = qualifiers;
-  }
-
   public CType(CBitfieldType tpBitfield) {
     this.kind = TypeKind.TP_BITFIELD;
     this.tpBitfield = tpBitfield;

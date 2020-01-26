@@ -1452,8 +1452,8 @@ public class TestSimple3 {
     tests.add(new UtilTestDto(false, "074", sb_074));
     tests.add(new UtilTestDto(false, "075", sb_075));
     tests.add(new UtilTestDto(false, "076", sb_076));
-    tests.add(new UtilTestDto(false, "077", sb_077));
-    tests.add(new UtilTestDto(false, "078", sb_078));
+    tests.add(new UtilTestDto(true, "077", sb_077));
+    tests.add(new UtilTestDto(true, "078", sb_078));
     tests.add(new UtilTestDto(false, "079", sb_079));
     tests.add(new UtilTestDto(false, "080", sb_080));
     tests.add(new UtilTestDto(false, "081", sb_081));
