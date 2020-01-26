@@ -1,20 +1,13 @@
 package ast;
 
-import static org.junit.Assert.*;
-
 import java.io.IOException;
-import java.util.List;
 
 import org.junit.Test;
 
 import ast._entry.PreprocessSourceForParser;
 import ast._entry.PreprocessSourceForParserVariant;
 import ast.parse.Parse;
-import ast.stmt.Scompound;
-import ast.stmt.main.CStatement;
-import ast.stmt.main.CStatementBase;
 import ast.symtabg.elements.CSymbol;
-import ast.unit.BlockItem;
 import ast.unit.ExternalDeclaration;
 import ast.unit.FunctionDefinition;
 import ast.unit.TranslationUnit;
@@ -41,45 +34,20 @@ public class _TestFuncLocals {
     Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
     Parse p = new Parse(it);
     TranslationUnit unit = p.parse_unit();
-    
+
     processLocals(unit);
   }
 
   private void processLocals(TranslationUnit unit) {
-    for(ExternalDeclaration ed : unit.getExternalDeclarations()) {
-      if(!ed.isFunctionDefinition()) {
+    for (ExternalDeclaration ed : unit.getExternalDeclarations()) {
+      if (!ed.isFunctionDefinition()) {
         continue;
       }
       FunctionDefinition fd = ed.getFunctionDefinition();
-      for(CSymbol local : fd.getLocals()) {
+      for (CSymbol local : fd.getLocals()) {
         System.out.println(local.toString());
       }
     }
   }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

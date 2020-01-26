@@ -43,15 +43,15 @@ public abstract class TypeMerger {
     TypeKind base = e.getBase();
     if (base == TypeKind.TP_ARRAY_OF) {
       CArrayType arr = new CArrayType(type, e.getArrlen());
-      return new CType(arr, type.getStorage());
+      return new CType(arr);
     }
     if (base == TypeKind.TP_POINTER_TO) {
       final CPointerType ptrTo = new CPointerType(type, e.isConstPointer());
-      return new CType(ptrTo, type.getStorage());
+      return new CType(ptrTo);
     }
     if (base == TypeKind.TP_FUNCTION) {
       CFunctionType fn = new CFunctionType(type, e.getParameters(), e.isVariadicFunction());
-      return new CType(fn, type.getStorage());
+      return new CType(fn);
     }
     throw new ParseException(
         "build from declarator fail: entry=" + e.getBase().toString() + "; type=" + type.toString());

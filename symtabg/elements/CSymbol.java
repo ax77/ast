@@ -2,9 +2,7 @@ package ast.symtabg.elements;
 
 import ast._typesnew.CType;
 import ast._typesnew.CTypeApi;
-import ast._typesnew.main.TypeKind;
 import ast.declarations.Initializer;
-import ast.errors.ParseException;
 import ast.parse.ILocation;
 import jscan.cstrtox.NumType;
 import jscan.sourceloc.SourceLocation;
@@ -37,12 +35,6 @@ public class CSymbol implements CTypeApi, ILocation {
     this.initializer = initializer;
   }
 
-  private void assertType(TypeKind need) {
-    if (need != type.getKind()) {
-      throw new ParseException(location.toString() + ":error: type not expected: " + need.toString());
-    }
-  }
-
   public Ident getName() {
     return name;
   }
@@ -52,18 +44,17 @@ public class CSymbol implements CTypeApi, ILocation {
   }
 
   public int getEnumvalue() {
-//    assertType(TypeKind.TP_ENUM);
     return (int) numericConstant.getClong();
   }
 
   public void setEnumvalue(int enumvalue) {
-//    assertType(TypeKind.TP_ENUM);
     this.numericConstant = new NumericConstant(enumvalue, NumType.N_INT); // TODO:
   }
 
   @Override
   public String toString() {
-    return " (name=" + name.getName() + ", type=" + type.toString() + ", line=" + location.getLine() + ") ";
+    return "line=" + String.format("%-3d", location.getLine()) + " (name=" + name.getName() + ", type="
+        + type.toString() + ", base=" + base.toString() + ") ";
   }
 
   public Initializer getInitializer() {
@@ -118,8 +109,6 @@ public class CSymbol implements CTypeApi, ILocation {
   @Override public boolean isIncompleteUnion()             {  return type.isIncompleteUnion()       ; }
   @Override public boolean isIncompleteArray()             {  return type.isIncompleteArray()       ; }
   @Override public boolean isEqualTo(CType another)        {  return type.isEqualTo(      another)  ; }
-  @Override public boolean isStatic()                      {  return type.isStatic()                ; }
-  @Override public boolean isExtern()                      {  return type.isExtern()                ; }
   @Override public boolean isConst()                       {  return type.isConst()                 ; }
   @Override public boolean isInline()                      {  return type.isInline()                ; }
   @Override public boolean isNoreturn()                    {  return type.isNoreturn()              ; }

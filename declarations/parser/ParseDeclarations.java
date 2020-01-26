@@ -3,10 +3,9 @@ package ast.declarations.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-import ast._typesnew.CEnumType;
-import ast._typesnew.CStructType;
 import ast._typesnew.CType;
 import ast._typesnew.decl.CDecl;
+import ast._typesnew.main.StorageKind;
 import ast._typesnew.parser.ParseBase;
 import ast._typesnew.parser.ParseDecl;
 import ast._typesnew.util.TypeMerger;
@@ -30,6 +29,8 @@ import jscan.tokenize.Token;
 
 public class ParseDeclarations {
   private final Parse p;
+  private CType basetype;
+  private StorageKind storagespec;
 
   public ParseDeclarations(Parse parser) {
     this.p = parser;
@@ -99,7 +100,10 @@ public class ParseDeclarations {
       return new Declaration();
     }
 
-    CType basetype = new ParseBase(p).parseBase();
+    ParseBase pb = new ParseBase(p);
+    basetype = pb.parseBase();
+    storagespec = pb.getStorageSpec();
+    NullChecker.check(basetype, storagespec); // paranoia
 
     /// this may be struct/union/enum declaration
     ///
@@ -118,7 +122,7 @@ public class ParseDeclarations {
       return agregate;
     }
 
-    List<CSymbol> initDeclaratorList = parseInitDeclaratorList(basetype);
+    List<CSymbol> initDeclaratorList = parseInitDeclaratorList();
     Token endLocation = p.semicolon();
 
     final Declaration declaration = new Declaration(startLocation, endLocation, initDeclaratorList);
@@ -152,23 +156,23 @@ public class ParseDeclarations {
     return true;
   }
 
-  public List<CSymbol> parseInitDeclaratorList(CType basetype) {
+  public List<CSymbol> parseInitDeclaratorList() {
     List<CSymbol> initDeclaratorList = new ArrayList<CSymbol>(0);
 
-    CSymbol initDeclarator = parseInitDeclarator(basetype);
+    CSymbol initDeclarator = parseInitDeclarator();
     initDeclaratorList.add(initDeclarator);
 
     while (p.tp() == T.T_COMMA) {
       p.move();
 
-      CSymbol initDeclaratorSeq = parseInitDeclarator(basetype);
+      CSymbol initDeclaratorSeq = parseInitDeclarator();
       initDeclaratorList.add(initDeclaratorSeq);
     }
 
     return initDeclaratorList;
   }
 
-  private CSymbol parseInitDeclarator(CType basetype) {
+  private CSymbol parseInitDeclarator() {
     //  init_declarator
     //    : declarator '=' initializer
     //    | declarator
@@ -180,7 +184,11 @@ public class ParseDeclarations {
     CType type = TypeMerger.build(basetype, decl);
 
     if (p.tp() != T.T_ASSIGN) {
-      final CSymbol sym = new CSymbol(CSymbolBase.SYM_VAR, decl.getName(), type, saved);
+      CSymbolBase base = CSymbolBase.SYM_VAR;
+      if (storagespec == StorageKind.ST_TYPEDEF) {
+        base = CSymbolBase.SYM_TYPEDEF;
+      }
+      final CSymbol sym = new CSymbol(base, decl.getName(), type, saved);
       p.defineSym(decl.getName(), sym);
       return sym;
     }
@@ -188,7 +196,8 @@ public class ParseDeclarations {
     p.checkedMove(T.T_ASSIGN);
     Initializer initializer = parseInitializer();
 
-    if (decl.isAstract()) {
+    if (storagespec == StorageKind.ST_TYPEDEF) {
+      p.perror("typedef with initializer.");
     }
 
     final CSymbol sym = new CSymbol(CSymbolBase.SYM_VAR, decl.getName(), type, initializer, saved);

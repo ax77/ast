@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ast.stmt.Scompound;
-import ast.stmt.main.CStatement;
 import ast.symtabg.elements.CSymbol;
 
 public class FunctionDefinition {

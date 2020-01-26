@@ -1,8 +1,5 @@
 package ast._typesnew.parser;
 
-import static ast._typesnew.CTypeImpl.FINLIN;
-import static ast._typesnew.CTypeImpl.FNORET;
-import static ast._typesnew.CTypeImpl.QCONST;
 import static jscan.tokenize.T.TOKEN_IDENT;
 
 import java.util.ArrayList;
@@ -10,202 +7,192 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import ast._typesnew.CEnumType;
 import ast._typesnew.CType;
 import ast._typesnew.main.StorageKind;
 import ast._typesnew.main.TypeKind;
 import ast._typesnew.util.TypeCombiner;
 import ast.parse.Parse;
-import ast.parse.ParseState;
-import ast.parse.Pcheckers;
 import ast.symtabg.elements.CSymbol;
+import ast.symtabg.elements.CSymbolBase;
 import jscan.hashed.Hash_ident;
-import jscan.symtab.Ident;
-import jscan.tokenize.T;
 import jscan.tokenize.Token;
 
 public class ParseBase {
   private final Parse p;
-
-  // declaration-specifiers flags
-  // combinations:
-  // type-qualifier-list
-  // specifier-qualifier-list 
-  //
-  private final int f_expect_storage_class = 1;
-  private final int f_expect_typespec = 2;
-  private final int f_expect_typequal = 4;
-  private final int f_expect_funcspec = 8;
+  private StorageKind storageSpec;
 
   public ParseBase(Parse p) {
     this.p = p;
-  }
-
-  private String look(int howMuch) {
-    StringBuilder sb = new StringBuilder();
-    ParseState parseState = new ParseState(p);
-    for (int i = 0; i < howMuch; i++) {
-      Token t = p.tok();
-      if (t.ofType(T.TOKEN_EOF)) {
-        break;
-      }
-      p.move();
-      if (t.hasLeadingWhitespace()) {
-        sb.append(" ");
-      }
-      sb.append(t.getValue());
-    }
-    p.restoreState(parseState);
-    return sb.toString();
-  }
-
-  private int getQual(Set<Token> tq, Set<Token> fs) {
-    int f = 0;
-    for (Token t : tq) {
-      if (Pcheckers.isConstIdent(t)) {
-        f |= QCONST;
-      }
-    }
-    for (Token t : fs) {
-      if (Pcheckers.isInlineIdent(t)) {
-        f |= FINLIN;
-      }
-      if (Pcheckers.isNoreturnIdent(t)) {
-        f |= FNORET;
-      }
-    }
-    return f;
-  }
-
-  private CType findType() {
-    CType basetype = null;
-
-    List<Token> st = new ArrayList<Token>();
-    Set<Token> tq = new HashSet<Token>();
-    Set<Token> fs = new HashSet<Token>();
-    List<Token> ts = new ArrayList<Token>();
-    tail(st, ts, tq, fs, true);
-
-    ParseState parseState = new ParseState(p);
-    Token curtok = p.tok();
-
-    boolean isMaybeTypedef = curtok.ofType(TOKEN_IDENT) && !curtok.isBuiltinIdent() && ts.isEmpty();
-
-    if (isMaybeTypedef) {
-      Ident symname = curtok.getIdent();
-      CSymbol symbol = p.getSym(symname);
-      if (symbol != null) {
-        CType typeFromStab = symbol.getType();
-        if (typeFromStab.getStorage() == StorageKind.ST_TYPEDEF) {
-
-          // if all ok, we eat this typedefed-name, and assign it's type to basetype
-          // XXX: storage-class _ALWAYS_ build from 'st'
-          // for this, we copy typedefed-type, with new storage-class we have now...
-          p.move();
-
-          tail(st, ts, tq, fs, true);
-          StorageKind storagespec = TypeCombiner.combine_storage(st);
-          basetype = new CType(typeFromStab, storagespec, getQual(tq, fs));
-
-        } else {
-          p.restoreState(parseState);
-        }
-      } else {
-        p.restoreState(parseState);
-      }
-    }
-
-    else if (Pcheckers.isStructOrUnionSpecStart(curtok)) {
-      if (!ts.isEmpty()) {
-        p.perror("type already recognized...");
-      }
-      p.move();
-      boolean isUnion = (curtok.isIdent(Hash_ident.union_ident));
-
-      StorageKind storagespec = TypeCombiner.combine_storage(st);
-      basetype = new ParseStruct(p).parseStruct(isUnion, storagespec);
-
-    }
-
-    else if (Pcheckers.isEnumSpecStart(curtok)) {
-      if (!ts.isEmpty()) {
-        p.perror("type already recognized...");
-      }
-      p.move();
-
-      StorageKind storagespec = TypeCombiner.combine_storage(st);
-      basetype = new ParseEnum(p).parseEnum(storagespec);
-    }
-
-    StorageKind storagespec = TypeCombiner.combine_storage(st);
-    if (basetype == null) {
-      if (ts.isEmpty()) {
-        p.pwarning("empty type-specifier. default INT.");
-        basetype = new CType(TypeKind.TP_INT, storagespec);
-      } else {
-        TypeKind bts = TypeCombiner.combine_typespec(ts);
-        basetype = new CType(bts, storagespec);
-      }
-    }
-
-    basetype.applyTqual(getQual(tq, fs));
-    return basetype;
+    this.storageSpec = StorageKind.ST_NONE;
   }
 
   public CType parseBase() {
-
-    return findType();
-
+    return findTypeAgain();
   }
 
-  private void tail(List<Token> st, List<Token> ts, Set<Token> tq, Set<Token> fs, boolean allowTS) {
+  //////////////////////////////////////////////////////////////////////
+
+  public CType findTypeAgain() {
+
+    List<Token> storage = new ArrayList<Token>();
+    List<Token> compoundKeywords = new ArrayList<Token>();
+    Set<Token> qualifiers = new HashSet<Token>();
+    cut(storage, compoundKeywords, qualifiers);
+
+    // new storage present always...
+    storageSpec = TypeCombiner.combine_storage(storage);
+
+    // const typedef struct x tdname;
+    // typedef const struct x tdname;
+    // struct ...
+    // enum  ...
+    // union ...
+
+    // if found struct/union/enum with|without typedef: one case
+    // if not found: another case
+    // if found typedefed-alias from symtab: another-another case
+    // if found one more one variant: another-another-another case ... 
+
+    // 1) compound
+    if (!compoundKeywords.isEmpty()) {
+      Token first = compoundKeywords.remove(0);
+      if (first.isIdent(Hash_ident.enum_ident)) {
+        CType ty = new ParseEnum(p).parseEnum(storageSpec);
+        return ty;
+      }
+
+      else {
+        boolean isUnion = (first.isIdent(Hash_ident.union_ident));
+        CType ty = new ParseStruct(p).parseStruct(isUnion, storageSpec);
+        //        ty.setStorage(storagespec);
+        return ty;
+      }
+    }
+
+    if (p.isTypeSpec()) {
+      // int typedef i32;
+      // int x;
+      // int const static x;
+      // int const typedef i32;
+      // ... ... ...
+      //
+
+      List<Token> ts = new ArrayList<Token>();
+      cut2(storage, ts, qualifiers);
+      storageSpec = TypeCombiner.combine_storage(storage);
+
+      TypeKind bts = TypeCombiner.combine_typespec(ts);
+      CType basetype = new CType(bts);
+
+      return basetype;
+    }
+
+    // if we here: it guarantee us that the typedef-name must be present.
+    // because if we are here: we still not found the type...
+    // but: it also may be a typedef-redeclaration (1) or typedef-usage (2):
+    // 1) i32 typedef i32;
+    // 2) i32 varname;
+    // i32 int ... :: error
+    //
+
+    if (p.tok().ofType(TOKEN_IDENT) && !p.tok().isBuiltinIdent()) {
+      CSymbol symbol = p.getSym(p.tok().getIdent());
+      if (symbol != null) {
+        CType typeFromStab = symbol.getType();
+        if (symbol.getBase() == CSymbolBase.SYM_TYPEDEF) {
+          p.move();
+
+          List<Token> ts = new ArrayList<Token>();
+          cut2(storage, ts, qualifiers);
+          if (!ts.isEmpty()) {
+            p.perror("error_1");
+          }
+
+          storageSpec = TypeCombiner.combine_storage(storage);
+
+          CType basetype = new CType(typeFromStab, 0);
+          return basetype;
+
+        }
+      }
+    }
+
+    p.perror("error_2");
+    return null;
+  }
+
+  private void cut2(List<Token> st, List<Token> ts, Set<Token> tq) {
     for (;;) {
       if (p.isStorageClassSpec()) {
         Token saved = p.tok();
         p.move();
         st.add(saved);
-      } else if (p.isTypeSpec() && allowTS) {
+      }
+
+      else if (p.isTypeSpec()) {
         Token saved = p.tok();
         p.move();
         ts.add(saved);
-      } else if (p.isTypeQual()) {
+      }
+
+      else if (p.isTypeQual()) {
         Token saved = p.tok();
         p.move();
         tq.add(saved);
-      } else if (p.isFuncSpec()) {
+      }
+
+      else if (p.isFuncSpec()) {
         Token saved = p.tok();
         p.move();
-        fs.add(saved);
-      } else {
+        //              fs.add(saved);
+      }
+
+      else {
         break;
       }
     }
   }
 
-  // TODO:
+  private void cut(List<Token> storage, List<Token> compoundKeywords, Set<Token> qualifiers) {
+    while (!p.isEof()) {
 
-  private void checkds(int variant, List<Token> st, List<Token> ts, Set<Token> tq, Set<Token> fs,
-      StringBuilder buffer) {
-    boolean expectTypeSpec = (variant & f_expect_typespec) == f_expect_typespec;
-    boolean expectStorage = (variant & f_expect_storage_class) == f_expect_storage_class;
-    boolean expectTypeQual = (variant & f_expect_typequal) == f_expect_typequal;
-    boolean expectFuncSpec = (variant & f_expect_funcspec) == f_expect_funcspec;
+      if (p.isStorageClassSpec()) {
+        Token saved = p.tok();
+        p.move();
+        storage.add(saved);
+      }
 
-    if (!expectStorage && !st.isEmpty()) {
-      p.perror("storage-class-specifiers not expect in this context: " + buffer.toString());
+      else if (p.isTypeQual()) {
+        Token saved = p.tok();
+        p.move();
+        qualifiers.add(saved);
+      }
+
+      else if (p.isFuncSpec()) {
+        Token saved = p.tok();
+        p.move();
+        //        fs.add(saved);
+      }
+
+      else if (p.isStructOrUnionSpecStart() || p.isEnumSpecStart()) {
+        Token saved = p.tok();
+        p.move();
+        compoundKeywords.add(saved);
+        break; // XXX: nothing else.
+      }
+
+      else {
+        break;
+      }
     }
+  }
 
-    if (!expectTypeSpec && !ts.isEmpty()) {
-      p.perror("type-specifiers not expect in this context: " + buffer.toString());
-    }
+  public StorageKind getStorageSpec() {
+    return storageSpec;
+  }
 
-    if (!expectTypeQual && !tq.isEmpty()) {
-      p.perror("type-qualifiers not expect in this context: " + buffer.toString());
-    }
-
-    if (!expectFuncSpec && !fs.isEmpty()) {
-      p.perror("function-specifiers not expect in this context: " + buffer.toString());
-    }
+  public void setStorageSpec(StorageKind storageSpec) {
+    this.storageSpec = storageSpec;
   }
 
 }

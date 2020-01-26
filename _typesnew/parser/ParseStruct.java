@@ -115,7 +115,7 @@ public class ParseStruct {
             newstruct.setFields(fields);
 
             CStructUnionSizeAlign sizeAlignDto = new SemanticStruct(parser).finalizeStructType(newstruct);
-            CType newtype = new CType(newstruct, sizeAlignDto.getSize(), sizeAlignDto.getAlign(), storagespec);
+            CType newtype = new CType(newstruct, sizeAlignDto.getSize(), sizeAlignDto.getAlign());
 
             parser.defineTag(tag.getIdent(), new CSymbol(CSymbolBase.SYM_STRUCT, tag.getIdent(), newtype, tag));
             return newtype;
@@ -136,7 +136,7 @@ public class ParseStruct {
             System.out.println("2");
           }
 
-          type.setStorage(storagespec);
+          //type.setStorage(storagespec);
           return type;
         }
       }
@@ -146,7 +146,7 @@ public class ParseStruct {
         // register incomplete forward.
         //
         CStructType incomplete = new CStructType(isUnion, tag.getIdent());
-        final CType structIncompleteType = new CType(incomplete, -1, -1, storagespec);
+        final CType structIncompleteType = new CType(incomplete, -1, -1);
         final CSymbol structSymbol = new CSymbol(CSymbolBase.SYM_STRUCT, tag.getIdent(), structIncompleteType, tag);
         parser.defineTag(tag.getIdent(), structSymbol);
 
@@ -192,7 +192,7 @@ public class ParseStruct {
         newstruct.setFields(parseFields(parser));
 
         CStructUnionSizeAlign sizeAlignDto = new SemanticStruct(parser).finalizeStructType(newstruct);
-        CType type = new CType(newstruct, sizeAlignDto.getSize(), sizeAlignDto.getAlign(), storagespec);
+        CType type = new CType(newstruct, sizeAlignDto.getSize(), sizeAlignDto.getAlign());
 
         if (paranoia) {
           System.out.println("5");
@@ -247,12 +247,16 @@ public class ParseStruct {
       List<CStructField> structDeclarationSeq = parseStructDeclaration();
       structDeclarationList.addAll(structDeclarationSeq);
     }
-    
-    if(parser.tp() != T.T_RIGHT_BRACE && parser.tok().ofType(TOKEN_IDENT)) {
-      CSymbol sym = parser.getSym(parser.tok().getIdent()) ;
-      if(sym != null) {
+
+    if (parser.tp() != T.T_RIGHT_BRACE && parser.tok().ofType(TOKEN_IDENT)) {
+      CSymbol sym = parser.getSym(parser.tok().getIdent());
+      if (sym != null) {
         System.out.println();
       }
+    }
+
+    if (parser.tp() != T.T_RIGHT_BRACE) {
+      System.out.println();
     }
 
     parser.checkedMove(T.T_RIGHT_BRACE);

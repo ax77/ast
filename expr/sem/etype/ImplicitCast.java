@@ -6,7 +6,6 @@ import static jscan.tokenize.T.T_TIMES;
 
 import ast._typesnew.CPointerType;
 import ast._typesnew.CType;
-import ast._typesnew.main.StorageKind;
 import ast.expr.main.CExpression;
 import ast.expr.main.CExpressionBase;
 import ast.expr.sem.CExpressionBuilderHelper;
@@ -46,7 +45,7 @@ public abstract class ImplicitCast {
       // 4) &(*((type*)arr+0))
 
       CType arrtype = typeOfNode.getTpArray().getArrayOf();
-      CType ptrtype = new CType(new CPointerType(arrtype, false), StorageKind.ST_NONE);
+      CType ptrtype = new CType(new CPointerType(arrtype, false));
 
       //1)
       Token operatorPlus = CExpressionBuilderHelper.copyTokenAddNewType(operator, T_PLUS, "+");
@@ -72,7 +71,7 @@ public abstract class ImplicitCast {
     }
 
     if (typeOfNode.isFunction()) {
-      CType ptrtype = new CType(new CPointerType(typeOfNode, false), StorageKind.ST_NONE);
+      CType ptrtype = new CType(new CPointerType(typeOfNode, false));
       Token operatorAddressOf = CExpressionBuilderHelper.copyTokenAddNewType(operator, T_AND, "&");
 
       CExpression addressOfFunction = new CExpression(operatorAddressOf, inputExpr);

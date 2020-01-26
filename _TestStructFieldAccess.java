@@ -4,14 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ast._entry.PreprocessSourceForParser;
 import ast._entry.PreprocessSourceForParserVariant;
 import ast.errors.ParseException;
 import ast.parse.Parse;
-import ast.symtabg.elements.CSymbol;
 import ast.unit.TranslationUnit;
 import jscan.Tokenlist;
 

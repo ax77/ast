@@ -50,10 +50,6 @@ public interface CTypeApi {
   
   public boolean isEqualTo(CType another);
   
-  // storage
-  public boolean isStatic();
-  public boolean isExtern();
-  
   // qualifiers
   public boolean isConst();
   

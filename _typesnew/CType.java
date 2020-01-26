@@ -6,7 +6,6 @@ import static ast._typesnew.CTypeImpl.QCONST;
 
 import java.util.List;
 
-import ast._typesnew.main.StorageKind;
 import ast._typesnew.main.TypeKind;
 import ast._typesnew.main.TypeSizes;
 import ast._typesnew.util.TypePrinter;
@@ -15,7 +14,6 @@ import ast.errors.ParseException;
 public class CType implements CTypeApi {
 
   private final TypeKind kind;
-  private StorageKind storage;
   private int qualifiers;
 
   private int size;
@@ -32,56 +30,52 @@ public class CType implements CTypeApi {
     qualifiers |= f;
   }
 
-  public void setStorage(StorageKind storage) {
-    this.storage = storage;
-  }
-
   // for primitives
-  public CType(TypeKind kind, StorageKind storage) {
+  public CType(TypeKind kind) {
     this.kind = kind;
     this.size = TypeSizes.get(kind);
     this.align = this.size;
-    this.storage = storage;
+
   }
 
-  public CType(CPointerType tpPointer, StorageKind storage) {
+  public CType(CPointerType tpPointer) {
     this.kind = TypeKind.TP_POINTER_TO;
     this.tpPointer = tpPointer;
     this.size = TypeSizes.get(TypeKind.TP_POINTER_TO);
     this.align = this.size;
-    this.storage = storage;
+
   }
 
-  public CType(CFunctionType cFunctionType, StorageKind storage) {
+  public CType(CFunctionType cFunctionType) {
     this.kind = TypeKind.TP_FUNCTION;
     this.tpFunction = cFunctionType;
     this.size = TypeSizes.get(TypeKind.TP_FUNCTION);
     this.align = this.size;
-    this.storage = storage;
+
   }
 
-  public CType(CArrayType cArrayType, StorageKind storage) {
+  public CType(CArrayType cArrayType) {
     this.kind = TypeKind.TP_ARRAY_OF;
     this.tpArray = cArrayType;
     this.size = cArrayType.getArrayLen() * cArrayType.getArrayOf().getSize();
     this.align = cArrayType.getArrayOf().getAlign();
-    this.storage = storage;
+
   }
 
-  public CType(CStructType tpStruct, int size, int align, StorageKind storage) {
+  public CType(CStructType tpStruct, int size, int align) {
     this.kind = (tpStruct.isUnion() ? TypeKind.TP_UNION : TypeKind.TP_STRUCT);
     this.tpStruct = tpStruct;
     this.size = size;
     this.align = align;
-    this.storage = storage;
+
   }
 
-  public CType(CEnumType tpEnum, StorageKind storage) {
+  public CType(CEnumType tpEnum) {
     this.kind = TypeKind.TP_ENUM;
     this.tpEnum = tpEnum;
     this.size = TypeSizes.get(TypeKind.TP_ENUM);
     this.align = this.size;
-    this.storage = storage;
+
   }
 
   // when we copy the type, building it from typedef name,
@@ -90,7 +84,7 @@ public class CType implements CTypeApi {
   // static const i32 x;
   // x is int, and static and const
   //
-  public CType(CType from, StorageKind storage, int qualifiers) {
+  public CType(CType from, int qualifiers) {
     this.kind = from.kind;
     this.size = from.size;
     this.align = from.align;
@@ -100,7 +94,7 @@ public class CType implements CTypeApi {
     this.tpFunction = from.tpFunction;
     this.tpPointer = from.tpPointer;
     this.tpStruct = from.tpStruct;
-    this.storage = storage;
+
     this.qualifiers = qualifiers;
   }
 
@@ -111,7 +105,6 @@ public class CType implements CTypeApi {
     //TODO:
     this.size = tpBitfield.getBase().getSize();
     this.align = 1;
-    this.storage = StorageKind.ST_NONE;
   }
 
   private void assertGetType(TypeKind need) {
@@ -137,10 +130,6 @@ public class CType implements CTypeApi {
 
   public TypeKind getKind() {
     return kind;
-  }
-
-  public StorageKind getStorage() {
-    return storage;
   }
 
   public CArrayType getTpArray() {
@@ -414,16 +403,6 @@ public class CType implements CTypeApi {
   @Override
   public boolean isSigned() {
     return isHasSignedness() && !isUnsigned();
-  }
-
-  @Override
-  public boolean isStatic() {
-    return storage == StorageKind.ST_STATIC;
-  }
-
-  @Override
-  public boolean isExtern() {
-    return storage == StorageKind.ST_EXTERN;
   }
 
   @Override

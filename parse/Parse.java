@@ -12,7 +12,6 @@ import java.util.Stack;
 
 import ast._typesnew.CType;
 import ast._typesnew.decl.CDecl;
-import ast._typesnew.main.StorageKind;
 import ast._typesnew.parser.ParseBase;
 import ast._typesnew.parser.ParseDecl;
 import ast._typesnew.util.TypeMerger;
@@ -22,10 +21,10 @@ import ast.errors.ParseErrors;
 import ast.errors.ParseException;
 import ast.stmt.Scompound;
 import ast.stmt.Sswitch;
-import ast.stmt.main.CStatement;
 import ast.stmt.parser.ParseStatement;
 import ast.symtabg.Symtab;
 import ast.symtabg.elements.CSymbol;
+import ast.symtabg.elements.CSymbolBase;
 import ast.unit.ExternalDeclaration;
 import ast.unit.FunctionDefinition;
 import ast.unit.TranslationUnit;
@@ -81,8 +80,8 @@ public class Parse {
         perror("redefinition"); // TODO: normal error message.
       }
     }
-    
-    if(currentFn != null) {
+
+    if (currentFn != null) {
       currentFn.addLoca(sym);
     }
 
@@ -104,7 +103,7 @@ public class Parse {
   public CSymbol getTag(Ident name) {
     return tags.getsym(name);
   }
-  
+
   public boolean isFileScope() {
     return symbols.isFileScope();
   }
@@ -429,10 +428,8 @@ public class Parse {
     if (tok.isBuiltinIdent()) {
       return false;
     }
-    Ident what = tok.getIdent();
-
-    CSymbol s = getSym(what);
-    return s != null && s.getType().getStorage() == StorageKind.ST_TYPEDEF;
+    CSymbol s = getSym(tok.getIdent());
+    return s != null && s.getBase() == CSymbolBase.SYM_TYPEDEF;
   }
 
   public boolean isEof() {

@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class UtilSrcToStringGenerator {
@@ -45,7 +44,7 @@ public class UtilSrcToStringGenerator {
     return sb.toString();
   }
 
-  @Ignore
+  //  @Ignore
   @Test
   public void tostr() throws IOException {
     final String dir = System.getProperty("user.dir");

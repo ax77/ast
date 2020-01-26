@@ -5,8 +5,6 @@ import java.util.List;
 import ast._typesnew.CStructField;
 import ast._typesnew.CType;
 import ast._typesnew.CTypeImpl;
-import ast._typesnew.main.StorageKind;
-import ast._typesnew.main.TypeKind;
 import ast.errors.ParseException;
 import ast.expr.main.CExpression;
 import ast.expr.main.CExpressionBase;
@@ -59,7 +57,7 @@ public abstract class CExpressionBuilder {
   public static CExpression esymbol(Parse parser, CSymbol e, Token token) {
     CExpression ret = new CExpression(e, token);
     if (!parser.isSemanticEnable()) {
-      ret.setResultType(new CType(TypeKind.TP_INT, StorageKind.ST_NONE));
+      ret.setResultType(CTypeImpl.TYPE_INT);
     } else {
       ret.setResultType(e.getType());
     }

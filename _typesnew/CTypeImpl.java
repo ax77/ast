@@ -3,27 +3,26 @@ package ast._typesnew;
 import java.util.HashMap;
 import java.util.Map;
 
-import ast._typesnew.main.StorageKind;
 import ast._typesnew.main.TypeKind;
 import jscan.cstrtox.NumType;
 
 public class CTypeImpl {
   //@formatter:off
-  public static final CType TYPE_VOID = new CType(TypeKind.TP_VOID, StorageKind.ST_NONE);
-  public static final CType TYPE_BOOL = new CType(TypeKind.TP_BOOL, StorageKind.ST_NONE);
-  public static final CType TYPE_CHAR = new CType(TypeKind.TP_CHAR, StorageKind.ST_NONE);
-  public static final CType TYPE_UCHAR = new CType(TypeKind.TP_UCHAR, StorageKind.ST_NONE);
-  public static final CType TYPE_SHORT = new CType(TypeKind.TP_SHORT, StorageKind.ST_NONE);
-  public static final CType TYPE_USHORT = new CType(TypeKind.TP_USHORT, StorageKind.ST_NONE);
-  public static final CType TYPE_INT = new CType(TypeKind.TP_INT, StorageKind.ST_NONE);
-  public static final CType TYPE_UINT = new CType(TypeKind.TP_UINT, StorageKind.ST_NONE);
-  public static final CType TYPE_LONG = new CType(TypeKind.TP_LONG, StorageKind.ST_NONE);
-  public static final CType TYPE_ULONG = new CType(TypeKind.TP_ULONG, StorageKind.ST_NONE);
-  public static final CType TYPE_LONG_LONG = new CType(TypeKind.TP_LONG_LONG, StorageKind.ST_NONE);
-  public static final CType TYPE_ULONG_LONG = new CType(TypeKind.TP_ULONG_LONG, StorageKind.ST_NONE);
-  public static final CType TYPE_FLOAT = new CType(TypeKind.TP_FLOAT, StorageKind.ST_NONE);
-  public static final CType TYPE_DOUBLE = new CType(TypeKind.TP_DOUBLE, StorageKind.ST_NONE);
-  public static final CType TYPE_LONG_DOUBLE = new CType(TypeKind.TP_LONG_DOUBLE, StorageKind.ST_NONE);
+  public static final CType TYPE_VOID = new CType(TypeKind.TP_VOID);
+  public static final CType TYPE_BOOL = new CType(TypeKind.TP_BOOL);
+  public static final CType TYPE_CHAR = new CType(TypeKind.TP_CHAR);
+  public static final CType TYPE_UCHAR = new CType(TypeKind.TP_UCHAR);
+  public static final CType TYPE_SHORT = new CType(TypeKind.TP_SHORT);
+  public static final CType TYPE_USHORT = new CType(TypeKind.TP_USHORT);
+  public static final CType TYPE_INT = new CType(TypeKind.TP_INT);
+  public static final CType TYPE_UINT = new CType(TypeKind.TP_UINT);
+  public static final CType TYPE_LONG = new CType(TypeKind.TP_LONG);
+  public static final CType TYPE_ULONG = new CType(TypeKind.TP_ULONG);
+  public static final CType TYPE_LONG_LONG = new CType(TypeKind.TP_LONG_LONG);
+  public static final CType TYPE_ULONG_LONG = new CType(TypeKind.TP_ULONG_LONG);
+  public static final CType TYPE_FLOAT = new CType(TypeKind.TP_FLOAT);
+  public static final CType TYPE_DOUBLE = new CType(TypeKind.TP_DOUBLE);
+  public static final CType TYPE_LONG_DOUBLE = new CType(TypeKind.TP_LONG_DOUBLE);
   
   public static final CType FUNC_DESIGNATOR_TODO_STUB = null; // TODO:
   

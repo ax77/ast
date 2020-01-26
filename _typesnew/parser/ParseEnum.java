@@ -107,7 +107,7 @@ public class ParseEnum {
           CType type = parser.getTag(tag.getIdent()).getType();
           return type;
         } else {
-          final CType incomplete = new CType(new CEnumType(tag.getIdent()), storagespec);
+          final CType incomplete = new CType(new CEnumType(tag.getIdent()));
           final CSymbol nsymbol = new CSymbol(CSymbolBase.SYM_ENUM, tag.getIdent(), incomplete, tag);
           parser.defineTag(tag.getIdent(), nsymbol);
           return incomplete;
@@ -152,7 +152,7 @@ public class ParseEnum {
             CEnumType newenum = new CEnumType(tag.getIdent());
             newenum.setEnumerators(dto.getEnumerators());
 
-            CType newtype = new CType(newenum, storagespec);
+            CType newtype = new CType(newenum);
 
             parser.defineTag(tag.getIdent(), new CSymbol(CSymbolBase.SYM_ENUM, tag.getIdent(), newtype, tag));
             return newtype;
@@ -185,7 +185,7 @@ public class ParseEnum {
         //
 
         CEnumType incomplete = new CEnumType(tag.getIdent());
-        final CType structIncompleteType = new CType(incomplete, storagespec);
+        final CType structIncompleteType = new CType(incomplete);
         final CSymbol structSymbol = new CSymbol(CSymbolBase.SYM_ENUM, tag.getIdent(), structIncompleteType, tag);
         parser.defineTag(tag.getIdent(), structSymbol);
 
@@ -228,7 +228,7 @@ public class ParseEnum {
         CEnumType newenum = new CEnumType(null);
 
         newenum.setEnumerators(dto.getEnumerators());
-        CType type = new CType(newenum, storagespec);
+        CType type = new CType(newenum);
 
         if (paranoia) {
           System.out.println("5");
@@ -284,8 +284,7 @@ public class ParseEnum {
     int enumvalue = enumdto.getCurvalue();
 
     if (parser.tp() != T.T_ASSIGN) {
-      final CSymbol symbol = new CSymbol(CSymbolBase.SYM_ENUM_CONST, identifier,
-          new CType(TypeKind.TP_INT, StorageKind.ST_STATIC), tok); // TODO:Storage
+      final CSymbol symbol = new CSymbol(CSymbolBase.SYM_ENUM_CONST, identifier, new CType(TypeKind.TP_INT), tok); // TODO:Storage
       symbol.setEnumvalue(enumvalue);
 
       parser.defineSym(identifier, symbol);
@@ -299,8 +298,7 @@ public class ParseEnum {
     CExpression constexpr = new ParseExpression(parser).e_const_expr();
     enumvalue = (int) new ConstexprEval(parser).ce(constexpr);
 
-    final CSymbol symbol = new CSymbol(CSymbolBase.SYM_ENUM_CONST, identifier,
-        new CType(TypeKind.TP_INT, StorageKind.ST_STATIC), tok); // TODO:Storage
+    final CSymbol symbol = new CSymbol(CSymbolBase.SYM_ENUM_CONST, identifier, new CType(TypeKind.TP_INT), tok); // TODO:Storage
     symbol.setEnumvalue(enumvalue);
 
     parser.defineSym(identifier, symbol);

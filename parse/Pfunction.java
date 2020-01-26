@@ -10,9 +10,9 @@ import java.util.Map;
 import ast._typesnew.CArrayType;
 import ast._typesnew.CFuncParam;
 import ast._typesnew.CType;
+import ast._typesnew.CTypeImpl;
 import ast._typesnew.decl.CDecl;
 import ast._typesnew.decl.CDeclEntry;
-import ast._typesnew.main.StorageKind;
 import ast._typesnew.main.TypeKind;
 import ast._typesnew.parser.ParseBase;
 import ast._typesnew.parser.ParseDecl;
@@ -137,15 +137,14 @@ public class Pfunction {
   }
 
   private void define__func__(Ident funcName) {
-    CType chartype = new CType(TypeKind.TP_UCHAR, StorageKind.ST_STATIC);
-    CArrayType arr = new CArrayType(chartype, funcName.getName().length() + 1);
-    final Ident __func__ = Hash_ident.__func___ident;
+    CArrayType arr = new CArrayType(CTypeImpl.TYPE_UCHAR, funcName.getName().length() + 1);
+    final Ident func = Hash_ident.__func___ident;
 
-    CSymbol sym = new CSymbol(CSymbolBase.SYM_VAR, __func__, new CType(arr, StorageKind.ST_STATIC), p.tok());
+    CSymbol sym = new CSymbol(CSymbolBase.SYM_VAR, func, new CType(arr), p.tok());
     CExpression init = new CExpression(funcName.getName(), p.tok());
     sym.setInitializer(new Initializer(init));
 
-    p.defineSym(__func__, sym);
+    p.defineSym(func, sym);
   }
 
   private void defineParameters(CType signature) {
