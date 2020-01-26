@@ -30,8 +30,8 @@ import ast.declarations.parser.ParseDeclarations;
 import ast.errors.ParseErrors;
 import ast.errors.ParseException;
 import ast.expr.main.CExpression;
-import ast.stmt.Scompound;
 import ast.stmt.Sswitch;
+import ast.stmt.main.CStatement;
 import ast.stmt.parser.ParseStatement;
 import ast.symtabg.Symtab;
 import ast.symtabg.elements.CSymbol;
@@ -696,7 +696,7 @@ public class Parse {
     defineParameters(fd.getSignature().getType());
     define__func__(fd.getSymbol().getName());
 
-    Scompound cst = new ParseStatement(this).parse_coumpound_stmt(true);
+    CStatement cst = new ParseStatement(this).parse_coumpound_stmt(true);
     fd.setCompoundStatement(cst);
 
     currentFn = null;

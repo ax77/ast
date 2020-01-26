@@ -1,13 +1,8 @@
 package ast.parse;
 
 import java.util.List;
-import java.util.Stack;
 
-import ast.stmt.Sswitch;
-import ast.symtabg.Symtab;
-import ast.symtabg.elements.CSymbol;
 import ast.unit.FunctionDefinition;
-import jscan.symtab.Ident;
 import jscan.tokenize.Token;
 
 public class ParseState {

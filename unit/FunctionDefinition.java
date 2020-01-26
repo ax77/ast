@@ -3,13 +3,13 @@ package ast.unit;
 import java.util.ArrayList;
 import java.util.List;
 
-import ast.stmt.Scompound;
+import ast.stmt.main.CStatement;
 import ast.symtabg.elements.CSymbol;
 
 public class FunctionDefinition {
 
   private final CSymbol symbol;
-  private Scompound block; //TODO:final
+  private CStatement block; //TODO:final
   private List<CSymbol> locals;
 
   public FunctionDefinition(CSymbol symbol) {
@@ -21,11 +21,11 @@ public class FunctionDefinition {
     locals.add(e);
   }
 
-  public Scompound getCompoundStatement() {
+  public CStatement getCompoundStatement() {
     return block;
   }
 
-  public void setCompoundStatement(Scompound compoundStatement) {
+  public void setCompoundStatement(CStatement compoundStatement) {
     this.block = compoundStatement;
   }
 

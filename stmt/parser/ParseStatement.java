@@ -15,24 +15,16 @@ import ast.declarations.parser.ParseDeclarations;
 import ast.expr.main.CExpression;
 import ast.expr.parser.ParseExpression;
 import ast.parse.Parse;
-import ast.stmt.Sasm;
 import ast.stmt.Scase;
-import ast.stmt.Scompound;
 import ast.stmt.Sdefault;
-import ast.stmt.Sdowhile;
-import ast.stmt.Sexpr;
-import ast.stmt.Sfor;
-import ast.stmt.Sgoto;
-import ast.stmt.Sif;
-import ast.stmt.Slabel;
-import ast.stmt.Sreturn;
 import ast.stmt.Sswitch;
-import ast.stmt.Swhile;
 import ast.stmt.main.CStatement;
 import ast.stmt.main.CStatementBase;
 import ast.stmt.sem.BreakContinueStrayCheck;
 import ast.unit.BlockItem;
+import ast.unit.FunctionDefinition;
 import jscan.hashed.Hash_ident;
+import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 
@@ -47,12 +39,12 @@ public class ParseStatement {
     return new ParseExpression(parser).e_expression();
   }
 
-  public Scompound parse_coumpound_stmt(boolean isFunctionStart) {
+  public CStatement parse_coumpound_stmt(boolean isFunctionStart) {
     if (!isFunctionStart) {
       parser.pushscope();
     }
 
-    Scompound compoundStatement = new Scompound();
+    List<BlockItem> blocks = new ArrayList<BlockItem>(0);
 
     Token lbrace = parser.checkedGetT(T.T_LEFT_BRACE);
 
@@ -63,13 +55,12 @@ public class ParseStatement {
         parser.popscope(); // XXX:
       }
 
-      compoundStatement.setPos(lbrace, rbrace);
-      return compoundStatement;
+      return new CStatement(lbrace, rbrace, blocks);
     }
 
     BlockItem block = parse_one_block();
     for (;;) {
-      compoundStatement.push(block);
+      blocks.add(block);
       if (parser.tp() == T.T_RIGHT_BRACE) {
         break;
       }
@@ -80,12 +71,12 @@ public class ParseStatement {
     }
 
     Token rbrace = parser.checkedGetT(T.T_RIGHT_BRACE);
-    compoundStatement.setPos(lbrace, rbrace);
 
     if (!isFunctionStart) {
       parser.popscope();
     }
-    return compoundStatement;
+
+    return new CStatement(lbrace, rbrace, blocks);
   }
 
   public CStatement parse_statement() {
@@ -163,15 +154,14 @@ public class ParseStatement {
     }
 
     if (parser.tok().ofType(T.T_LEFT_BRACE)) {
-      return new CStatement(parse_coumpound_stmt(false));
+      return parse_coumpound_stmt(false);
     }
 
     // expression-statement by default
     //
     Token from = parser.tok();
     CExpression expr = e_expression();
-    Sexpr es = new Sexpr(expr);
-    CStatement ret = new CStatement(from, es);
+    CStatement ret = new CStatement(from, CStatementBase.SEXPR, expr);
     parser.semicolon();
     return ret;
   }
@@ -202,8 +192,7 @@ public class ParseStatement {
     parser.checkedGetT(T.T_RIGHT_PAREN);
     parser.checkedGetT(T_SEMI_COLON);
 
-    Sasm asmstmt_ = new Sasm(asmlist);
-    return new CStatement(startLoc, asmstmt_);
+    return new CStatement(startLoc, asmlist);
   }
 
   private BlockItem parse_one_block() {
@@ -262,32 +251,42 @@ public class ParseStatement {
 
   private CStatement parse_label() {
 
+    FunctionDefinition function = null;
+    Ident label = null;
+    CStatement labelstmt = null;
+
     if (parser.getCurrentFn() == null) {
       parser.perror("label statement outside function");
     }
+    function = parser.getCurrentFn();
 
-    Token ident = parser.expectIdentifier();
+    Token from = parser.expectIdentifier();
+    label = from.getIdent();
     parser.checkedGetT(T_COLON);
 
-    CStatement labelstmt = parse_statement();
-    Slabel label = new Slabel(parser.getCurrentFn(), ident.getIdent(), labelstmt);
+    labelstmt = parse_statement();
 
-    return new CStatement(ident, label);
+    return new CStatement(from, CStatementBase.SLABEL, function, label, labelstmt);
   }
 
   private CStatement parse_goto() {
 
+    FunctionDefinition function = null;
+    Ident label = null;
+    CStatement labelstmt = null;
+
     if (parser.getCurrentFn() == null) {
       parser.perror("goto statement outside function");
     }
+    function = parser.getCurrentFn();
 
     Token from = parser.checkedMoveIdent(Hash_ident.goto_ident);
 
-    Token ident = parser.expectIdentifier();
-    Sgoto gotostmt = new Sgoto(parser.getCurrentFn(), ident.getIdent());
+    Token identTok = parser.expectIdentifier();
+    label = identTok.getIdent();
 
     parser.semicolon();
-    return new CStatement(from, gotostmt);
+    return new CStatement(from, CStatementBase.SGOTO, function, label, labelstmt);
   }
 
   private CStatement parse_return() {
@@ -295,54 +294,55 @@ public class ParseStatement {
 
     if (parser.tp() == T_SEMI_COLON) {
       parser.move();
-      Sreturn retstmt = new Sreturn();
-      return new CStatement(from, retstmt);
+      return new CStatement(from, CStatementBase.SRETURN, null);
     }
 
     CExpression retexpr = e_expression();
-    Sreturn retstmt = new Sreturn(retexpr);
 
     parser.checkedGetT(T_SEMI_COLON);
-    return new CStatement(from, retstmt);
+    return new CStatement(from, CStatementBase.SRETURN, retexpr);
   }
 
   private CStatement parse_dowhile() {
+    CExpression test = null;
+    CStatement loop = null;
+
     parser.pushLoop("do_while");
 
     Token from = parser.checkedMoveIdent(Hash_ident.do_ident);
 
-    CStatement loop = parse_statement();
+    loop = parse_statement();
     parser.checkedMoveIdent(Hash_ident.while_ident);
 
-    CExpression cond = new ParseExpression(parser).getExprInParen();
+    test = new ParseExpression(parser).getExprInParen();
     parser.semicolon();
 
-    Sdowhile swhile = new Sdowhile(cond, loop);
-
     parser.popLoop();
-    return new CStatement(from, CStatementBase.SDOWHILE, swhile);
+    return new CStatement(from, CStatementBase.SDOWHILE, test, loop);
   }
 
   private CStatement parse_for() {
+
+    Declaration decl = null;
+    CExpression init = null;
+    CExpression test = null;
+    CExpression step = null;
+    CStatement loop = null;
+
     parser.pushLoop("for");
     parser.pushscope(); // TODO:
 
     Token from = parser.checkedMoveIdent(Hash_ident.for_ident);
     parser.lparen();
 
-    Sfor forloop = new Sfor();
-
     if (parser.tp() != T_SEMI_COLON) {
 
       if (parser.isDeclSpecStart()) {
-        Declaration decl = new ParseDeclarations(parser).parseDeclaration(); // XXX: semicolon moved in parse_declaration()
-        forloop.setDecl(decl);
-
+        decl = new ParseDeclarations(parser).parseDeclaration(); // XXX: semicolon moved in parse_declaration()
       }
 
       else {
-        CExpression init = e_expression();
-        forloop.setInit(init);
+        init = e_expression();
         parser.semicolon();
       }
     }
@@ -352,23 +352,20 @@ public class ParseStatement {
     }
 
     if (parser.tp() != T_SEMI_COLON) {
-      CExpression test = e_expression();
-      forloop.setTest(test);
+      test = e_expression();
     }
     parser.semicolon();
 
     if (parser.tp() != T_RIGHT_PAREN) {
-      CExpression step = e_expression();
-      forloop.setStep(step);
+      step = e_expression();
     }
     parser.rparen();
 
-    CStatement loop = parse_statement();
-    forloop.setLoop(loop);
+    loop = parse_statement();
 
     parser.popLoop();
     parser.popscope(); // TODO:
-    return new CStatement(from, forloop);
+    return new CStatement(from, decl, init, test, step, loop);
   }
 
   private CStatement parse_switch() {
@@ -407,34 +404,37 @@ public class ParseStatement {
   }
 
   private CStatement parse_if() {
+    CExpression ifexpr = null;
+    CStatement ifstmt = null;
+    CStatement ifelse = null;
+
     Token from = parser.checkedMoveIdent(Hash_ident.if_ident);
 
-    CExpression ifexpr = new ParseExpression(parser).getExprInParen();
-    CStatement ifstmt = parse_statement();
+    ifexpr = new ParseExpression(parser).getExprInParen();
+    ifstmt = parse_statement();
 
     if (parser.tok().isIdent(Hash_ident.else_ident)) {
       Token elsekw = parser.checkedMoveIdent(Hash_ident.else_ident);
-      CStatement elsestmt = parse_statement();
+      ifelse = parse_statement();
 
-      Sif ret = new Sif(ifexpr, ifstmt, elsestmt);
-      return new CStatement(elsekw, ret);
+      return new CStatement(elsekw, ifexpr, ifstmt, ifelse);
     }
 
-    Sif ret = new Sif(ifexpr, ifstmt);
-    return new CStatement(from, ret);
+    return new CStatement(from, ifexpr, ifstmt, ifelse);
   }
 
   private CStatement parse_while() {
+    CExpression test = null;
+    CStatement loop = null;
+
     parser.pushLoop("while");
 
     Token from = parser.checkedMoveIdent(Hash_ident.while_ident);
-    CExpression cond = new ParseExpression(parser).getExprInParen();
-    CStatement loop = parse_statement();
-
-    Swhile swhile = new Swhile(cond, loop);
+    test = new ParseExpression(parser).getExprInParen();
+    loop = parse_statement();
 
     parser.popLoop();
-    return new CStatement(from, swhile);
+    return new CStatement(from, CStatementBase.SWHILE, test, loop);
   }
 
 }
