@@ -36,6 +36,15 @@ public class ParseDeclarations {
     this.p = parser;
   }
 
+  // constructor need for entry point.
+  // when we parse basetype, and don't know yet, function is, or declaration
+  // and build first
+  public ParseDeclarations(Parse parser, CType basetype, StorageKind storagespec) {
+    this.p = parser;
+    this.basetype = basetype;
+    this.storagespec = storagespec;
+  }
+
   //declaration
   //    : declaration_specifiers ';'
   //    | declaration_specifiers init_declarator_list ';'
@@ -172,7 +181,7 @@ public class ParseDeclarations {
     return initDeclaratorList;
   }
 
-  private CSymbol parseInitDeclarator() {
+  public CSymbol parseInitDeclarator() {
     //  init_declarator
     //    : declarator '=' initializer
     //    | declarator
@@ -206,7 +215,7 @@ public class ParseDeclarations {
     return sym;
   }
 
-  private Initializer parseInitializer() {
+  public Initializer parseInitializer() {
 
     //  initializer
     //    : assignment_expression

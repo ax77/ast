@@ -47,8 +47,10 @@ public class ParseStatement {
     return new ParseExpression(parser).e_expression();
   }
 
-  public Scompound parse_coumpound_stmt() {
-    parser.pushscope();
+  public Scompound parse_coumpound_stmt(boolean isFunctionStart) {
+    if (!isFunctionStart) {
+      parser.pushscope();
+    }
 
     Scompound compoundStatement = new Scompound();
 
@@ -57,7 +59,10 @@ public class ParseStatement {
     if (parser.tp() == T.T_RIGHT_BRACE) {
       Token rbrace = parser.checkedGetT(T.T_RIGHT_BRACE);
 
-      parser.popscope(); // XXX:
+      if (!isFunctionStart) {
+        parser.popscope(); // XXX:
+      }
+
       compoundStatement.setPos(lbrace, rbrace);
       return compoundStatement;
     }
@@ -77,7 +82,9 @@ public class ParseStatement {
     Token rbrace = parser.checkedGetT(T.T_RIGHT_BRACE);
     compoundStatement.setPos(lbrace, rbrace);
 
-    parser.popscope();
+    if (!isFunctionStart) {
+      parser.popscope();
+    }
     return compoundStatement;
   }
 
@@ -156,7 +163,7 @@ public class ParseStatement {
     }
 
     if (parser.tok().ofType(T.T_LEFT_BRACE)) {
-      return new CStatement(parse_coumpound_stmt());
+      return new CStatement(parse_coumpound_stmt(false));
     }
 
     // expression-statement by default

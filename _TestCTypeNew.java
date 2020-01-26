@@ -825,6 +825,7 @@ public class _TestCTypeNew {
 
   }
 
+  @Ignore
   @Test
   public void testKnR_func1() throws IOException {
     //@formatter:off
