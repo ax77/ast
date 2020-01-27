@@ -24,7 +24,7 @@ public abstract class CExpressionBuilder {
     return res;
   }
 
-  public static CExpression binary(Token operator, Parse parser, CExpression lhs, CExpression rhs) {
+  public static CExpression binary(Token operator, CExpression lhs, CExpression rhs) {
     return BinaryTyped.sBinary(operator, lhs, rhs);
   }
 
@@ -54,13 +54,9 @@ public abstract class CExpressionBuilder {
     return ret;
   }
 
-  public static CExpression esymbol(Parse parser, CSymbol e, Token token) {
+  public static CExpression esymbol(CSymbol e, Token token) {
     CExpression ret = new CExpression(e, token);
-    if (!parser.isSemanticEnable()) {
-      ret.setResultType(CTypeImpl.TYPE_INT);
-    } else {
-      ret.setResultType(e.getType());
-    }
+    ret.setResultType(e.getType());
     return ret;
   }
 

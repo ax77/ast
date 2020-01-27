@@ -11,6 +11,7 @@ import jscan.tokenize.Token;
 
 public class CSymbol implements CTypeApi, ILocation {
   private final SourceLocation location;
+  private final Token from;
 
   private final CSymbolBase base;
   private final Ident name;
@@ -22,6 +23,7 @@ public class CSymbol implements CTypeApi, ILocation {
 
   public CSymbol(CSymbolBase base, Ident name, CType type, Token from) {
     this.location = new SourceLocation(from);
+    this.from = from;
     this.base = base;
     this.name = name;
     this.type = type;
@@ -29,6 +31,7 @@ public class CSymbol implements CTypeApi, ILocation {
 
   public CSymbol(CSymbolBase base, Ident name, CType type, Initializer initializer, Token from) {
     this.location = new SourceLocation(from);
+    this.from = from;
     this.base = base;
     this.name = name;
     this.type = type;
@@ -53,8 +56,15 @@ public class CSymbol implements CTypeApi, ILocation {
 
   @Override
   public String toString() {
-    return "line=" + String.format("%-3d", location.getLine()) + " (name=" + name.getName() + ", type="
-        + type.toString() + ", base=" + base.toString() + ") ";
+    return "line="
+        + String.format("%-3d", location.getLine())
+        + " (name="
+        + name.getName()
+        + ", type="
+        + type.toString()
+        + ", base="
+        + base.toString()
+        + ") ";
   }
 
   public Initializer getInitializer() {
@@ -164,6 +174,10 @@ public class CSymbol implements CTypeApi, ILocation {
 
   public CSymbolBase getBase() {
     return base;
+  }
+
+  public Token getFrom() {
+    return from;
   }
 
 }

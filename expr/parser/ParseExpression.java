@@ -185,7 +185,7 @@ public class ParseExpression {
         Token assignOperator = CExpressionBuilderHelper.copyTokenAddNewType(saved, T_ASSIGN, "=");
         Token binaryOperator = Copier.getOperatorFromCompAssign(saved);
 
-        CExpression rhs = CExpressionBuilder.binary(binaryOperator, parser, lhs, e_assign());
+        CExpression rhs = CExpressionBuilder.binary(binaryOperator, lhs, e_assign());
         lhs = CExpressionBuilder.assign(assignOperator, lhs, rhs);
       }
 
@@ -217,7 +217,7 @@ public class ParseExpression {
     while (parser.tp() == T_OR_OR) {
       Token saved = parser.tok();
       parser.move();
-      e = CExpressionBuilder.binary(saved, parser, e, e_land());
+      e = CExpressionBuilder.binary(saved, e, e_land());
     }
     return e;
   }
@@ -227,7 +227,7 @@ public class ParseExpression {
     while (parser.tp() == T_AND_AND) {
       Token saved = parser.tok();
       parser.move();
-      e = CExpressionBuilder.binary(saved, parser, e, e_bor());
+      e = CExpressionBuilder.binary(saved, e, e_bor());
     }
     return e;
   }
@@ -237,7 +237,7 @@ public class ParseExpression {
     while (parser.tp() == T_OR) {
       Token saved = parser.tok();
       parser.move();
-      e = CExpressionBuilder.binary(saved, parser, e, e_bxor());
+      e = CExpressionBuilder.binary(saved, e, e_bxor());
     }
     return e;
   }
@@ -247,7 +247,7 @@ public class ParseExpression {
     while (parser.tp() == T_XOR) {
       Token saved = parser.tok();
       parser.move();
-      e = CExpressionBuilder.binary(saved, parser, e, e_band());
+      e = CExpressionBuilder.binary(saved, e, e_band());
     }
     return e;
   }
@@ -257,7 +257,7 @@ public class ParseExpression {
     while (parser.tp() == T_AND) {
       Token saved = parser.tok();
       parser.move();
-      e = CExpressionBuilder.binary(saved, parser, e, e_equality());
+      e = CExpressionBuilder.binary(saved, e, e_equality());
     }
     return e;
   }
@@ -267,7 +267,7 @@ public class ParseExpression {
     while (parser.tp() == T_EQ || parser.tp() == T_NE) {
       Token saved = parser.tok();
       parser.move();
-      e = CExpressionBuilder.binary(saved, parser, e, e_relational());
+      e = CExpressionBuilder.binary(saved, e, e_relational());
     }
     return e;
   }
@@ -277,7 +277,7 @@ public class ParseExpression {
     while (parser.tp() == T_LT || parser.tp() == T_GT || parser.tp() == T_LE || parser.tp() == T_GE) {
       Token saved = parser.tok();
       parser.move();
-      e = CExpressionBuilder.binary(saved, parser, e, e_shift());
+      e = CExpressionBuilder.binary(saved, e, e_shift());
     }
     return e;
   }
@@ -287,7 +287,7 @@ public class ParseExpression {
     while (parser.tp() == T_LSHIFT || parser.tp() == T_RSHIFT) {
       Token saved = parser.tok();
       parser.move();
-      e = CExpressionBuilder.binary(saved, parser, e, e_add());
+      e = CExpressionBuilder.binary(saved, e, e_add());
     }
     return e;
   }
@@ -297,7 +297,7 @@ public class ParseExpression {
     while (parser.tp() == T_PLUS || parser.tp() == T_MINUS) {
       Token saved = parser.tok();
       parser.move();
-      e = CExpressionBuilder.binary(saved, parser, e, e_mul());
+      e = CExpressionBuilder.binary(saved, e, e_mul());
     }
     return e;
   }
@@ -307,7 +307,7 @@ public class ParseExpression {
     while (parser.tp() == T_TIMES || parser.tp() == T_DIVIDE || parser.tp() == T_PERCENT) {
       Token saved = parser.tok();
       parser.move();
-      e = CExpressionBuilder.binary(saved, parser, e, e_cast());
+      e = CExpressionBuilder.binary(saved, e, e_cast());
     }
     return e;
   }
@@ -527,7 +527,7 @@ public class ParseExpression {
           Token operatorPlus = CExpressionBuilderHelper.copyTokenAddNewType(lbrack, T_PLUS, "+");
           Token operatorDeref = CExpressionBuilderHelper.copyTokenAddNewType(lbrack, T_TIMES, "*");
 
-          CExpression inBrace = CExpressionBuilder.binary(operatorPlus, parser, lhs, e_expression());
+          CExpression inBrace = CExpressionBuilder.binary(operatorPlus, lhs, e_expression());
           lhs = CExpressionBuilder.unary(operatorDeref, inBrace);
 
           parser.rbracket();
@@ -589,7 +589,7 @@ public class ParseExpression {
         parser.perror("symbol '" + saved.getValue() + "' was not declared in the scope.");
       }
 
-      CExpression e = CExpressionBuilder.esymbol(parser, sym, saved);
+      CExpression e = CExpressionBuilder.esymbol(sym, saved);
       return e;
     }
 
