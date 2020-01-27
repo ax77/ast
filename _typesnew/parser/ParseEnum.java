@@ -113,7 +113,6 @@ public class ParseEnum {
           return incomplete;
         }
       } else if (parser.tp() == T.T_LEFT_BRACE) {
-        System.out.println();
       }
     }
 

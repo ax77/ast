@@ -1480,7 +1480,6 @@ public class TestSimple3 {
     }
 
     assertEquals(tests.size()-ignore,  others);
-    System.out.println(ignore);
   }
 
 }

@@ -146,7 +146,6 @@ public class ParseStruct {
         final CSymbol structSymbol = new CSymbol(CSymbolBase.SYM_STRUCT, tag.getIdent(), structIncompleteType, tag);
 
         if (parser.getTags().isEmpty()) {
-          System.out.println();
         }
 
         parser.defineTag(tag.getIdent(), structSymbol);
@@ -252,12 +251,10 @@ public class ParseStruct {
     if (parser.tp() != T.T_RIGHT_BRACE && parser.tok().ofType(TOKEN_IDENT)) {
       CSymbol sym = parser.getSym(parser.tok().getIdent());
       if (sym != null) {
-        System.out.println();
       }
     }
 
     if (parser.tp() != T.T_RIGHT_BRACE) {
-      System.out.println();
     }
 
     parser.checkedMove(T.T_RIGHT_BRACE);

@@ -45,7 +45,7 @@ public class _TestFuncLocals {
       }
       FunctionDefinition fd = ed.getFunctionDefinition();
       for (CSymbol local : fd.getLocals()) {
-        System.out.println(local.toString());
+        //System.out.println(local.toString());
       }
     }
   }

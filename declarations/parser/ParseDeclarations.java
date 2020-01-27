@@ -16,6 +16,7 @@ import ast.declarations.Initializer;
 import ast.declarations.InitializerList;
 import ast.declarations.InitializerListEntry;
 import ast.declarations.main.Declaration;
+import ast.declarations.sem.FinalizeInitializers;
 import ast.expr.main.CExpression;
 import ast.expr.parser.ParseExpression;
 import ast.expr.sem.ConstexprEval;
@@ -134,7 +135,7 @@ public class ParseDeclarations {
     List<CSymbol> initDeclaratorList = parseInitDeclaratorList();
     Token endLocation = p.semicolon();
 
-    final Declaration declaration = new Declaration(startLocation, endLocation, initDeclaratorList);
+    final Declaration declaration = FinalizeInitializers.sVarlist(startLocation, endLocation, initDeclaratorList);
     return declaration;
   }
 

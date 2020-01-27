@@ -27,6 +27,7 @@ import ast._typesnew.util.TypeMerger;
 import ast.declarations.Initializer;
 import ast.declarations.main.Declaration;
 import ast.declarations.parser.ParseDeclarations;
+import ast.declarations.sem.FinalizeInitializers;
 import ast.errors.ParseErrors;
 import ast.errors.ParseException;
 import ast.expr.main.CExpression;
@@ -599,7 +600,7 @@ public class Parse {
       List<CSymbol> initDeclaratorList = new ArrayList<CSymbol>(0);
 
       initDeclaratorList.add(sym);
-      Declaration declaration = new Declaration(current, current, initDeclaratorList);
+      Declaration declaration = FinalizeInitializers.sVarlist(current, current, initDeclaratorList);
 
       semicolon(); // XXX:
       return new ExternalDeclaration(declaration);
@@ -628,7 +629,7 @@ public class Parse {
           initDeclaratorList.add(initDeclaratorSeq);
         }
 
-        Declaration declaration = new Declaration(current, current, initDeclaratorList);
+        Declaration declaration = FinalizeInitializers.sVarlist(current, current, initDeclaratorList);
 
         semicolon(); // XXX:
         return new ExternalDeclaration(declaration);
@@ -662,7 +663,7 @@ public class Parse {
           initDeclaratorList.add(initDeclaratorSeq);
         }
 
-        Declaration declaration = new Declaration(current, current, initDeclaratorList);
+        Declaration declaration = FinalizeInitializers.sVarlist(current, current, initDeclaratorList);
 
         semicolon(); // XXX:
         return new ExternalDeclaration(declaration);
