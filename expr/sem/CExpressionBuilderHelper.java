@@ -2,12 +2,12 @@ package ast.expr.sem;
 
 import static ast._typesnew.CTypeImpl.TYPE_INT;
 import static jscan.tokenize.T.TOKEN_NUMBER;
-
 import ast._typesnew.CType;
 import ast._typesnew.CTypeImpl;
 import ast.expr.main.CExpression;
 import ast.parse.NullChecker;
 import ast.symtabg.elements.NumericConstant;
+import jscan.cstrtox.C_strtox;
 import jscan.cstrtox.NumType;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
@@ -21,6 +21,23 @@ public abstract class CExpressionBuilderHelper {
     ntoken.setType(newtype);
     ntoken.setValue(newvalue);
     return ntoken;
+  }
+
+  public static Token plusOperator(Token from) {
+    return copyTokenAddNewType(from, T.T_PLUS, "+");
+  }
+
+  public static Token derefOperator(Token from) {
+    return copyTokenAddNewType(from, T.T_TIMES, "*");
+  }
+
+  public static Token assignOperator(Token from) {
+    return copyTokenAddNewType(from, T.T_ASSIGN, "=");
+  }
+
+  public static CExpression createNumericConst(Token from, Integer intValue) {
+    C_strtox e = new C_strtox(intValue.toString());
+    return CExpressionBuilder.number(e, from);
   }
 
   public static CExpression digitZero(Token from) {

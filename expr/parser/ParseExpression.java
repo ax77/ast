@@ -375,7 +375,7 @@ public class ParseExpression {
         parser.rparen();
 
         C_strtox strtox = new C_strtox(String.format("%d", typename.getSize()));
-        final CExpression ret = CExpressionBuilder.number(strtox, id, parser);
+        final CExpression ret = CExpressionBuilder.number(strtox, id);
         return ret;
 
       } else {
@@ -388,7 +388,7 @@ public class ParseExpression {
         }
 
         C_strtox strtox = new C_strtox(String.format("%d", sizeofexpr.getResultType().getSize()));
-        return CExpressionBuilder.number(strtox, id, parser);
+        return CExpressionBuilder.number(strtox, id);
 
       }
 
@@ -398,7 +398,7 @@ public class ParseExpression {
 
     CExpression sizeofexpr = e_unary();
     C_strtox strtox = new C_strtox(String.format("%d", sizeofexpr.getResultType().getSize()));
-    return CExpressionBuilder.number(strtox, id, parser);
+    return CExpressionBuilder.number(strtox, id);
 
   }
 
@@ -575,7 +575,7 @@ public class ParseExpression {
 
         // TODO:NUMBERS
         C_strtox strtox = new C_strtox(toeval);
-        CExpression e = CExpressionBuilder.number(strtox, saved, parser);
+        CExpression e = CExpressionBuilder.number(strtox, saved);
         return e;
       }
     }

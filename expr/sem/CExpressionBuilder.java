@@ -38,7 +38,7 @@ public abstract class CExpressionBuilder {
     return res;
   }
 
-  public static CExpression number(C_strtox e, Token token, Parse parser) {
+  public static CExpression number(C_strtox e, Token token) {
 
     CExpression ret = new CExpression(e, token);
 
