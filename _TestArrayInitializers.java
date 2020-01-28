@@ -1,25 +1,17 @@
 package ast;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import jscan.Tokenlist;
-import jscan.preprocess.ScanExc;
 
 import org.junit.Ignore;
 import org.junit.Test;
 
 import ast._entry.PreprocessSourceForParser;
 import ast._entry.PreprocessSourceForParserVariant;
-import ast._typesnew.CType;
 import ast.arrayinit.OffsetInitializer;
 import ast.declarations.Initializer;
-import ast.declarations.InitializerList;
-import ast.declarations.InitializerListEntry;
-import ast.errors.ParseException;
-import ast.expr.main.CExpression;
-import ast.parse.NullChecker;
 import ast.parse.Parse;
 import ast.symtabg.elements.CSymbol;
 import ast.unit.TranslationUnit;
@@ -64,6 +56,7 @@ public class _TestArrayInitializers {
     sb.append(" /*032*/        { 6, 7, 8 },        // row 1 = 6, 7, 8, 0, 0              \n");
     sb.append(" /*033*/        { 11, 12, 13, 14 }  // row 2 = 11, 12, 13, 14, 0          \n");
     sb.append(" /*034*/      };                                                          \n");
+    sb.append("              int arr10[2][3][3] = {1,2,3,4,5,6,7,8,9,10};                \n");
     sb.append(" /*035*/  }                                                               \n");
     //@formatter:on
 

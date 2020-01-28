@@ -12,6 +12,31 @@ import ast.expr.main.CExpression;
 import ast.parse.NullChecker;
 import ast.symtabg.elements.CSymbol;
 
+class OffsetInitializerEntry {
+
+  private final List<Integer> index;
+  private final CExpression expression;
+
+  public OffsetInitializerEntry(List<Integer> index, CExpression expression) {
+    this.index = index;
+    this.expression = expression;
+  }
+
+  public List<Integer> getIndex() {
+    return index;
+  }
+
+  public CExpression getExpression() {
+    return expression;
+  }
+
+  @Override
+  public String toString() {
+    return index.toString() + ":" + expression.toString();
+  }
+
+}
+
 public class OffsetInitializer {
 
   // build from this
@@ -114,7 +139,7 @@ public class OffsetInitializer {
 
         List<Integer> index = ent.getIndex();
         for (int i = index.size(); i < dims.size(); i++) {
-          index.add(0);
+          index.add(0, 0);
         }
 
         int initializerOffset = 0;
@@ -130,6 +155,9 @@ public class OffsetInitializer {
     }
 
   }
+
+  // expand braced initializers to form: [1,0,1]
+  // where each index associated with array dimension
 
   private void buildIndices(Initializer initializer) {
     if (!initializer.isHasInitializerList()) {
