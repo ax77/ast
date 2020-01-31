@@ -155,6 +155,11 @@ public class Blocks {
     for (List<InitNew> e : fixupBlocks) {
       mergingResult.addAll(e);
     }
+    int offset = 0;
+    for (InitNew e : mergingResult) {
+      e.setOffset(offset);
+      offset += oneElementOffset;
+    }
     return mergingResult;
   }
 
