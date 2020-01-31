@@ -3,7 +3,6 @@ package ast.initarr;
 import java.util.ArrayList;
 import java.util.List;
 
-import jscan.tokenize.Token;
 import ast._typesnew.CArrayType;
 import ast._typesnew.CType;
 import ast.errors.ParseException;
@@ -61,12 +60,13 @@ public class Blocks {
   private final int mlen;
   private final List<InitBlock> blocks;
 
-  private List<InitNew> mergingResult;
   private int initsCount;
   private final List<Integer> dimensions;
 
   private final int oneElementOffset; // XXX: for int arr[][2][3] is INT_SIZE
   private boolean lengthComeFromInitializersCount;
+
+  private final List<List<InitNew>> fixupBlocks;
 
   public Blocks(CSymbol sym) {
     this.symbol = sym;
@@ -114,7 +114,15 @@ public class Blocks {
     this.mdeep = dimensions.size();
     this.mlen = mlenTmp;
     this.blocks = new ArrayList<InitBlock>(0);
-    this.mergingResult = new ArrayList<InitNew>(0);
+    this.fixupBlocks = new ArrayList<List<InitNew>>(0);
+  }
+
+  private void addToFixup(InitNew e) {
+    boolean fixupAvail = !fixupBlocks.isEmpty() && fixupBlocks.get(fixupBlocks.size() - 1).size() < mlen;
+    if (!fixupAvail) {
+      fixupBlocks.add(new ArrayList<InitNew>(0));
+    }
+    fixupBlocks.get(fixupBlocks.size() - 1).add(e);
   }
 
   private void buildArrayDimensions(CType typeGiven, List<Integer> dimensions, List<Integer> sizeOut) {
@@ -143,6 +151,10 @@ public class Blocks {
   }
 
   public List<InitNew> getMergingResult() {
+    List<InitNew> mergingResult = new ArrayList<InitNew>();
+    for (List<InitNew> e : fixupBlocks) {
+      mergingResult.addAll(e);
+    }
     return mergingResult;
   }
 
@@ -215,127 +227,235 @@ public class Blocks {
   public void merge() {
     checkBounds();
     buildResultList();
-    finishArrayType();
-    fixOffsets();
+    fixall();
   }
 
   private void buildResultList() {
-    Token from = symbol.getFrom();
-
     for (InitBlock block : blocks) {
       final List<OffsetInitializerEntry> fromBlocks = block.getFromBlocks();
       final List<OffsetInitializerEntry> fromWild = block.getWildEntries();
-
       if (!fromBlocks.isEmpty()) {
         initsCount++;
       }
       if (!fromWild.isEmpty()) {
         initsCount++;
       }
-
       // I)
       for (OffsetInitializerEntry e : fromBlocks) {
-        mergingResult.add(new InitNew(e.getExpression()));
+        addToFixup(new InitNew(e.getExpression()));
       }
       if (!fromBlocks.isEmpty()) {
         for (int i = fromBlocks.size(); i < mlen; i++) {
-          mergingResult.add(new InitNew(CExpressionBuilderHelper.digitZero(from)));
+          addToFixup(zero());
         }
       }
-
       // II)
       for (OffsetInitializerEntry e : fromWild) {
-        mergingResult.add(new InitNew(e.getExpression()));
+        addToFixup(new InitNew(e.getExpression()));
       }
       if (!fromWild.isEmpty()) {
         for (int i = fromWild.size(); i < mlen; i++) {
-          mergingResult.add(new InitNew(CExpressionBuilderHelper.digitZero(from)));
+          addToFixup(zero());
         }
       }
-
     }
-
   }
 
-  private void finishArrayType() {
-    Token from = symbol.getFrom();
-
-    // int x[1] = { 1,2,3 };
-    // int x[] = { ... };
-    if (dimensions.get(0) != 0) {
-      if (initsCount > dimensions.get(0)) {
-        err("array size overflow.");
-      } else {
-        setArrayLen();
-      }
-    }
-
-    else {
-      dimensions.set(0, initsCount);
-      setArrayLen();
-    }
-
-    // int x[2][3][4] = { { {  } } };
-    // fill full array with zero's
-    //
-    if (initsCount == 0) {
-      int fulllen = getFullLen();
-
-      for (int i = 0; i < fulllen; i++) {
-        mergingResult.add(new InitNew(CExpressionBuilderHelper.digitZero(from)));
-      }
-    }
-
-    // trailing 
-    final int needSize = getFullLen();
-    final int haveSize = mergingResult.size();
-    if (haveSize < needSize) {
-      for (int j = haveSize; j < needSize; j++) {
-        mergingResult.add(new InitNew(CExpressionBuilderHelper.digitZero(from)));
-      }
-    }
-
+  private InitNew zero() {
+    return new InitNew(CExpressionBuilderHelper.digitZero(symbol.getFrom()));
   }
 
-  private void setArrayLen() {
+  /////
+  private void finishArrayType(int withLen) {
+
+    if (withLen <= 0) {
+      err("zero or negative lenght...");
+    }
+
     CType type = symbol.getType();
     CArrayType arr = type.getTpArray();
 
     if (arr.getArrayLen() != 0) {
-      return;
+      err("array length already known");
     }
 
-    arr.setArrayLen(initsCount);
+    arr.setArrayLen(withLen);
 
     type.setSize(arr.getArrayLen() * arr.getArrayOf().getSize());
     type.setAlign(arr.getArrayOf().getAlign());
   }
 
-  private void fixOffsets() {
-    int offset = 0;
-    for (InitNew e : mergingResult) {
-      e.setOffset(offset);
-      offset += oneElementOffset;
-    }
-  }
+  private void fixall() {
 
-  private int getFullLen() {
-    checkNoZeroDimensions();
+    //int arr[ ] = { 1,2,3 }; // the len == 3
+    //int arr[5] = { 1,2,3 }; // the len == 5, with trailing zeros
+    //int arr[ ] = {  };      // the len == 0, the size == 0 -> is an error
 
-    int fulllen = 1;
-    for (Integer i : dimensions) {
-      fulllen *= i.intValue();
-    }
+    final CArrayType arr = symbol.getType().getTpArray();
+    final int arlen = arr.getArrayLen();
+    final boolean isOneDimensionalArray = !arr.getArrayOf().isArray();
 
-    return fulllen;
-  }
+    int xxxxx = fixupBlocks.size(); // this line for debugger use
 
-  private void checkNoZeroDimensions() {
-    for (Integer i : dimensions) {
-      if (i == 0) {
-        err("zero len.");
+    if (isOneDimensionalArray) {
+
+      if (arlen == 0) {
+        // int x[ ] = { };
+        // how use this object?
+        //
+        if (fixupBlocks.isEmpty()) {
+          err("zero-sized array with empty initializer-list not allowed");
+        }
+
+        int newlen = fixupBlocks.size();
+        finishArrayType(newlen);
+
       }
+
+      else {
+        if (fixupBlocks.isEmpty()) {
+          // int x[5] = { };
+          // fill all with zeros
+          //
+          fixupBlocks.add(new ArrayList<InitNew>(0));
+          for (int j = 0; j < arlen; j++) {
+            addToFixup(zero());
+          }
+        }
+
+        else {
+
+          if (fixupBlocks.size() > 1) {
+            err(".0.fixed-sized array overflow");
+          }
+
+          // int x[5] = { 0 };
+          // we fill trailing zeros when build blocks.
+          // check here that all ok
+          for (List<InitNew> e : fixupBlocks) {
+            int inits = e.size();
+            if (inits != arlen) {
+              err(".1.fixed-sized array overflow");
+            }
+          }
+        }
+      }
+
     }
+
+    else {
+
+      if (arlen == 0) {
+
+        if (fixupBlocks.isEmpty()) {
+          err("zero-sized array with empty initializer-list not allowed");
+        }
+
+        // calc len without first
+        //
+        // int x[][3] = {{1, 3, 0}, {-1, 5, 9}};
+        int restlen = 1;
+        for (int i = 1; i < dimensions.size(); i++) {
+          final Integer xx = dimensions.get(i);
+          if (xx == 0) {
+            err(".3.zero size for array may be in first dimension only.");
+          }
+          restlen *= xx;
+        }
+
+        for (List<InitNew> e : fixupBlocks) {
+          if (e.size() > restlen) {
+            err(".1.fixed-sized multidimensional array overflow");
+          }
+        }
+
+        int newlen = fixupBlocks.size();
+        finishArrayType(newlen);
+      }
+
+      else {
+
+        // I)
+        // calc len include first
+        //
+        // int c0[3][4] = {0,1,2,3,4,5,6,7,8,9,10,11};
+        int lenExpected = 1;
+        for (int i = 0; i < dimensions.size(); i++) {
+          final Integer xx = dimensions.get(i);
+          if (xx == 0) {
+            err(".3.zero size for array may be in first dimension only.");
+          }
+          lenExpected *= xx;
+        }
+
+        // II)
+        if (fixupBlocks.isEmpty()) {
+          // short q1[4][3][2] = { { { } } };
+          // fill all with zeros
+          //
+          fixupBlocks.add(new ArrayList<InitNew>(0));
+          for (int j = 0; j < lenExpected; j++) {
+            addToFixup(zero());
+          }
+        }
+
+        // III)
+        // calc full size;
+
+        int lenActual = 0;
+        for (List<InitNew> e : fixupBlocks) {
+          lenActual += e.size();
+        }
+
+        if (lenActual > lenExpected) {
+          err(".5.fixed-sized multidimensional array overflow");
+        }
+
+        // fill all with zeros?
+        // size is ok. add trailing zeros.
+        //
+        //  short q2[4][3][2] = {  
+        //      { 1 },             
+        //      { 2, 3 },          
+        //      { 4, 5, 6 }        
+        //  };  
+        if (lenExpected > lenActual) {
+          for (int j = 0; j < lenExpected - lenActual; j++) {
+            addToFixup(zero());
+          }
+        }
+      }
+
+    }
+
+  }
+
+  public boolean isLengthComeFromInitializersCount() {
+    return lengthComeFromInitializersCount;
+  }
+
+  public void setLengthComeFromInitializersCount(boolean lengthComeFromInitializersCount) {
+    this.lengthComeFromInitializersCount = lengthComeFromInitializersCount;
+  }
+
+  public CSymbol getSymbol() {
+    return symbol;
+  }
+
+  public List<Integer> getDimensions() {
+    return dimensions;
+  }
+
+  public int getOneElementOffset() {
+    return oneElementOffset;
+  }
+
+  public List<List<InitNew>> getFixupBlocks() {
+    return fixupBlocks;
+  }
+
+  public void setInitsCount(int initsCount) {
+    this.initsCount = initsCount;
   }
 
 }

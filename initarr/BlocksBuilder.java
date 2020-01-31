@@ -12,7 +12,7 @@ import ast.symtabg.elements.CSymbol;
 
 public abstract class BlocksBuilder {
 
-  private static int level = 0;
+  private static int level = -1;
   private static List<OffsetInitializerEntry> entries = new ArrayList<OffsetInitializerEntry>(0);
 
   public static Blocks build(CSymbol sym, Initializer initializer) {

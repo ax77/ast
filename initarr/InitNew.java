@@ -24,7 +24,7 @@ public class InitNew {
 
   @Override
   public String toString() {
-    return offset + " = " + expression;
+    return ""+expression; // offset + " = " + expression;
   }
 
 }
