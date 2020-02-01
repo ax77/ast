@@ -38,4 +38,12 @@ public class Designator {
     return identifier;
   }
 
+  @Override
+  public String toString() {
+    if (isDotDesignator) {
+      return "." + identifier.getValue();
+    }
+    return "[" + constantExpression.toString() + "]";
+  }
+
 }

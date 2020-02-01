@@ -14,7 +14,6 @@ import org.junit.Test;
 import ast._entry.PreprocessSourceForParser;
 import ast._entry.PreprocessSourceForParserVariant;
 import ast.declarations.Initializer;
-import ast.initarr.Blocks;
 import ast.initarr.BlocksBuilder;
 import ast.initarr.InitNew;
 import ast.parse.Parse;
@@ -91,9 +90,7 @@ public class _TestArrayInitializers2 {
         continue;
       }
       final Initializer initializer = sym.getInitializer();
-
-      Blocks blocks = BlocksBuilder.build(sym, initializer);
-      final List<InitNew> mergingResult = blocks.getMergingResult();
+      final List<InitNew>mergingResult = BlocksBuilder.build(sym, initializer);
 
       final int lenExpected = sizes.get(sym.getName().getName()).intValue();
       final int lenActual = sym.getType().getTpArray().getArrayLen();

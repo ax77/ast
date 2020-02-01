@@ -13,7 +13,7 @@ public class Initializer {
   //    | '{' initializer_list ',' '}'
   //    ;
 
-  private final boolean hasInitializerList;
+  private final boolean isInitializerList;
   private final CExpression assignment;
   private final List<InitializerListEntry> initializerList;
 
@@ -23,7 +23,7 @@ public class Initializer {
       throw new ParseException("assignment==null in new initializer...");
     }
 
-    this.hasInitializerList = false;
+    this.isInitializerList = false;
     this.assignment = assignment;
     this.initializerList = null;
   }
@@ -34,13 +34,13 @@ public class Initializer {
       throw new ParseException("initializer-list==null in new initializer...");
     }
 
-    this.hasInitializerList = true;
+    this.isInitializerList = true;
     this.assignment = null;
     this.initializerList = initializerList;
   }
 
-  public boolean isHasInitializerList() {
-    return hasInitializerList;
+  public boolean isInitializerList() {
+    return isInitializerList;
   }
 
   public CExpression getAssignment() {
@@ -49,6 +49,14 @@ public class Initializer {
 
   public List<InitializerListEntry> getInitializerList() {
     return initializerList;
+  }
+
+  @Override
+  public String toString() {
+    if (isInitializerList) {
+      return "" + initializerList;
+    }
+    return assignment.toString();
   }
 
 }

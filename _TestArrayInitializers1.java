@@ -13,14 +13,13 @@ import org.junit.Test;
 import ast._entry.PreprocessSourceForParser;
 import ast._entry.PreprocessSourceForParserVariant;
 import ast.declarations.Initializer;
-import ast.initarr.Blocks;
 import ast.initarr.BlocksBuilder;
 import ast.initarr.InitNew;
 import ast.parse.Parse;
 import ast.symtabg.elements.CSymbol;
 import ast.unit.TranslationUnit;
 
-public class _TestArrayInitializers {
+public class _TestArrayInitializers1 {
 
   //I)
   /////////////////////////////////////////////////////////////////////
@@ -61,11 +60,7 @@ public class _TestArrayInitializers {
         continue;
       }
       final Initializer initializer = sym.getInitializer();
-
-      Blocks blocks = BlocksBuilder.build(sym, initializer);
-      final List<InitNew> mergingResult = blocks.getMergingResult();
-
-      assertEquals(3, blocks.getInitsCount());
+      final List<InitNew> mergingResult = BlocksBuilder.build(sym, initializer);
 
       final String tocheck = "1,2,3,4,5,0,0,0,6,0,0,0";
       final String[] split = tocheck.split(",");
@@ -114,11 +109,7 @@ public class _TestArrayInitializers {
         continue;
       }
       final Initializer initializer = sym.getInitializer();
-
-      Blocks blocks = BlocksBuilder.build(sym, initializer);
-      final List<InitNew> mergingResult = blocks.getMergingResult();
-
-      assertEquals(5, blocks.getInitsCount());
+      final List<InitNew> mergingResult = BlocksBuilder.build(sym, initializer);
 
       final String tocheck = "1,0,2,0,3,4,5,6,7,0";
       final String[] split = tocheck.split(",");
@@ -173,11 +164,7 @@ public class _TestArrayInitializers {
         continue;
       }
       final Initializer initializer = sym.getInitializer();
-
-      Blocks blocks = BlocksBuilder.build(sym, initializer);
-      final List<InitNew> mergingResult = blocks.getMergingResult();
-
-      assertEquals(3, blocks.getInitsCount());
+      final List<InitNew> mergingResult = BlocksBuilder.build(sym, initializer);
 
       final String tocheck = "1,0,0,0,0,0,2,3,0,0,0,0,4,5,6,7,0,0";
       final String[] split = tocheck.split(",");
@@ -215,11 +202,7 @@ public class _TestArrayInitializers {
         continue;
       }
       final Initializer initializer = sym.getInitializer();
-
-      Blocks blocks = BlocksBuilder.build(sym, initializer);
-      final List<InitNew> mergingResult = blocks.getMergingResult();
-
-      assertEquals(3, blocks.getInitsCount());
+      final List<InitNew> mergingResult = BlocksBuilder.build(sym, initializer);
 
       final String tocheck = "1,2,3,4,5,0";
       final String[] split = tocheck.split(",");
@@ -271,11 +254,7 @@ public class _TestArrayInitializers {
         continue;
       }
       final Initializer initializer = sym.getInitializer();
-
-      Blocks blocks = BlocksBuilder.build(sym, initializer);
-      final List<InitNew> mergingResult = blocks.getMergingResult();
-
-      assertEquals(3, blocks.getInitsCount());
+      final List<InitNew> mergingResult = BlocksBuilder.build(sym, initializer);
 
       final String tocheck = "1,2,0,0,0,6,7,8,0,0,11,12,13,14,0";
       final String[] split = tocheck.split(",");
@@ -313,11 +292,7 @@ public class _TestArrayInitializers {
         continue;
       }
       final Initializer initializer = sym.getInitializer();
-
-      Blocks blocks = BlocksBuilder.build(sym, initializer);
-      final List<InitNew> mergingResult = blocks.getMergingResult();
-
-      assertEquals(5, blocks.getInitsCount());
+      final List<InitNew> mergingResult = BlocksBuilder.build(sym, initializer);
 
       final String tocheck = "1,2,3,4,5";
       final String[] split = tocheck.split(",");

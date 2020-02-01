@@ -38,4 +38,12 @@ public class InitializerListEntry {
     return isHasDesignatorsBefore;
   }
 
+  @Override
+  public String toString() {
+    if (isHasDesignatorsBefore) {
+      return designators + "=" + initializer;
+    }
+    return initializer.toString();
+  }
+
 }

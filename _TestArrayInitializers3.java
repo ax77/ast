@@ -11,7 +11,6 @@ import org.junit.Test;
 import ast._entry.PreprocessSourceForParser;
 import ast._entry.PreprocessSourceForParserVariant;
 import ast.declarations.Initializer;
-import ast.initarr.Blocks;
 import ast.initarr.BlocksBuilder;
 import ast.initarr.InitNew;
 import ast.parse.Parse;
@@ -50,11 +49,8 @@ public class _TestArrayInitializers3 {
         continue;
       }
       final Initializer initializer = sym.getInitializer();
+      final List<InitNew> mergingResult = BlocksBuilder.build(sym, initializer);
 
-      Blocks blocks = BlocksBuilder.build(sym, initializer);
-      final List<InitNew> mergingResult = blocks.getMergingResult();
-
-  
     }
 
   }
