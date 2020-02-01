@@ -1,6 +1,5 @@
 package ast.declarations;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ast.errors.ParseException;
@@ -14,10 +13,9 @@ public class Initializer {
   //    | '{' initializer_list ',' '}'
   //    ;
 
-  private final List<Integer> index;
   private final boolean hasInitializerList;
   private final CExpression assignment;
-  private final InitializerList initializerList;
+  private final List<InitializerListEntry> initializerList;
 
   public Initializer(CExpression assignment) {
     if (assignment == null) {
@@ -25,19 +23,17 @@ public class Initializer {
       throw new ParseException("assignment==null in new initializer...");
     }
 
-    this.index = new ArrayList<Integer>(0);
     this.hasInitializerList = false;
     this.assignment = assignment;
     this.initializerList = null;
   }
 
-  public Initializer(InitializerList initializerList) {
+  public Initializer(List<InitializerListEntry> initializerList) {
     if (initializerList == null) {
       //TODO:POSITION
       throw new ParseException("initializer-list==null in new initializer...");
     }
 
-    this.index = new ArrayList<Integer>(0);
     this.hasInitializerList = true;
     this.assignment = null;
     this.initializerList = initializerList;
@@ -51,20 +47,8 @@ public class Initializer {
     return assignment;
   }
 
-  public InitializerList getInitializerList() {
+  public List<InitializerListEntry> getInitializerList() {
     return initializerList;
-  }
-
-  public void pushi(int i) {
-    index.add(i);
-  }
-
-  public void pushall(List<Integer> outer) {
-    index.addAll(0, outer);
-  }
-
-  public List<Integer> getIndex() {
-    return index;
   }
 
 }

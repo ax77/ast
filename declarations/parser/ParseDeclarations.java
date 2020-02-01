@@ -11,7 +11,6 @@ import ast._typesnew.parser.ParseDecl;
 import ast._typesnew.util.TypeMerger;
 import ast.declarations.Designator;
 import ast.declarations.Initializer;
-import ast.declarations.InitializerList;
 import ast.declarations.InitializerListEntry;
 import ast.declarations.main.Declaration;
 import ast.declarations.sem.FinalizeInitializers;
@@ -238,18 +237,20 @@ public class ParseDeclarations {
     // int a[5] = {};
     if (p.tp() == T.T_RIGHT_BRACE) {
       p.checkedMove(T.T_RIGHT_BRACE);
-      return new Initializer(new InitializerList());
+      return new Initializer(new ArrayList<InitializerListEntry>(0));
     }
 
     // otherwise - recursively expand braced initializers
     //
-    InitializerList initializerList = parseInitializerList(); // XXX: taint comma case here
+    List<InitializerListEntry> initializerList = parseInitializerList(); // XXX: taint comma case here
     p.checkedMove(T.T_RIGHT_BRACE);
 
     return new Initializer(initializerList);
   }
 
-  public InitializerList parseInitializerList() {
+  public List<InitializerListEntry> parseInitializerList() {
+
+    List<InitializerListEntry> initializerList = new ArrayList<InitializerListEntry>(0);
 
     // c89
     //  initializer_list
@@ -265,10 +266,8 @@ public class ParseDeclarations {
     //    | initializer_list ',' initializer
     //    ;
 
-    InitializerList initializerList = new InitializerList();
-
     InitializerListEntry entry = parseInitializerListEntry();
-    initializerList.push(entry);
+    initializerList.add(entry);
 
     while (p.tp() == T.T_COMMA) {
 
@@ -283,7 +282,7 @@ public class ParseDeclarations {
       p.checkedMove(T.T_COMMA);
 
       InitializerListEntry initializerSeq = parseInitializerListEntry();
-      initializerList.push(initializerSeq);
+      initializerList.add(initializerSeq);
     }
 
     return initializerList;

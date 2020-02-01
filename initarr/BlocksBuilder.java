@@ -5,7 +5,6 @@ import java.util.List;
 
 import jscan.preprocess.ScanExc;
 import ast.declarations.Initializer;
-import ast.declarations.InitializerList;
 import ast.declarations.InitializerListEntry;
 import ast.errors.ParseException;
 import ast.symtabg.elements.CSymbol;
@@ -55,8 +54,7 @@ public abstract class BlocksBuilder {
     else {
 
       ++level;
-      final InitializerList initializerList = initializer.getInitializerList();
-      final List<InitializerListEntry> initializers = initializerList.getInitializers();
+      final List<InitializerListEntry> initializers = initializer.getInitializerList();
       for (int j = 0; j < initializers.size(); j++) {
         InitializerListEntry entry = initializers.get(j);
         if (entry.isHasDesignatorsBefore()) {

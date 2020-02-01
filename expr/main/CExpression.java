@@ -16,7 +16,7 @@ import java.util.List;
 
 import ast._typesnew.CStructField;
 import ast._typesnew.CType;
-import ast.declarations.InitializerList;
+import ast.declarations.InitializerListEntry;
 import ast.errors.ParseException;
 import ast.parse.ILocation;
 import ast.parse.NodeTemp;
@@ -44,7 +44,7 @@ public class CExpression implements ILocation {
   private final CExpression tree[]; // unary, binary, assign, array-subscript
 
   private CType typename; // cast lhs to typename
-  private InitializerList initializerList; // (typename) { initializer-list } compound literal
+  private List<InitializerListEntry> initializerList; // (typename) { initializer-list } compound literal
   private CStructField fieldName; //  field name (compsel)
   private CSymbol symbol; // primary ident
 
@@ -148,7 +148,7 @@ public class CExpression implements ILocation {
     setLhs(lhs);
   }
 
-  public CExpression(CType typename, InitializerList initializerList, Token token) {
+  public CExpression(CType typename, List<InitializerListEntry> initializerList, Token token) {
     this.tname = NodeTemp.gettemp();
     this.tree = emptyTree();
     this.location = new SourceLocation(token);
@@ -275,11 +275,11 @@ public class CExpression implements ILocation {
     this.base = base;
   }
 
-  public InitializerList getInitializerList() {
+  public List<InitializerListEntry> getInitializerList() {
     return initializerList;
   }
 
-  public void setInitializerList(InitializerList initializerList) {
+  public void setInitializerList(List<InitializerListEntry> initializerList) {
     this.initializerList = initializerList;
   }
 

@@ -49,7 +49,7 @@ import java.util.Map;
 import ast._typesnew.CStructField;
 import ast._typesnew.CStructType;
 import ast._typesnew.CType;
-import ast.declarations.InitializerList;
+import ast.declarations.InitializerListEntry;
 import ast.declarations.parser.ParseDeclarations;
 import ast.expr.main.CExpression;
 import ast.expr.main.CExpressionBase;
@@ -419,7 +419,7 @@ public class ParseExpression {
       if (parser.tp() == T.T_LEFT_BRACE) {
         Token saved = parser.tok();
 
-        InitializerList initializerList = new ParseDeclarations(parser).parseInitializerList();
+        List<InitializerListEntry> initializerList = new ParseDeclarations(parser).parseInitializerList();
         CExpression compliteral = new CExpression(typename, initializerList, saved);
 
         compliteral.setResultType(typename);
