@@ -20,22 +20,19 @@ import jscan.Tokenlist;
 
 public class _TestArrayInitializers3 {
 
-  // int arr[6] = { [4] = 29, [2] = 15 };
+  //  int arr[2][2] = { [0] = {1,2}, [1] = {3,4}, };
   //  arr.2.0:
-  //    .long   0
-  //    .long   0
-  //    .long   15
-  //    .long   0
-  //    .long   29
-  //    .long   0
+  //    .long   1
+  //    .long   2
+  //    .long   3
+  //    .long   4
 
-  @Ignore
   @Test
   public void testArrayDesignators_0() throws IOException {
     //@formatter:off
     StringBuilder sb = new StringBuilder();
     sb.append(" /*001*/  void f() {                                  \n");
-    sb.append(" /*002*/     int arr[6] = { [4] = 29, [2] = 15 };     \n");
+    sb.append(" /*002*/     int arr[2][2] = { [0] = {1,2}, [1] = {3,4}, };     \n");
     sb.append(" /*035*/  }                                           \n");
     //@formatter:on
 

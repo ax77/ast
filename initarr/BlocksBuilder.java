@@ -2,10 +2,11 @@ package ast.initarr;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
-import jscan.preprocess.ScanExc;
 import ast._typesnew.CArrayType;
 import ast._typesnew.CType;
+import ast.declarations.Designator;
 import ast.declarations.Initializer;
 import ast.declarations.InitializerListEntry;
 import ast.errors.ParseException;
@@ -16,6 +17,8 @@ import ast.symtabg.elements.CSymbol;
 class OffsetInitializerEntry {
 
   private int level;
+
+  private List<Designator> designatorsBefore;
   private CExpression expression;
 
   public OffsetInitializerEntry(int level, CExpression expression) {
@@ -36,10 +39,21 @@ class OffsetInitializerEntry {
     return expression.toString();// String.format("%-3d", weight) + " = " + expression;
   }
 
+  public List<Designator> getDesignatorsBefore() {
+    return designatorsBefore;
+  }
+
+  public void setDesignatorsBefore(List<Designator> designatorsBefore) {
+    this.designatorsBefore = designatorsBefore;
+  }
+
 }
 
 class InitBlock {
+
+  private List<Designator> designatorsBeforeBlocks;
   private List<OffsetInitializerEntry> fromBlocks;
+
   private List<OffsetInitializerEntry> wildEntries;
 
   public InitBlock() {
@@ -72,6 +86,22 @@ class InitBlock {
     return wildEntries;
   }
 
+  public void setDesignatorsBeforeBlocks(List<Designator> designatorsBeforeBlocks) {
+    this.designatorsBeforeBlocks = designatorsBeforeBlocks;
+  }
+
+  public void setDesignatorsBeforeWilds(List<Designator> designatorsBefore) {
+    wildEntries.get(wildEntries.size() - 1).setDesignatorsBefore(designatorsBefore);
+  }
+
+  public void setFromBlocks(List<OffsetInitializerEntry> fromBlocks) {
+    this.fromBlocks = fromBlocks;
+  }
+
+  public void setWildEntries(List<OffsetInitializerEntry> wildEntries) {
+    this.wildEntries = wildEntries;
+  }
+
 }
 
 class Blocks {
@@ -87,6 +117,7 @@ class Blocks {
   private final CSymbol symbol;
   private final int mdeep;
   private final int mlen;
+
   private final List<InitBlock> blocks;
 
   private int initsCount;
@@ -214,7 +245,8 @@ class Blocks {
   public void pushToBlocks(List<OffsetInitializerEntry> entries) {
     blocks.add(new InitBlock());
     for (OffsetInitializerEntry e : entries) {
-      blocks.get(blocks.size() - 1).pushToBlocks(e);
+      final InitBlock last = blocks.get(blocks.size() - 1);
+      last.pushToBlocks(e);
     }
   }
 
@@ -222,6 +254,20 @@ class Blocks {
     for (OffsetInitializerEntry e : entries) {
       pushToWild(e);
     }
+  }
+
+  public void setDesignatorsBeforeBlocks(List<Designator> designatorsBefore) {
+    if (blocks.isEmpty()) {
+      err("empty blocks. set designator fail.");
+    }
+    blocks.get(blocks.size() - 1).setDesignatorsBeforeBlocks(designatorsBefore);
+  }
+
+  public void setDesignatorsBeforeWild(List<Designator> designatorsBefore) {
+    if (blocks.isEmpty()) {
+      err("empty blocks. set designator fail.");
+    }
+    blocks.get(blocks.size() - 1).setDesignatorsBeforeWilds(designatorsBefore);
   }
 
   private void checkBounds() {
@@ -498,11 +544,13 @@ public abstract class BlocksBuilder {
 
   private static int level = -1;
   private static List<OffsetInitializerEntry> entries = new ArrayList<OffsetInitializerEntry>(0);
+  private static Stack<List<Designator>> designators = new Stack<List<Designator>>();
 
   public static List<InitNew> build(CSymbol sym, Initializer initializer) {
 
     level = -1;
     entries = new ArrayList<OffsetInitializerEntry>(0);
+    designators = new Stack<List<Designator>>();
 
     Blocks blocks = new Blocks(sym);
     buildIndices(initializer, blocks);
@@ -532,6 +580,13 @@ public abstract class BlocksBuilder {
         }
 
         blocks.pushToWild(entries);
+        if (!designators.isEmpty()) {
+          if (designators.size() != 1) {
+            err("designators stack overflow.");
+          }
+          blocks.setDesignatorsBeforeWild(designators.pop());
+        }
+
         entries = new ArrayList<OffsetInitializerEntry>(0);
       }
     }
@@ -543,14 +598,22 @@ public abstract class BlocksBuilder {
       for (int j = 0; j < initializers.size(); j++) {
         InitializerListEntry entry = initializers.get(j);
         if (entry.isHasDesignatorsBefore()) {
-          throw new ScanExc("unsupported now");
+          designators.push(entry.getDesignators());
         }
         buildIndices(entry.getInitializer(), blocks);
       }
       --level;
 
       if (level == 0) {
+
         blocks.pushToBlocks(entries);
+        if (!designators.isEmpty()) {
+          if (designators.size() != 1) {
+            err("designators stack overflow.");
+          }
+          blocks.setDesignatorsBeforeBlocks(designators.pop());
+        }
+
         entries = new ArrayList<OffsetInitializerEntry>(0);
       }
     }
