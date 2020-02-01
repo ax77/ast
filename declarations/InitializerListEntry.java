@@ -1,45 +1,41 @@
 package ast.declarations;
 
-import ast.errors.ParseException;
+import java.util.List;
+
+import ast.parse.NullChecker;
 
 public class InitializerListEntry {
 
-  private final boolean isDesignation;
-  private final DesignatedInitializer designatedInitializer;
+  private final boolean isHasDesignatorsBefore;
+  private final List<Designator> designators;
   private final Initializer initializer;
 
-  public InitializerListEntry(DesignatedInitializer designatedInitializer) {
-    if (designatedInitializer == null) {
-      //TODO:POSITION
-      throw new ParseException("null designatedInitializer...");
-    }
+  public InitializerListEntry(List<Designator> designators, Initializer initializer) {
+    NullChecker.check(designators, initializer);
 
-    this.isDesignation = true;
-    this.designatedInitializer = designatedInitializer;
-    this.initializer = null;
-  }
-
-  public InitializerListEntry(Initializer initializer) {
-    if (initializer == null) {
-      //TODO:POSITION
-      throw new ParseException("null initializer...");
-    }
-
-    this.isDesignation = false;
-    this.designatedInitializer = null;
+    this.isHasDesignatorsBefore = true;
+    this.designators = designators;
     this.initializer = initializer;
   }
 
-  public DesignatedInitializer getDesignatedInitializer() {
-    return designatedInitializer;
+  public InitializerListEntry(Initializer initializer) {
+    NullChecker.check(initializer);
+
+    this.isHasDesignatorsBefore = false;
+    this.designators = null;
+    this.initializer = initializer;
+  }
+
+  public List<Designator> getDesignators() {
+    return designators;
   }
 
   public Initializer getInitializer() {
     return initializer;
   }
 
-  public boolean isDesignation() {
-    return isDesignation;
+  public boolean isHasDesignatorsBefore() {
+    return isHasDesignatorsBefore;
   }
 
 }

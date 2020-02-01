@@ -9,8 +9,6 @@ import ast._typesnew.main.StorageKind;
 import ast._typesnew.parser.ParseBase;
 import ast._typesnew.parser.ParseDecl;
 import ast._typesnew.util.TypeMerger;
-import ast.declarations.DesignatedInitializer;
-import ast.declarations.Designation;
 import ast.declarations.Designator;
 import ast.declarations.Initializer;
 import ast.declarations.InitializerList;
@@ -315,23 +313,20 @@ public class ParseDeclarations {
     //   ;
 
     if (p.tp() == T.T_LEFT_BRACKET || p.tp() == T.T_DOT) {
-
-      Designation designation = new Designation();
-      parseDesignatorListTo(p, designation);
-
+      List<Designator> designators = parseDesignatorList(p);
       p.checkedMove(T.T_ASSIGN);
+
       Initializer initializer = parseInitializer();
-
-      final DesignatedInitializer designatedInitializer = new DesignatedInitializer(designation, initializer);
-      return new InitializerListEntry(designatedInitializer);
-
+      return new InitializerListEntry(designators, initializer);
     }
 
     Initializer initializer = parseInitializer();
     return new InitializerListEntry(initializer);
   }
 
-  private void parseDesignatorListTo(Parse p, Designation designation) {
+  private List<Designator> parseDesignatorList(Parse p) {
+
+    List<Designator> designators = new ArrayList<Designator>(0);
 
     // designator_list
     //   : designator
@@ -349,19 +344,21 @@ public class ParseDeclarations {
         p.lbracket();
         CExpression expr = new ParseExpression(p).e_const_expr();
         p.rbracket();
-        designation.push(new Designator(expr));
+        designators.add(new Designator(expr));
       }
 
       else if (p.tp() == T.T_DOT) {
         p.move();
         Token ident = p.expectIdentifier();
-        designation.push(new Designator(ident));
+        designators.add(new Designator(ident));
       }
 
       else {
         break;
       }
     }
+
+    return designators;
 
   }
 

@@ -59,7 +59,7 @@ public abstract class BlocksBuilder {
       final List<InitializerListEntry> initializers = initializerList.getInitializers();
       for (int j = 0; j < initializers.size(); j++) {
         InitializerListEntry entry = initializers.get(j);
-        if (entry.isDesignation()) {
+        if (entry.isHasDesignatorsBefore()) {
           throw new ScanExc("unsupported now");
         }
         buildIndices(entry.getInitializer(), blocks);
