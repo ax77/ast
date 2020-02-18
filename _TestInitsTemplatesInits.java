@@ -1,4 +1,4 @@
-package ast.newinits;
+package ast;
 
 import static org.junit.Assert.assertEquals;
 
@@ -13,11 +13,13 @@ import org.junit.Test;
 
 import ast._entry.PreprocessSourceForParser;
 import ast._entry.PreprocessSourceForParserVariant;
+import ast.newinits.JustOut;
+import ast.newinits.TemplateJo;
 import ast.parse.Parse;
 import ast.symtabg.elements.CSymbol;
 import ast.unit.TranslationUnit;
 
-public class _TestTemplatesInits {
+public class _TestInitsTemplatesInits {
 
   @Test
   public void testTemplatesGenerators() throws IOException {

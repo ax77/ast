@@ -1,4 +1,4 @@
-package ast.newinits;
+package ast;
 
 import static org.junit.Assert.assertEquals;
 
@@ -13,11 +13,13 @@ import org.junit.Test;
 
 import ast._entry.PreprocessSourceForParser;
 import ast._entry.PreprocessSourceForParserVariant;
+import ast.newinits.JustOut;
+import ast.newinits.TemplateJo;
 import ast.parse.Parse;
 import ast.symtabg.elements.CSymbol;
 import ast.unit.TranslationUnit;
 
-public class _TestSizeFinder {
+public class _TestInitsSizeFinder {
 
   @Test
   public void testSizes1() throws IOException {

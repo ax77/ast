@@ -14,17 +14,24 @@ import static ast.expr.main.CExpressionBase.EUNARY;
 
 import java.util.List;
 
+import jscan.cstrtox.C_strtox;
+import jscan.sourceloc.SourceLocation;
+import jscan.tokenize.Token;
 import ast._typesnew.CStructField;
 import ast._typesnew.CType;
 import ast.declarations.InitializerListEntry;
 import ast.errors.ParseException;
 import ast.parse.ILocation;
-import ast.parse.NodeTemp;
 import ast.symtabg.elements.CSymbol;
 import ast.symtabg.elements.NumericConstant;
-import jscan.cstrtox.C_strtox;
-import jscan.sourceloc.SourceLocation;
-import jscan.tokenize.Token;
+
+abstract class NodeTemp {
+  private static long iter = 0;
+
+  public static long gettemp() {
+    return iter++;
+  }
+}
 
 public class CExpression implements ILocation {
 
@@ -32,23 +39,22 @@ public class CExpression implements ILocation {
   private static final int RHS_INDEX = 1;
   private static final int CND_INDEX = 2;
 
-  // TODO: location
-
   private final CExpressionBase base; // what union contains
   private final long tname; // just unique id. for codegen.
   private final SourceLocation location;
 
   private CType resultType; // what expression doe's after evaluation
   private final Token token; // operator, position
-  private final CExpression tree[]; // unary, binary, assign, array-subscript
+  private final CExpression tree[];
 
-  private List<InitializerListEntry> initializerList; // (typename) { initializer-list } compound literal
-  private CStructField fieldName; //  field name (compsel)
-  private List<CExpression> arglist; // function-arguments
+  private List<InitializerListEntry> initializerList; // (resultType) { initializer-list } compound literal
+  private CStructField field;
+  private List<CExpression> arglist;
 
+  // primary
   private String cstring;
   private NumericConstant cnumber;
-  private CSymbol symbol; // primary ident
+  private CSymbol symbol;
 
   private void assertBaseIsOneOf(CExpressionBase... bases) {
     boolean contains = false;
@@ -173,7 +179,7 @@ public class CExpression implements ILocation {
     this.base = CExpressionBase.ECOMPSEL;
 
     setLhs(postfis);
-    this.fieldName = fieldName;
+    this.field = fieldName;
   }
 
   public CExpression(CExpression condition, CExpression branchTrue, CExpression branchFalse, Token token) {
@@ -264,8 +270,8 @@ public class CExpression implements ILocation {
     this.initializerList = initializerList;
   }
 
-  public CStructField getFieldName() {
-    return fieldName;
+  public CStructField getField() {
+    return field;
   }
 
   public CSymbol getSymbol() {
@@ -327,7 +333,7 @@ public class CExpression implements ILocation {
     }
     case ECOMPSEL: {
       // TODO:
-      return "(" + getLhs().toString() + ")." + fieldName.getName().getName();
+      return "(" + getLhs().toString() + ")." + field.getName().getName();
     }
     case ECAST: {
       return "(" + resultType.toString() + ") " + "(" + getLhs().toString() + ")";

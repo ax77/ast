@@ -5,12 +5,9 @@ import static jscan.tokenize.T.TOKEN_NUMBER;
 import static jscan.tokenize.T.TOKEN_STRING;
 import static jscan.tokenize.T.T_AND;
 import static jscan.tokenize.T.T_AND_AND;
-import static jscan.tokenize.T.T_AND_EQUAL;
 import static jscan.tokenize.T.T_ARROW;
-import static jscan.tokenize.T.T_ASSIGN;
 import static jscan.tokenize.T.T_COLON;
 import static jscan.tokenize.T.T_DIVIDE;
-import static jscan.tokenize.T.T_DIVIDE_EQUAL;
 import static jscan.tokenize.T.T_DOT;
 import static jscan.tokenize.T.T_EQ;
 import static jscan.tokenize.T.T_GE;
@@ -19,35 +16,24 @@ import static jscan.tokenize.T.T_LE;
 import static jscan.tokenize.T.T_LEFT_BRACKET;
 import static jscan.tokenize.T.T_LEFT_PAREN;
 import static jscan.tokenize.T.T_LSHIFT;
-import static jscan.tokenize.T.T_LSHIFT_EQUAL;
 import static jscan.tokenize.T.T_LT;
 import static jscan.tokenize.T.T_MINUS;
-import static jscan.tokenize.T.T_MINUS_EQUAL;
 import static jscan.tokenize.T.T_MINUS_MINUS;
 import static jscan.tokenize.T.T_NE;
 import static jscan.tokenize.T.T_OR;
-import static jscan.tokenize.T.T_OR_EQUAL;
 import static jscan.tokenize.T.T_OR_OR;
 import static jscan.tokenize.T.T_PERCENT;
-import static jscan.tokenize.T.T_PERCENT_EQUAL;
 import static jscan.tokenize.T.T_PLUS;
-import static jscan.tokenize.T.T_PLUS_EQUAL;
 import static jscan.tokenize.T.T_QUESTION;
 import static jscan.tokenize.T.T_RIGHT_PAREN;
 import static jscan.tokenize.T.T_RSHIFT;
-import static jscan.tokenize.T.T_RSHIFT_EQUAL;
 import static jscan.tokenize.T.T_TIMES;
-import static jscan.tokenize.T.T_TIMES_EQUAL;
 import static jscan.tokenize.T.T_XOR;
-import static jscan.tokenize.T.T_XOR_EQUAL;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import jscan.cstrtox.C_strtox;
-import jscan.cstrtox.NumType;
 import jscan.hashed.Hash_ident;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
@@ -55,7 +41,6 @@ import jscan.tokenize.Token;
 import ast._typesnew.CStructField;
 import ast._typesnew.CStructType;
 import ast._typesnew.CType;
-import ast._typesnew.CTypeImpl;
 import ast.declarations.InitializerListEntry;
 import ast.declarations.parser.ParseDeclarations;
 import ast.expr.main.CExpression;
@@ -66,65 +51,6 @@ import ast.parse.Parse;
 import ast.parse.ParseState;
 import ast.parse.Pcheckers;
 import ast.symtabg.elements.CSymbol;
-
-class Copier {
-
-  //@formatter:off
-  private static Map<T, T> asopmap = new HashMap<T, T>();
-  static {
-    asopmap.put(T_TIMES_EQUAL     , T_TIMES);
-    asopmap.put(T_PERCENT_EQUAL   , T_PERCENT);
-    asopmap.put(T_DIVIDE_EQUAL    , T_DIVIDE);
-    asopmap.put(T_PLUS_EQUAL      , T_PLUS);
-    asopmap.put(T_MINUS_EQUAL     , T_MINUS);
-    asopmap.put(T_LSHIFT_EQUAL    , T_LSHIFT);
-    asopmap.put(T_RSHIFT_EQUAL    , T_RSHIFT);
-    asopmap.put(T_AND_EQUAL       , T_AND);
-    asopmap.put(T_XOR_EQUAL       , T_XOR);
-    asopmap.put(T_OR_EQUAL        , T_OR);
-  }
-  //@formatter:on
-
-  public static Token getOperatorFromCompAssign(Token from) {
-    Token ntoken = new Token(from);
-    ntoken.setType(asopmap.get(from.getType()));
-    switch (ntoken.getType()) {
-    case T_TIMES:
-      ntoken.setValue("*");
-      break;
-    case T_PERCENT:
-      ntoken.setValue("%");
-      break;
-    case T_DIVIDE:
-      ntoken.setValue("/");
-      break;
-    case T_PLUS:
-      ntoken.setValue("+");
-      break;
-    case T_MINUS:
-      ntoken.setValue("-");
-      break;
-    case T_LSHIFT:
-      ntoken.setValue("<<");
-      break;
-    case T_RSHIFT:
-      ntoken.setValue(">>");
-      break;
-    case T_AND:
-      ntoken.setValue("&");
-      break;
-    case T_XOR:
-      ntoken.setValue("^");
-      break;
-    case T_OR:
-      ntoken.setValue("|");
-      break;
-    default:
-      break;
-    }
-    return ntoken;
-  }
-}
 
 public class ParseExpression {
   private final Parse parser;
@@ -150,24 +76,15 @@ public class ParseExpression {
   }
 
   private CExpression build_number(C_strtox e, Token token) {
-    CExpression ret = new CExpression(e, token);
-
-    final NumType numtype = ret.getCnumber().getNumtype();
-    ret.setResultType(CTypeImpl.bindings.get(numtype));
-
-    return ret;
+    return new CExpression(e, token);
   }
 
   private CExpression build_cast(Parse parser, CType typename, CExpression tocast, Token token) {
-    CExpression ret = new CExpression(typename, tocast, token);
-    ret.setResultType(typename);
-    return ret;
+    return new CExpression(typename, tocast, token);
   }
 
   private CExpression build_var(CSymbol e, Token token) {
-    CExpression ret = new CExpression(e, token);
-    ret.setResultType(e.getType());
-    return ret;
+    return new CExpression(e, token);
   }
 
   private CExpression build_compsel(CExpression postfis, Token operator, CStructField fieldName) {
@@ -176,7 +93,6 @@ public class ParseExpression {
 
   private CExpression build_fcall(CExpression function, List<CExpression> arguments, Token token) {
     return new CExpression(function, arguments, token);
-
   }
 
   private CExpression build_incdec(CExpressionBase base, Token op, CExpression lhs) {
@@ -235,7 +151,7 @@ public class ParseExpression {
         // = lhs(a) rhs( + lhs(a) rhs(b) )
 
         Token assignOperator = CExpressionBuilderHelper.assignOperator(saved);
-        Token binaryOperator = Copier.getOperatorFromCompAssign(saved);
+        Token binaryOperator = CExpressionBuilderHelper.getOperatorFromCompAssign(saved);
 
         CExpression rhs = build_binary(binaryOperator, lhs, e_assign());
         lhs = build_assign(assignOperator, lhs, rhs);

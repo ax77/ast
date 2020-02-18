@@ -1,4 +1,4 @@
-package ast.newinits;
+package ast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +7,7 @@ import java.util.Random;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class _TestTemplatesTextual {
+public class _TestInitsTemplatesTextual {
 
   //  template = {{0,0,0},{0,0,0}}
   //
