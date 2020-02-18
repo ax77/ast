@@ -1,4 +1,4 @@
-package ast.expr.main;
+package ast.expr.sem;
 
 import static ast._typesnew.CTypeImpl.FUNC_DESIGNATOR_TODO_STUB;
 import static ast._typesnew.CTypeImpl.TYPE_DOUBLE;
@@ -35,7 +35,8 @@ import ast._typesnew.CPointerType;
 import ast._typesnew.CType;
 import ast._typesnew.CTypeImpl;
 import ast.errors.ParseException;
-import ast.expr.sem.CExpressionBuilderHelper;
+import ast.expr.main.CExpression;
+import ast.expr.main.CExpressionBase;
 import ast.parse.NullChecker;
 
 public abstract class TypeApplier {
@@ -258,7 +259,7 @@ public abstract class TypeApplier {
       // !
       //
       if (operator.ofType(T_EXCLAMATION)) {
-        CType lhsRT = CExpressionBuilderHelper.ipromote(operand.getResultType());
+        CType lhsRT = ipromote(operand.getResultType());
         CType resRT = null;
         if (lhsRT.isScalar()) {
           resRT = TYPE_INT;
@@ -272,7 +273,7 @@ public abstract class TypeApplier {
       // [- + ~]
       //
       else if (operator.ofType(T_MINUS) || operator.ofType(T_PLUS) || operator.ofType(T_TILDE)) {
-        CType lhsRT = CExpressionBuilderHelper.ipromote(operand.getResultType());
+        CType lhsRT = ipromote(operand.getResultType());
         CType resRT = null;
         if (lhsRT.isArithmetic()) {
           resRT = lhsRT;
@@ -348,9 +349,9 @@ public abstract class TypeApplier {
       e.setResultType(e.getFieldName().getType());
     }
 
-    else if (base == ECAST) {
-      e.setResultType(e.getResultType());
-    }
+    //    else if (base == ECAST) {
+    //      e.setResultType(e.getResultType());
+    //    }
 
     else if (base == EFCALL) {
       applytype(e.getLhs());
@@ -385,9 +386,9 @@ public abstract class TypeApplier {
       e.setResultType(e.getLhs().getResultType());
     }
 
-    else if (base == ECOMPLITERAL) {
-      e.setResultType(e.getResultType());
-    }
+    //    else if (base == ECOMPLITERAL) {
+    //      e.setResultType(e.getResultType());
+    //    }
 
     else {
       throw new ParseException("unimpl. base: " + base.toString());
@@ -463,8 +464,8 @@ public abstract class TypeApplier {
     } else if (lhsRt.isFloat() || rhsRt.isFloat()) {
       return TYPE_FLOAT;
     } else {
-      CType prom_1 = CExpressionBuilderHelper.ipromote(lhsRt);
-      CType prom_2 = CExpressionBuilderHelper.ipromote(rhsRt);
+      CType prom_1 = ipromote(lhsRt);
+      CType prom_2 = ipromote(rhsRt);
       if (prom_1.getSize() > prom_2.getSize()) {
         return prom_1;
       } else if (prom_2.getSize() > prom_1.getSize()) {
@@ -477,6 +478,19 @@ public abstract class TypeApplier {
         }
       }
     }
+  }
+
+  public static CType ipromote(CType res) {
+    if (res.isBool()) {
+      return TYPE_INT;
+    }
+    if (res.isUchar() || res.isChar()) {
+      return TYPE_INT;
+    }
+    if (res.isUshort() || res.isShort()) {
+      return TYPE_INT;
+    }
+    return res;
   }
 
 }

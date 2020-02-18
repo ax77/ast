@@ -22,6 +22,7 @@ import ast._typesnew.parser.ParseBase;
 import ast._typesnew.parser.ParseDecl;
 import ast._typesnew.util.TypeMerger;
 import ast.expr.sem.CExpressionBuilderHelper;
+import ast.expr.sem.TypeApplier;
 import ast.parse.Parse;
 import jscan.Tokenlist;
 
@@ -167,7 +168,7 @@ public class _TestTypeCompat {
     List<CFuncParam> params = func.getParameters();
     for (int i = 0; i < params.size(); i++) {
       CType declaredType = params.get(i).getType();
-      CType promotedType = CExpressionBuilderHelper.ipromote(declaredType);
+      CType promotedType = TypeApplier.ipromote(declaredType);
       if (!declaredType.isEqualTo(promotedType)) {
         return true;
       }

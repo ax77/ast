@@ -20,7 +20,6 @@ public class TestSimple2 {
     return new Stream(fname, source);
   }
 
-  @Ignore
   @Test
   public void test() throws IOException {
     //@formatter:off

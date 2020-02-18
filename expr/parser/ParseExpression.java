@@ -46,25 +46,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ast._typesnew.CStructField;
-import ast._typesnew.CStructType;
-import ast._typesnew.CType;
-import ast.declarations.InitializerListEntry;
-import ast.declarations.parser.ParseDeclarations;
-import ast.expr.main.CExpression;
-import ast.expr.main.CExpressionBase;
-import ast.expr.main.TypeApplier;
-import ast.expr.sem.CExpressionBuilder;
-import ast.expr.sem.CExpressionBuilderHelper;
-import ast.parse.Parse;
-import ast.parse.ParseState;
-import ast.parse.Pcheckers;
-import ast.symtabg.elements.CSymbol;
 import jscan.cstrtox.C_strtox;
+import jscan.cstrtox.NumType;
 import jscan.hashed.Hash_ident;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import ast._typesnew.CStructField;
+import ast._typesnew.CStructType;
+import ast._typesnew.CType;
+import ast._typesnew.CTypeImpl;
+import ast.declarations.InitializerListEntry;
+import ast.declarations.parser.ParseDeclarations;
+import ast.expr.main.CExpression;
+import ast.expr.main.CExpressionBase;
+import ast.expr.sem.CExpressionBuilderHelper;
+import ast.expr.sem.TypeApplier;
+import ast.parse.Parse;
+import ast.parse.ParseState;
+import ast.parse.Pcheckers;
+import ast.symtabg.elements.CSymbol;
 
 class Copier {
 
@@ -132,12 +133,62 @@ public class ParseExpression {
     this.parser = parser;
   }
 
+  private CExpression build_unary(Token op, CExpression operand) {
+    return new CExpression(CExpressionBase.EUNARY, op, operand);
+  }
+
+  private CExpression build_binary(Token operator, CExpression lhs, CExpression rhs) {
+    return new CExpression(CExpressionBase.EBINARY, lhs, rhs, operator);
+  }
+
+  private CExpression build_assign(Token tok, CExpression lvalue, CExpression rvalue) {
+    return new CExpression(CExpressionBase.EASSIGN, lvalue, rvalue, tok);
+  }
+
+  private CExpression build_comma(Token tok, T op, CExpression lhs, CExpression rhs) {
+    return new CExpression(CExpressionBase.ECOMMA, lhs, rhs, tok);
+  }
+
+  private CExpression build_number(C_strtox e, Token token) {
+    CExpression ret = new CExpression(e, token);
+
+    final NumType numtype = ret.getCnumber().getNumtype();
+    ret.setResultType(CTypeImpl.bindings.get(numtype));
+
+    return ret;
+  }
+
+  private CExpression build_cast(Parse parser, CType typename, CExpression tocast, Token token) {
+    CExpression ret = new CExpression(typename, tocast, token);
+    ret.setResultType(typename);
+    return ret;
+  }
+
+  private CExpression build_var(CSymbol e, Token token) {
+    CExpression ret = new CExpression(e, token);
+    ret.setResultType(e.getType());
+    return ret;
+  }
+
+  private CExpression build_compsel(CExpression postfis, Token operator, CStructField fieldName) {
+    return new CExpression(postfis, operator, fieldName);
+  }
+
+  private CExpression build_fcall(CExpression function, List<CExpression> arguments, Token token) {
+    return new CExpression(function, arguments, token);
+
+  }
+
+  private CExpression build_incdec(CExpressionBase base, Token op, CExpression lhs) {
+    return new CExpression(base, op, lhs);
+  }
+
   public CExpression e_expression() {
     CExpression e = e_assign();
 
     while (parser.tp() == T.T_COMMA) {
       Token saved = parser.checkedGetT(T.T_COMMA);
-      e = CExpressionBuilder.comma(saved, saved.getType(), e, e_expression());
+      e = build_comma(saved, saved.getType(), e, e_expression());
     }
 
     return e;
@@ -167,7 +218,7 @@ public class ParseExpression {
     //      Token saved = parser.tok();
     //      parser.move();
     //      final CExpression rhs = e_assign();
-    //      lhs = CExpressionBuilder.assign(saved, lhs, rhs);
+    //      lhs = build_assign(saved, lhs, rhs);
     //    }
 
     if (parser.isAssignOperator()) {
@@ -186,14 +237,14 @@ public class ParseExpression {
         Token assignOperator = CExpressionBuilderHelper.copyTokenAddNewType(saved, T_ASSIGN, "=");
         Token binaryOperator = Copier.getOperatorFromCompAssign(saved);
 
-        CExpression rhs = CExpressionBuilder.binary(binaryOperator, lhs, e_assign());
-        lhs = CExpressionBuilder.assign(assignOperator, lhs, rhs);
+        CExpression rhs = build_binary(binaryOperator, lhs, e_assign());
+        lhs = build_assign(assignOperator, lhs, rhs);
       }
 
       else {
 
         parser.move();
-        lhs = CExpressionBuilder.assign(saved, lhs, e_assign());
+        lhs = build_assign(saved, lhs, e_assign());
       }
 
     }
@@ -218,7 +269,7 @@ public class ParseExpression {
     while (parser.tp() == T_OR_OR) {
       Token saved = parser.tok();
       parser.move();
-      e = CExpressionBuilder.binary(saved, e, e_land());
+      e = build_binary(saved, e, e_land());
     }
     return e;
   }
@@ -228,7 +279,7 @@ public class ParseExpression {
     while (parser.tp() == T_AND_AND) {
       Token saved = parser.tok();
       parser.move();
-      e = CExpressionBuilder.binary(saved, e, e_bor());
+      e = build_binary(saved, e, e_bor());
     }
     return e;
   }
@@ -238,7 +289,7 @@ public class ParseExpression {
     while (parser.tp() == T_OR) {
       Token saved = parser.tok();
       parser.move();
-      e = CExpressionBuilder.binary(saved, e, e_bxor());
+      e = build_binary(saved, e, e_bxor());
     }
     return e;
   }
@@ -248,7 +299,7 @@ public class ParseExpression {
     while (parser.tp() == T_XOR) {
       Token saved = parser.tok();
       parser.move();
-      e = CExpressionBuilder.binary(saved, e, e_band());
+      e = build_binary(saved, e, e_band());
     }
     return e;
   }
@@ -258,7 +309,7 @@ public class ParseExpression {
     while (parser.tp() == T_AND) {
       Token saved = parser.tok();
       parser.move();
-      e = CExpressionBuilder.binary(saved, e, e_equality());
+      e = build_binary(saved, e, e_equality());
     }
     return e;
   }
@@ -268,7 +319,7 @@ public class ParseExpression {
     while (parser.tp() == T_EQ || parser.tp() == T_NE) {
       Token saved = parser.tok();
       parser.move();
-      e = CExpressionBuilder.binary(saved, e, e_relational());
+      e = build_binary(saved, e, e_relational());
     }
     return e;
   }
@@ -278,7 +329,7 @@ public class ParseExpression {
     while (parser.tp() == T_LT || parser.tp() == T_GT || parser.tp() == T_LE || parser.tp() == T_GE) {
       Token saved = parser.tok();
       parser.move();
-      e = CExpressionBuilder.binary(saved, e, e_shift());
+      e = build_binary(saved, e, e_shift());
     }
     return e;
   }
@@ -288,7 +339,7 @@ public class ParseExpression {
     while (parser.tp() == T_LSHIFT || parser.tp() == T_RSHIFT) {
       Token saved = parser.tok();
       parser.move();
-      e = CExpressionBuilder.binary(saved, e, e_add());
+      e = build_binary(saved, e, e_add());
     }
     return e;
   }
@@ -298,7 +349,7 @@ public class ParseExpression {
     while (parser.tp() == T_PLUS || parser.tp() == T_MINUS) {
       Token saved = parser.tok();
       parser.move();
-      e = CExpressionBuilder.binary(saved, e, e_mul());
+      e = build_binary(saved, e, e_mul());
     }
     return e;
   }
@@ -308,7 +359,7 @@ public class ParseExpression {
     while (parser.tp() == T_TIMES || parser.tp() == T_DIVIDE || parser.tp() == T_PERCENT) {
       Token saved = parser.tok();
       parser.move();
-      e = CExpressionBuilder.binary(saved, e, e_cast());
+      e = build_binary(saved, e, e_cast());
     }
     return e;
   }
@@ -331,7 +382,7 @@ public class ParseExpression {
 
         if (parser.tp() != T.T_LEFT_BRACE) {
           final CExpression tocast = e_cast();
-          return CExpressionBuilder.doCast(parser, typeName, tocast, lparen);
+          return build_cast(parser, typeName, tocast, lparen);
         }
       }
 
@@ -348,13 +399,13 @@ public class ParseExpression {
     if (parser.isUnaryOperator()) {
       Token operator = parser.tok();
       parser.move();
-      return CExpressionBuilder.unary(operator, e_cast());
+      return build_unary(operator, e_cast());
     }
 
     if (parser.tp() == T.T_PLUS_PLUS || parser.tp() == T_MINUS_MINUS) {
       Token operator = parser.tok();
       parser.move();
-      return CExpressionBuilder.incdec(CExpressionBase.EPREINCDEC, operator, e_unary());
+      return build_incdec(CExpressionBase.EPREINCDEC, operator, e_unary());
     }
 
     if (parser.tok().isIdent(Hash_ident.sizeof_ident)) {
@@ -376,7 +427,7 @@ public class ParseExpression {
         parser.rparen();
 
         C_strtox strtox = new C_strtox(String.format("%d", typename.getSize()));
-        final CExpression ret = CExpressionBuilder.number(strtox, id);
+        final CExpression ret = build_number(strtox, id);
         return ret;
 
       } else {
@@ -390,7 +441,7 @@ public class ParseExpression {
         }
 
         C_strtox strtox = new C_strtox(String.format("%d", sizeofexpr.getResultType().getSize()));
-        return CExpressionBuilder.number(strtox, id);
+        return build_number(strtox, id);
 
       }
 
@@ -402,7 +453,7 @@ public class ParseExpression {
     TypeApplier.applytype(sizeofexpr);
 
     C_strtox strtox = new C_strtox(String.format("%d", sizeofexpr.getResultType().getSize()));
-    return CExpressionBuilder.number(strtox, id);
+    return build_number(strtox, id);
 
   }
 
@@ -456,7 +507,7 @@ public class ParseExpression {
           }
         }
 
-        lhs = CExpressionBuilder.efcall(lhs, arglist, lparen);
+        lhs = build_fcall(lhs, arglist, lparen);
         parser.rparen();
       }
 
@@ -489,8 +540,8 @@ public class ParseExpression {
           }
           //////////////////////////////////////////////////////////////////////
 
-          CExpression inBrace = CExpressionBuilder.unary(operatorDeref, lhs);
-          lhs = CExpressionBuilder.eStructFieldAccess(inBrace, operatorDot, field);
+          CExpression inBrace = build_unary(operatorDeref, lhs);
+          lhs = build_compsel(inBrace, operatorDot, field);
         }
 
         else {
@@ -511,7 +562,7 @@ public class ParseExpression {
           }
           //////////////////////////////////////////////////////////////////////
 
-          lhs = CExpressionBuilder.eStructFieldAccess(lhs, operator, field);
+          lhs = build_compsel(lhs, operator, field);
         }
 
       }
@@ -521,7 +572,7 @@ public class ParseExpression {
       else if (parser.tp() == T.T_PLUS_PLUS || parser.tp() == T_MINUS_MINUS) {
         Token operator = parser.tok();
         parser.move();
-        lhs = CExpressionBuilder.incdec(CExpressionBase.EPOSTINCDEC, operator, lhs);
+        lhs = build_incdec(CExpressionBase.EPOSTINCDEC, operator, lhs);
       }
 
       // array-subscript
@@ -534,8 +585,8 @@ public class ParseExpression {
           Token operatorPlus = CExpressionBuilderHelper.copyTokenAddNewType(lbrack, T_PLUS, "+");
           Token operatorDeref = CExpressionBuilderHelper.copyTokenAddNewType(lbrack, T_TIMES, "*");
 
-          CExpression inBrace = CExpressionBuilder.binary(operatorPlus, lhs, e_expression());
-          lhs = CExpressionBuilder.unary(operatorDeref, inBrace);
+          CExpression inBrace = build_binary(operatorPlus, lhs, e_expression());
+          lhs = build_unary(operatorDeref, inBrace);
 
           parser.rbracket();
         }
@@ -582,7 +633,7 @@ public class ParseExpression {
 
         // TODO:NUMBERS
         C_strtox strtox = new C_strtox(toeval);
-        CExpression e = CExpressionBuilder.number(strtox, saved);
+        CExpression e = build_number(strtox, saved);
         return e;
       }
     }
@@ -596,7 +647,7 @@ public class ParseExpression {
         parser.perror("symbol '" + saved.getValue() + "' was not declared in the scope.");
       }
 
-      CExpression e = CExpressionBuilder.esymbol(sym, saved);
+      CExpression e = build_var(sym, saved);
       return e;
     }
 

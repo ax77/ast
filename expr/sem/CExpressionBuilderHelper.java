@@ -1,16 +1,14 @@
 package ast.expr.sem;
 
-import static ast._typesnew.CTypeImpl.TYPE_INT;
 import static jscan.tokenize.T.TOKEN_NUMBER;
-import ast._typesnew.CType;
-import ast._typesnew.CTypeImpl;
-import ast.expr.main.CExpression;
-import ast.parse.NullChecker;
-import ast.symtabg.elements.NumericConstant;
 import jscan.cstrtox.C_strtox;
 import jscan.cstrtox.NumType;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import ast._typesnew.CTypeImpl;
+import ast.expr.main.CExpression;
+import ast.parse.NullChecker;
+import ast.symtabg.elements.NumericConstant;
 
 public abstract class CExpressionBuilderHelper {
 
@@ -37,7 +35,7 @@ public abstract class CExpressionBuilderHelper {
 
   public static CExpression createNumericConst(Token from, Integer intValue) {
     C_strtox e = new C_strtox(intValue.toString());
-    return CExpressionBuilder.number(e, from);
+    return new CExpression(e, from);
   }
 
   public static CExpression digitZero(Token from) {
@@ -60,16 +58,4 @@ public abstract class CExpressionBuilderHelper {
     return ret;
   }
 
-  public static CType ipromote(CType res) {
-    if (res.isBool()) {
-      return TYPE_INT;
-    }
-    if (res.isUchar() || res.isChar()) {
-      return TYPE_INT;
-    }
-    if (res.isUshort() || res.isShort()) {
-      return TYPE_INT;
-    }
-    return res;
-  }
 }
