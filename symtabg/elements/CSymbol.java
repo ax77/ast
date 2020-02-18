@@ -21,6 +21,8 @@ public class CSymbol implements CTypeApi, ILocation {
   private NumericConstant numericConstant;
   private Initializer initializer;
 
+  private int offset;
+
   public CSymbol(CSymbolBase base, Ident name, CType type, Token from) {
     this.location = new SourceLocation(from);
     this.from = from;
@@ -89,6 +91,14 @@ public class CSymbol implements CTypeApi, ILocation {
 
   public void setNumericConstant(NumericConstant numericConstant) {
     this.numericConstant = numericConstant;
+  }
+
+  public int getOffset() {
+    return offset;
+  }
+
+  public void setOffset(int offset) {
+    this.offset = offset;
   }
 
   //@formatter:off

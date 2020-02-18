@@ -11,6 +11,7 @@ public class FunctionDefinition {
   private final CSymbol symbol;
   private CStatement block; //TODO:final
   private List<CSymbol> locals;
+  private int localsize;
 
   public FunctionDefinition(CSymbol symbol) {
     this.symbol = symbol;
@@ -39,6 +40,14 @@ public class FunctionDefinition {
 
   public List<CSymbol> getLocals() {
     return locals;
+  }
+
+  public int getLocalsize() {
+    return localsize;
+  }
+
+  public void setLocalsize(int localsize) {
+    this.localsize = localsize;
   }
 
 }

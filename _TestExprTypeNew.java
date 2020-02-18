@@ -81,40 +81,4 @@ public class _TestExprTypeNew {
     }
   }
 
-  @Test
-  public void testConstexprEval_0() throws IOException {
-    Map<String, Integer> s = new HashMap<String, Integer>();
-    //@formatter:off
-    s.put("1 + 2 * 3             ",     7);
-    s.put("1 ? 2 : 3 ? 4 : 5     ",     2);
-    s.put("1 ? 2 : 1 / 0         ",     2);
-    s.put("0 && 1 / 0            ",     0);
-    s.put("1 - 1 && 1 / 0        ",     0);
-    s.put("1 || 1 / 0            ",     1);
-    s.put("-1 || 1 / 0           ",     1);
-    s.put("1+2*3-1+2*1024-2+1/2  ",  2052);
-    s.put("1 & 2                 ",     0);
-    s.put("1 | 2                 ",     3);
-    s.put("1 ^ 2                 ",     3);
-    s.put("1 << 1                ",     2);
-    s.put("1 << 2                ",     4);
-    s.put("1 << 3                ",     8);
-    s.put("0 && 0 ? 1 : 2        ",     2);
-    s.put("(1,2,3,4,5,6,7,8,9,0) ",     0);
-    s.put("(1+2, 2+3, 3+4)       ",     7);
-    //@formatter:on
-
-    for (Entry<String, Integer> entry : s.entrySet()) {
-
-      String source = entry.getKey();
-      Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
-
-      Parse p = new Parse(it);
-      CExpression expr = new ParseExpression(p).e_expression();
-
-      long ce = new ConstexprEval(p).ce(expr);
-      assertEquals(entry.getValue().intValue(), ce);
-    }
-  }
-
 }

@@ -21,7 +21,7 @@ public class TestGeneric {
   public void testGenericSelection() throws IOException {
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    //    sb.append(" /*001*/  void g(void);                                                                 \n");
+    //        sb.append(" /*001*/  void g(void);                                                                 \n");
     sb.append(" /*002*/  int a1[_Generic(0, int: 1, short: 2, float: 3, default: 4) == 1 ? 1 : -1];    \n");
     sb.append(" /*003*/  int a2[_Generic(0, default: 1, short: 2, float: 3, int: 4) == 4 ? 1 : -1];    \n");
     sb.append(" /*004*/  int a3[_Generic(0L, int: 1, short: 2, float: 3, default: 4) == 4 ? 1 : -1];   \n");
@@ -29,7 +29,7 @@ public class TestGeneric {
     sb.append(" /*006*/  int a5[_Generic(0, int: 1, short: 2, float: 3) == 1 ? 1 : -1];                \n");
     sb.append(" /*007*/  int a6[_Generic(0, short: 1, float: 2, int: 3) == 3 ? 1 : -1];                \n");
     //    sb.append(" /*008*/  int a7[_Generic(\"test\", char *: 1, default: 2) == 1 ? 1 : -1];              \n");
-    //    sb.append(" /*009*/  int a8[_Generic(g, void (*)(void): 1, default: 2) == 1 ? 1 : -1];             \n");
+    //        sb.append(" /*009*/  int a8[_Generic(g, void (*)(void): 1, default: 2) == 1 ? 1 : -1];             \n");
     sb.append(" /*010*/  const int i = 12;                                                             \n");
     sb.append(" /*011*/  int a9[_Generic(i, int: 1, default: 2) == 1 ? 1 : -1];                        \n");
     //@formatter:on
@@ -42,7 +42,6 @@ public class TestGeneric {
 
   }
 
-  @Ignore
   @Test
   public void testGenericTypeItself() throws IOException {
     //@formatter:off

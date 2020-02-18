@@ -33,6 +33,10 @@ public abstract class CExpressionBuilderHelper {
     return copyTokenAddNewType(from, T.T_ASSIGN, "=");
   }
 
+  public static Token dotOperator(Token from) {
+    return copyTokenAddNewType(from, T.T_DOT, ".");
+  }
+
   public static CExpression createNumericConst(Token from, Integer intValue) {
     C_strtox e = new C_strtox(intValue.toString());
     return new CExpression(e, from);

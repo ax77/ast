@@ -7,6 +7,7 @@ import java.util.List;
 
 import ast._typesnew.CType;
 import ast.expr.main.CExpression;
+import ast.expr.sem.TypeApplier;
 import ast.parse.Parse;
 import jscan.hashed.Hash_ident;
 import jscan.tokenize.T;
@@ -89,6 +90,13 @@ public class ExpandGenericResult {
   }
 
   private CExpression selectResultExpression(GenericSelection genericSelection) {
+    for (GenericAssociation e : genericSelection.getAssociations()) {
+      TypeApplier.applytype(e.getAssignment());
+    }
+    TypeApplier.applytype(genericSelection.getControlExpression());
+    if (genericSelection.getDefaultAssociation() != null) {
+      TypeApplier.applytype(genericSelection.getDefaultAssociation());
+    }
 
     CType need = genericSelection.getControlExpression().getResultType();
     if (need == null) {

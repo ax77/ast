@@ -58,14 +58,14 @@ public class _TestInternalConversions {
     sb.append(" /*040*/      _Static_assert(    8 == sizeof( (f64 = i8) ), \"(f64 = i8)\" );                                                   \n");
     sb.append(" /*041*/      _Static_assert(    8 == sizeof( (f64 = f128) ), \"(f64 = f128)\" );                                               \n");
     sb.append(" /*042*/      _Static_assert(   16 == sizeof( (f128 = i8 || i32) ), \"(f128 = i8 || i32)\" );                                   \n");
-//    sb.append(" /*043*/      _Static_assert(    1 == sizeof( (i8++) ), \"(i8++)\" );                                                           \n");
-//    sb.append(" /*044*/      _Static_assert(    8 == sizeof( (++i64) ), \"(++i64)\" );                                                         \n");
-//    sb.append(" /*045*/      _Static_assert(    1 == sizeof( (f2(1, 2)) ), \"(f2(1, 2))\" );                                                   \n");
+    sb.append(" /*043*/      _Static_assert(    1 == sizeof( (i8++) ), \"(i8++)\" );                                                           \n");
+    sb.append(" /*044*/      _Static_assert(    8 == sizeof( (++i64) ), \"(++i64)\" );                                                         \n");
+    sb.append(" /*045*/      _Static_assert(    1 == sizeof( (f2(1, 2)) ), \"(f2(1, 2))\" );                                                   \n");
 //    sb.append(" /*046*/      _Static_assert(    8 == sizeof( (fp = f2) ), \"(fp = f2)\" );                                                     \n");
-//    sb.append(" /*047*/      _Static_assert(    8 == sizeof( (fp = &f2) ), \"(fp = &f2)\" );                                                   \n");
+    sb.append(" /*047*/      _Static_assert(    8 == sizeof( (fp = &f2) ), \"(fp = &f2)\" );                                                   \n");
 //    sb.append(" /*048*/      _Static_assert(    8 == sizeof( (f2 + 1) ), \"(f2 + 1)\" );                                                       \n");
 //    sb.append(" /*049*/      _Static_assert(    8 == sizeof( (fp - 1) ), \"(fp - 1)\" );                                                       \n");
-//    sb.append(" /*050*/      _Static_assert(    1 == sizeof( (f3(fp)) ), \"(f3(fp))\" );                                                       \n");
+    sb.append(" /*050*/      _Static_assert(    1 == sizeof( (f3(fp)) ), \"(f3(fp))\" );                                                       \n");
     sb.append(" /*051*/      return 0;                                                                                                         \n");
     sb.append(" /*052*/  }                                                                                                                     \n");
     //@formatter:on

@@ -234,7 +234,7 @@ public class ParseExpression {
         // += lhs(a) rhs(b)
         // = lhs(a) rhs( + lhs(a) rhs(b) )
 
-        Token assignOperator = CExpressionBuilderHelper.copyTokenAddNewType(saved, T_ASSIGN, "=");
+        Token assignOperator = CExpressionBuilderHelper.assignOperator(saved);
         Token binaryOperator = Copier.getOperatorFromCompAssign(saved);
 
         CExpression rhs = build_binary(binaryOperator, lhs, e_assign());
@@ -409,13 +409,13 @@ public class ParseExpression {
     }
 
     if (parser.tok().isIdent(Hash_ident.sizeof_ident)) {
-      return eSizeof();
+      return e_sizeof();
     }
 
     return e_postfix();
   }
 
-  private CExpression eSizeof() {
+  private CExpression e_sizeof() {
     Token id = parser.checkedMoveIdent(Hash_ident.sizeof_ident);
 
     if (parser.tp() == T_LEFT_PAREN) {
@@ -525,8 +525,8 @@ public class ParseExpression {
         // a->b :: (*a).b
         if (operator.ofType(T_ARROW)) {
 
-          final Token operatorDeref = CExpressionBuilderHelper.copyTokenAddNewType(operator, T_TIMES, "*");
-          final Token operatorDot = CExpressionBuilderHelper.copyTokenAddNewType(operator, T_DOT, ".");
+          final Token operatorDeref = CExpressionBuilderHelper.derefOperator(operator);
+          final Token operatorDot = CExpressionBuilderHelper.dotOperator(operator);
 
           //////////////////////////////////////////////////////////////////////
           final CType lhsRT = lhs.getResultType();
@@ -582,8 +582,8 @@ public class ParseExpression {
           Token lbrack = parser.lbracket();
 
           // a[5] :: *(a+5)
-          Token operatorPlus = CExpressionBuilderHelper.copyTokenAddNewType(lbrack, T_PLUS, "+");
-          Token operatorDeref = CExpressionBuilderHelper.copyTokenAddNewType(lbrack, T_TIMES, "*");
+          Token operatorPlus = CExpressionBuilderHelper.plusOperator(lbrack);
+          Token operatorDeref = CExpressionBuilderHelper.derefOperator(lbrack);
 
           CExpression inBrace = build_binary(operatorPlus, lhs, e_expression());
           lhs = build_unary(operatorDeref, inBrace);

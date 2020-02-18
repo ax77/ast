@@ -34,7 +34,7 @@ public class CExpression implements ILocation {
 
   // TODO: location
 
-  private CExpressionBase base; // what union contains
+  private final CExpressionBase base; // what union contains
   private final long tname; // just unique id. for codegen.
   private final SourceLocation location;
 
@@ -254,10 +254,6 @@ public class CExpression implements ILocation {
 
   public CExpressionBase getBase() {
     return base;
-  }
-
-  public void setBase(CExpressionBase base) {
-    this.base = base;
   }
 
   public List<InitializerListEntry> getInitializerList() {
