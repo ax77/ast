@@ -3,6 +3,7 @@ package ast;
 import java.io.IOException;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ast.parse.Parse;
@@ -41,6 +42,7 @@ public class TestGeneric {
 
   }
 
+  @Ignore
   @Test
   public void testGenericTypeItself() throws IOException {
     //@formatter:off

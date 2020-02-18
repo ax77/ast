@@ -117,20 +117,20 @@ public class ConstexprEval {
 
       //21)
       if (t == T.T_MINUS) {
-        return -ce(expression.getOperand());
+        return -ce(expression.getLhs());
       }
       //22)
       if (t == T.T_PLUS) {
-        return ce(expression.getOperand());
+        return ce(expression.getLhs());
       }
 
       //23)
       if (t == T.T_TILDE) {
-        return ~ce(expression.getOperand());
+        return ~ce(expression.getLhs());
       }
       //24)
       if (t == T.T_EXCLAMATION) {
-        long r = ce(expression.getOperand());
+        long r = ce(expression.getLhs());
         return (r == 0 ? 1 : 0);
       }
 

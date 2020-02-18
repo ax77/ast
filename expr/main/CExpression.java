@@ -39,18 +39,16 @@ public class CExpression implements ILocation {
   private final SourceLocation location;
 
   private CType resultType; // what expression doe's after evaluation
-
   private final Token token; // operator, position
   private final CExpression tree[]; // unary, binary, assign, array-subscript
 
-  private CType typename; // cast lhs to typename
   private List<InitializerListEntry> initializerList; // (typename) { initializer-list } compound literal
   private CStructField fieldName; //  field name (compsel)
-  private CSymbol symbol; // primary ident
-
   private List<CExpression> arglist; // function-arguments
+
   private String cstring;
   private NumericConstant cnumber;
+  private CSymbol symbol; // primary ident
 
   private void assertBaseIsOneOf(CExpressionBase... bases) {
     boolean contains = false;
@@ -66,23 +64,14 @@ public class CExpression implements ILocation {
   }
 
   public CExpression getLhs() {
-    assertBaseIsOneOf(EASSIGN, EBINARY, ETERNARY, ECOMMA, ECAST /*, ESUBSCRIPT*/, EFCALL, EPRIMARY_GENERIC);
-    return tree[LHS_INDEX];
-  }
-
-  public CExpression getPostfix() {
-    assertBaseIsOneOf(ECOMPSEL);
+    assertBaseIsOneOf(ECOMPSEL, EUNARY, EPREINCDEC, EPOSTINCDEC, EASSIGN, EBINARY, ETERNARY, ECOMMA, ECAST, EFCALL,
+        EPRIMARY_GENERIC);
     return tree[LHS_INDEX];
   }
 
   public CExpression getRhs() {
     assertBaseIsOneOf(EASSIGN, EBINARY, ETERNARY, ECOMMA /*, ESUBSCRIPT*/);
     return tree[RHS_INDEX];
-  }
-
-  public CExpression getOperand() {
-    assertBaseIsOneOf(EUNARY, EPREINCDEC, EPOSTINCDEC);
-    return tree[LHS_INDEX];
   }
 
   private void setLhs(CExpression e) {
@@ -100,10 +89,6 @@ public class CExpression implements ILocation {
 
   private void setCnd(CExpression condition) {
     tree[CND_INDEX] = condition;
-  }
-
-  public CType getTypename() {
-    return typename;
   }
 
   private CExpression[] emptyTree() {
@@ -154,7 +139,7 @@ public class CExpression implements ILocation {
     this.location = new SourceLocation(token);
     this.token = token;
     this.base = CExpressionBase.ECOMPLITERAL;
-    this.typename = typename;
+    this.resultType = typename;
     this.initializerList = initializerList;
   }
 
@@ -174,7 +159,7 @@ public class CExpression implements ILocation {
     this.location = new SourceLocation(token);
     this.token = token;
     this.base = CExpressionBase.ECAST;
-    this.typename = typename;
+    this.resultType = typename;
     setLhs(tocast);
   }
 
@@ -315,10 +300,6 @@ public class CExpression implements ILocation {
     return tree;
   }
 
-  public void setTypename(CType typename) {
-    this.typename = typename;
-  }
-
   private String tokenTos(Token t) {
     return " " + t.getValue() + " ";
   }
@@ -337,18 +318,23 @@ public class CExpression implements ILocation {
       return getLhs().toString() + tokenTos(getToken()) + getRhs().toString();
     }
     case ETERNARY: {
-      return "(" + getCnd().toString().trim() + " ? " + getLhs().toString().trim() + " : " + getRhs().toString().trim()
+      return "("
+          + getCnd().toString().trim()
+          + " ? "
+          + getLhs().toString().trim()
+          + " : "
+          + getRhs().toString().trim()
           + ")";
     }
     case EUNARY: {
-      return "(" + getToken().getValue() + getOperand().toString() + ")";
+      return "(" + getToken().getValue() + getLhs().toString() + ")";
     }
     case ECOMPSEL: {
       // TODO:
-      return "(" + getPostfix().toString() + ")." + fieldName.getName().getName();
+      return "(" + getLhs().toString() + ")." + fieldName.getName().getName();
     }
     case ECAST: {
-      return "(" + typename.toString() + ") " + "(" + getLhs().toString() + ")";
+      return "(" + resultType.toString() + ") " + "(" + getLhs().toString() + ")";
     }
     case EFCALL: {
       StringBuilder sb = new StringBuilder();
@@ -367,13 +353,13 @@ public class CExpression implements ILocation {
       return sb.toString();
     }
     case EPREINCDEC: {
-      return "(" + getToken().getValue() + getOperand().toString() + ")";
+      return "(" + getToken().getValue() + getLhs().toString() + ")";
     }
     case EPOSTINCDEC: {
-      return "(" + getOperand().toString() + getToken().getValue() + ")";
+      return "(" + getLhs().toString() + getToken().getValue() + ")";
     }
     case ECOMPLITERAL: {
-      return "(" + typename.toString() + ") {" + initializerList.toString() + " }";
+      return "(" + resultType.toString() + ") {" + initializerList.toString() + " }";
     }
     case EPRIMARY_IDENT: {
       return token.getValue(); // TODO: this for unit-tests now.

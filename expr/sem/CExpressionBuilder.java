@@ -2,34 +2,31 @@ package ast.expr.sem;
 
 import java.util.List;
 
+import jscan.cstrtox.C_strtox;
+import jscan.cstrtox.NumType;
+import jscan.tokenize.T;
+import jscan.tokenize.Token;
 import ast._typesnew.CStructField;
 import ast._typesnew.CType;
 import ast._typesnew.CTypeImpl;
 import ast.errors.ParseException;
 import ast.expr.main.CExpression;
 import ast.expr.main.CExpressionBase;
-import ast.expr.sem.etype.BinaryTyped;
-import ast.expr.sem.etype.UnaryTyped;
 import ast.parse.Parse;
 import ast.symtabg.elements.CSymbol;
-import jscan.cstrtox.C_strtox;
-import jscan.cstrtox.NumType;
-import jscan.tokenize.T;
-import jscan.tokenize.Token;
 
 public abstract class CExpressionBuilder {
 
   public static CExpression unary(Token op, CExpression operand) {
-    CExpression res = UnaryTyped.sUnary(op, operand);
-    return res;
+    return new CExpression(CExpressionBase.EUNARY, op, operand);
   }
 
   public static CExpression binary(Token operator, CExpression lhs, CExpression rhs) {
-    return BinaryTyped.sBinary(operator, lhs, rhs);
+    return new CExpression(CExpressionBase.EBINARY, lhs, rhs, operator);
   }
 
   public static CExpression assign(Token tok, CExpression lvalue, CExpression rvalue) {
-    return BinaryTyped.sAssign(tok, lvalue, rvalue);
+    return new CExpression(CExpressionBase.EASSIGN, lvalue, rvalue, tok);
   }
 
   public static CExpression comma(Token tok, T op, CExpression lhs, CExpression rhs) {

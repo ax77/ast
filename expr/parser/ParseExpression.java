@@ -53,6 +53,7 @@ import ast.declarations.InitializerListEntry;
 import ast.declarations.parser.ParseDeclarations;
 import ast.expr.main.CExpression;
 import ast.expr.main.CExpressionBase;
+import ast.expr.main.TypeApplier;
 import ast.expr.sem.CExpressionBuilder;
 import ast.expr.sem.CExpressionBuilderHelper;
 import ast.parse.Parse;
@@ -381,6 +382,7 @@ public class ParseExpression {
       } else {
 
         CExpression sizeofexpr = e_expression();
+        TypeApplier.applytype(sizeofexpr);
         parser.rparen();
 
         if (sizeofexpr.getResultType() == null) {
@@ -397,6 +399,8 @@ public class ParseExpression {
     // sizeof 1
 
     CExpression sizeofexpr = e_unary();
+    TypeApplier.applytype(sizeofexpr);
+
     C_strtox strtox = new C_strtox(String.format("%d", sizeofexpr.getResultType().getSize()));
     return CExpressionBuilder.number(strtox, id);
 
@@ -465,8 +469,11 @@ public class ParseExpression {
         Token fieldNameTok = parser.expectIdentifier();
         Ident fieldName = fieldNameTok.getIdent();
 
+        TypeApplier.applytype(lhs);
+
         // a->b :: (*a).b
         if (operator.ofType(T_ARROW)) {
+
           final Token operatorDeref = CExpressionBuilderHelper.copyTokenAddNewType(operator, T_TIMES, "*");
           final Token operatorDot = CExpressionBuilderHelper.copyTokenAddNewType(operator, T_DOT, ".");
 
