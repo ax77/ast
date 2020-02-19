@@ -1,7 +1,5 @@
 package ast.expr.parser;
 
-import static ast.expr.sem.TypeApplierAllowModes.*;
-import static ast.expr.sem.TypeApplierAllowModes.ALLOW_POINTER_TO_FUNCTION;
 import static jscan.tokenize.T.TOKEN_CHAR;
 import static jscan.tokenize.T.TOKEN_NUMBER;
 import static jscan.tokenize.T.TOKEN_STRING;
@@ -49,7 +47,6 @@ import ast.expr.main.CExpression;
 import ast.expr.main.CExpressionBase;
 import ast.expr.sem.CExpressionBuilderHelper;
 import ast.expr.sem.TypeApplier;
-import ast.expr.sem.TypeApplierAllowModes;
 import ast.parse.Parse;
 import ast.parse.ParseState;
 import ast.parse.Pcheckers;
@@ -352,7 +349,7 @@ public class ParseExpression {
       } else {
 
         CExpression sizeofexpr = e_expression();
-        TypeApplier.applytype(sizeofexpr, ALLOW_POINTER_TO_FUNCTION);
+        TypeApplier.applytype(sizeofexpr);
         parser.rparen();
 
         if (sizeofexpr.getResultType() == null) {
@@ -369,7 +366,7 @@ public class ParseExpression {
     // sizeof 1
 
     CExpression sizeofexpr = e_unary();
-    TypeApplier.applytype(sizeofexpr, ALLOW_POINTER_TO_FUNCTION);
+    TypeApplier.applytype(sizeofexpr);
 
     C_strtox strtox = new C_strtox(String.format("%d", sizeofexpr.getResultType().getSize()));
     return build_number(strtox, id);
@@ -439,7 +436,7 @@ public class ParseExpression {
         Token fieldNameTok = parser.expectIdentifier();
         Ident fieldName = fieldNameTok.getIdent();
 
-        TypeApplier.applytype(lhs, ALLOW_POINTER_TO_ARRAY_FUNCTION);
+        TypeApplier.applytype(lhs);
 
         // a->b :: (*a).b
         if (operator.ofType(T_ARROW)) {

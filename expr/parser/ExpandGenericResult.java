@@ -1,19 +1,17 @@
 package ast.expr.parser;
 
-import static ast.expr.sem.TypeApplierAllowModes.*;
-import static ast.expr.sem.TypeApplierAllowModes.ALLOW_POINTER_TO_FUNCTION;
 import static jscan.tokenize.T.T_COLON;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import jscan.hashed.Hash_ident;
+import jscan.tokenize.T;
+import jscan.tokenize.Token;
 import ast._typesnew.CType;
 import ast.expr.main.CExpression;
 import ast.expr.sem.TypeApplier;
 import ast.parse.Parse;
-import jscan.hashed.Hash_ident;
-import jscan.tokenize.T;
-import jscan.tokenize.Token;
 
 class GenericAssociation {
   private final CType typename;
@@ -93,12 +91,12 @@ public class ExpandGenericResult {
 
   private CExpression selectResultExpression(GenericSelection genericSelection) {
     for (GenericAssociation e : genericSelection.getAssociations()) {
-      TypeApplier.applytype(e.getAssignment(), ALLOW_POINTER_TO_ARRAY_FUNCTION);
+      TypeApplier.applytype(e.getAssignment());
     }
 
-    TypeApplier.applytype(genericSelection.getControlExpression(), ALLOW_POINTER_TO_ARRAY_FUNCTION);
+    TypeApplier.applytype(genericSelection.getControlExpression());
     if (genericSelection.getDefaultAssociation() != null) {
-      TypeApplier.applytype(genericSelection.getDefaultAssociation(), ALLOW_POINTER_TO_ARRAY_FUNCTION);
+      TypeApplier.applytype(genericSelection.getDefaultAssociation());
     }
 
     CType need = genericSelection.getControlExpression().getResultType();

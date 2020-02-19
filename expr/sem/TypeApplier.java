@@ -51,7 +51,6 @@ import ast.errors.ParseException;
 import ast.expr.main.CExpression;
 import ast.expr.main.CExpressionBase;
 import ast.parse.NullChecker;
-import static ast.expr.sem.TypeApplierAllowModes.*;
 
 public abstract class TypeApplier {
 
@@ -61,7 +60,7 @@ public abstract class TypeApplier {
     }
   }
 
-  public static void applytype(CExpression e, TypeApplierAllowModes modeArray) {
+  public static void applytype(CExpression e) {
 
     final CExpressionBase base = e.getBase();
     if (e.getResultType() != null) {
@@ -69,8 +68,8 @@ public abstract class TypeApplier {
     }
 
     if (base == EASSIGN) {
-      applytype(e.getLhs(), ALLOW_POINTER_TO_FUNCTION);
-      applytype(e.getRhs(), ALLOW_POINTER_TO_ARRAY_FUNCTION);
+      applytype(e.getLhs());
+      applytype(e.getRhs());
 
       assertType(e.getLhs());
       assertType(e.getRhs());
@@ -80,8 +79,8 @@ public abstract class TypeApplier {
 
     else if (base == EBINARY) {
 
-      applytype(e.getLhs(), ALLOW_POINTER_TO_ARRAY_FUNCTION);
-      applytype(e.getRhs(), ALLOW_POINTER_TO_ARRAY_FUNCTION);
+      applytype(e.getLhs());
+      applytype(e.getRhs());
 
       assertType(e.getLhs());
       assertType(e.getRhs());
@@ -91,8 +90,8 @@ public abstract class TypeApplier {
     }
 
     else if (base == ECOMMA) {
-      applytype(e.getLhs(), ALLOW_POINTER_TO_ARRAY_FUNCTION);
-      applytype(e.getRhs(), ALLOW_POINTER_TO_ARRAY_FUNCTION);
+      applytype(e.getLhs());
+      applytype(e.getRhs());
 
       assertType(e.getLhs());
       assertType(e.getRhs());
@@ -101,9 +100,9 @@ public abstract class TypeApplier {
     }
 
     else if (base == ETERNARY) {
-      applytype(e.getCnd(), ALLOW_POINTER_TO_ARRAY_FUNCTION);
-      applytype(e.getLhs(), ALLOW_POINTER_TO_ARRAY_FUNCTION);
-      applytype(e.getRhs(), ALLOW_POINTER_TO_ARRAY_FUNCTION);
+      applytype(e.getCnd());
+      applytype(e.getLhs());
+      applytype(e.getRhs());
 
       assertType(e.getCnd());
       assertType(e.getLhs());
@@ -114,7 +113,7 @@ public abstract class TypeApplier {
     }
 
     else if (base == EUNARY) {
-      applytype(e.getLhs(), ALLOW_POINTER_TO_ARRAY_FUNCTION);
+      applytype(e.getLhs());
 
       assertType(e.getLhs());
       applyUnary(e);
@@ -122,20 +121,6 @@ public abstract class TypeApplier {
 
     else if (base == EPRIMARY_IDENT) {
       final CType symtype = e.getSymbol().getType();
-      if (modeArray == ALLOW_POINTER_TO_ARRAY_FUNCTION) {
-        if (symtype.isArray()) {
-          CPointerType ptrto = new CPointerType(symtype.getTpArray().getArrayOf(), false);
-          e.setResultType(new CType(ptrto));
-          return;
-        }
-      }
-      if (modeArray == ALLOW_POINTER_TO_ARRAY_FUNCTION || modeArray == ALLOW_POINTER_TO_FUNCTION) {
-        if (symtype.isFunction()) {
-          CPointerType ptrto = new CPointerType(symtype, false);
-          e.setResultType(new CType(ptrto));
-          return;
-        }
-      }
       e.setResultType(symtype);
     }
 
@@ -150,28 +135,28 @@ public abstract class TypeApplier {
     }
 
     else if (base == EPRIMARY_GENERIC) {
-      applytype(e.getLhs(), ALLOW_POINTER_TO_ARRAY_FUNCTION);
+      applytype(e.getLhs());
 
       assertType(e.getLhs());
       e.setResultType(e.getLhs().getResultType());
     }
 
     else if (base == ECOMPSEL) {
-      applytype(e.getLhs(), ALLOW_POINTER_TO_ARRAY_FUNCTION);
+      applytype(e.getLhs());
 
       assertType(e.getLhs());
       e.setResultType(e.getField().getType());
     }
 
     else if (base == EFCALL) {
-      applytype(e.getLhs(), ALLOW_POINTER_TO_ARRAY_FUNCTION);
+      applytype(e.getLhs());
 
       assertType(e.getLhs());
       applyFcall(e);
     }
 
     else if (base == EPREINCDEC) {
-      applytype(e.getLhs(), ALLOW_POINTER_TO_ARRAY_FUNCTION);
+      applytype(e.getLhs());
 
       assertType(e.getLhs());
 
@@ -180,7 +165,7 @@ public abstract class TypeApplier {
     }
 
     else if (base == EPOSTINCDEC) {
-      applytype(e.getLhs(), ALLOW_POINTER_TO_ARRAY_FUNCTION);
+      applytype(e.getLhs());
 
       assertType(e.getLhs());
 
@@ -201,10 +186,10 @@ public abstract class TypeApplier {
 
     checkModLvalue(lhs);
 
-    //    // allow pointer to function, but NOT an array
-    //    genPointerFn(lhs);
-    //    // allow pointer to function, AND array
-    //    genPointer(rhs);
+    // allow pointer to function, but NOT an array
+    genPointerFn(lhs);
+    // allow pointer to function, AND array
+    genPointer(rhs);
 
     final CType lhsRT = lhs.getResultType();
     final CType rhsRT = rhs.getResultType();
@@ -248,6 +233,8 @@ public abstract class TypeApplier {
   private static void applyUnary(CExpression e) {
     final Token operator = e.getToken();
     final CExpression operand = e.getLhs();
+
+    genPointer(operand);
 
     // !
     //
@@ -316,6 +303,9 @@ public abstract class TypeApplier {
       } else {
         errorUnaryExpr("Unary expression error: ", operator, operand);
       }
+      if (resRT == null) {
+        System.out.println();
+      }
       checkResultType(resRT, operator, operand);
       e.setResultType(resRT);
     }
@@ -330,8 +320,8 @@ public abstract class TypeApplier {
     final CExpression lhs = e.getLhs();
     final CExpression rhs = e.getRhs();
 
-    //    genPointer(lhs);
-    //    genPointer(rhs);
+    genPointer(lhs);
+    genPointer(rhs);
 
     final CType Ltype = lhs.getResultType();
     final CType Rtype = rhs.getResultType();
@@ -470,35 +460,35 @@ public abstract class TypeApplier {
     }
   }
 
-  //  private static void genPointer(CExpression inputExpr) {
-  //
-  //    NullChecker.check(inputExpr);
-  //    final CType typeOfNode = inputExpr.getResultType();
-  //
-  //    if (typeOfNode.isArray()) {
-  //      CType arrtype = typeOfNode.getTpArray().getArrayOf();
-  //      CType ptrtype = new CType(new CPointerType(arrtype, false));
-  //      inputExpr.setResultType(ptrtype);
-  //    }
-  //
-  //    if (typeOfNode.isFunction()) {
-  //      CType ptrtype = new CType(new CPointerType(typeOfNode, false));
-  //      inputExpr.setResultType(ptrtype);
-  //    }
-  //
-  //  }
-  //
-  //  private static void genPointerFn(CExpression inputExpr) {
-  //
-  //    NullChecker.check(inputExpr);
-  //    final CType typeOfNode = inputExpr.getResultType();
-  //
-  //    if (typeOfNode.isFunction()) {
-  //      CType ptrtype = new CType(new CPointerType(typeOfNode, false));
-  //      inputExpr.setResultType(ptrtype);
-  //    }
-  //
-  //  }
+  private static void genPointer(CExpression inputExpr) {
+
+    NullChecker.check(inputExpr);
+    final CType typeOfNode = inputExpr.getResultType();
+
+    if (typeOfNode.isArray()) {
+      CType arrtype = typeOfNode.getTpArray().getArrayOf();
+      CType ptrtype = new CType(new CPointerType(arrtype, false));
+      inputExpr.setResultType(ptrtype);
+    }
+
+    if (typeOfNode.isFunction()) {
+      CType ptrtype = new CType(new CPointerType(typeOfNode, false));
+      inputExpr.setResultType(ptrtype);
+    }
+
+  }
+
+  private static void genPointerFn(CExpression inputExpr) {
+
+    NullChecker.check(inputExpr);
+    final CType typeOfNode = inputExpr.getResultType();
+
+    if (typeOfNode.isFunction()) {
+      CType ptrtype = new CType(new CPointerType(typeOfNode, false));
+      inputExpr.setResultType(ptrtype);
+    }
+
+  }
 
   private static void errorUnaryExpr(String string, Token operator, CExpression lhs) {
     throw new ParseException("errorUnaryExpr: " + operator.toString() + " " + lhs.toString());

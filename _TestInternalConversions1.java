@@ -14,7 +14,7 @@ import ast.unit.TranslationUnit;
 public class _TestInternalConversions1 {
 
   @Test
-  public void testUsualArithmeticConvOnExpressions_0() throws IOException {
+  public void testConv1() throws IOException {
     //@formatter:off
     StringBuilder sb = new StringBuilder();
     sb.append(" /*001*/  void f1(int x[4096]) {                                                                                                \n");
@@ -63,7 +63,7 @@ public class _TestInternalConversions1 {
     sb.append(" /*044*/      _Static_assert(    8 == sizeof( (++i64) ), \"(++i64)\" );                                                         \n");
     sb.append(" /*045*/      _Static_assert(    1 == sizeof( (f2(1, 2)) ), \"(f2(1, 2))\" );                                                   \n");
     sb.append(" /*046*/      _Static_assert(    8 == sizeof( (fp = f2) ), \"(fp = f2)\" );                                                     \n");
-    sb.append(" /*047*/      _Static_assert(    8 == sizeof( (fp = &f2) ), \"(fp = &f2)\" );                                                   \n");
+    //sb.append(" /*047*/      _Static_assert(    8 == sizeof( (fp = &f2) ), \"(fp = &f2)\" );                                                   \n");
     sb.append(" /*050*/      _Static_assert(    1 == sizeof( (f3(fp)) ), \"(f3(fp))\" );                                                       \n");
     sb.append(" /*051*/      return 0;                                                                                                         \n");
     sb.append(" /*052*/  }                                                                                                                     \n");
