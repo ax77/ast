@@ -10,7 +10,7 @@ public class CFuncParam {
   public CFuncParam(Ident name, CType type) {
     NullChecker.check(name, type);
     this.name = name;
-    this.type = type;
+    this.type = genpointer(type);
   }
 
   // KnR identifier-list func-definition [int x(a,b,c) int a,b,c; {}]
@@ -24,7 +24,15 @@ public class CFuncParam {
   public CFuncParam(CType type) {
     NullChecker.check(type);
     this.name = null;
-    this.type = type;
+    this.type = genpointer(type);
+  }
+
+  private CType genpointer(CType from) {
+    if (from.isArray()) {
+      CPointerType ptr = new CPointerType(from.getTpArray().getArrayOf(), false);
+      return new CType(ptr);
+    }
+    return from;
   }
 
   public Ident getName() {

@@ -159,7 +159,8 @@ public class ConstexprEval {
     // int a1[_Generic(0, int: 1, short: 2, float: 3, default: 4) == 1 ? 1 : -1];
     //
     if (base == CExpressionBase.EPRIMARY_GENERIC) {
-      return ce(expression.getGenericSelectionResult());
+      final CExpression genericSelectionResult = expression.getGenericSelectionResult();
+      return ce(genericSelectionResult);
     }
 
     if (base == CExpressionBase.ECAST) {

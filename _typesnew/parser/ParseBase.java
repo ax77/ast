@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import ast._typesnew.CType;
+import ast._typesnew.CTypeImpl;
 import ast._typesnew.main.StorageKind;
 import ast._typesnew.main.TypeKind;
 import ast._typesnew.util.TypeCombiner;
@@ -114,8 +115,12 @@ public class ParseBase {
       }
     }
 
-    p.perror("error_2");
-    return null;
+    // 'int' by default
+    p.pwarning("default type-int... if type not specified.");
+    return CTypeImpl.TYPE_INT;
+
+    //    p.perror("error_2");
+    //    return null;
   }
 
   private void cut2(List<Token> st, List<Token> ts, Set<Token> tq) {

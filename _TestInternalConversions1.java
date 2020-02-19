@@ -2,24 +2,25 @@ package ast;
 
 import java.io.IOException;
 
+import jscan.Tokenlist;
+
 import org.junit.Test;
 
 import ast._entry.PreprocessSourceForParser;
 import ast._entry.PreprocessSourceForParserVariant;
 import ast.parse.Parse;
 import ast.unit.TranslationUnit;
-import jscan.Tokenlist;
 
-public class _TestInternalConversions {
+public class _TestInternalConversions1 {
 
   @Test
   public void testUsualArithmeticConvOnExpressions_0() throws IOException {
     //@formatter:off
     StringBuilder sb = new StringBuilder();
     sb.append(" /*001*/  void f1(int x[4096]) {                                                                                                \n");
-//    sb.append(" /*002*/      _Static_assert(sizeof(x) == sizeof(unsigned long long)                                                            \n");
-//    sb.append(" /*003*/          , \"conv.arr to ptr in fparam.\"                                                                              \n");
-//    sb.append(" /*004*/      );                                                                                                                \n");
+    sb.append(" /*002*/      _Static_assert(sizeof(x) == sizeof(unsigned long long)                                                            \n");
+    sb.append(" /*003*/          , \"conv.arr to ptr in fparam.\"                                                                              \n");
+    sb.append(" /*004*/      );                                                                                                                \n");
     sb.append(" /*005*/  }                                                                                                                     \n");
     sb.append(" /*006*/  void f2(int a, int b) {  }                                                                                            \n");
     sb.append(" /*007*/  void f3(void (*fp)(int, int)) { }                                                                                     \n");
@@ -61,10 +62,8 @@ public class _TestInternalConversions {
     sb.append(" /*043*/      _Static_assert(    1 == sizeof( (i8++) ), \"(i8++)\" );                                                           \n");
     sb.append(" /*044*/      _Static_assert(    8 == sizeof( (++i64) ), \"(++i64)\" );                                                         \n");
     sb.append(" /*045*/      _Static_assert(    1 == sizeof( (f2(1, 2)) ), \"(f2(1, 2))\" );                                                   \n");
-//    sb.append(" /*046*/      _Static_assert(    8 == sizeof( (fp = f2) ), \"(fp = f2)\" );                                                     \n");
+    sb.append(" /*046*/      _Static_assert(    8 == sizeof( (fp = f2) ), \"(fp = f2)\" );                                                     \n");
     sb.append(" /*047*/      _Static_assert(    8 == sizeof( (fp = &f2) ), \"(fp = &f2)\" );                                                   \n");
-//    sb.append(" /*048*/      _Static_assert(    8 == sizeof( (f2 + 1) ), \"(f2 + 1)\" );                                                       \n");
-//    sb.append(" /*049*/      _Static_assert(    8 == sizeof( (fp - 1) ), \"(fp - 1)\" );                                                       \n");
     sb.append(" /*050*/      _Static_assert(    1 == sizeof( (f3(fp)) ), \"(f3(fp))\" );                                                       \n");
     sb.append(" /*051*/      return 0;                                                                                                         \n");
     sb.append(" /*052*/  }                                                                                                                     \n");
