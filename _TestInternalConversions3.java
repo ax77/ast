@@ -11,6 +11,7 @@ import ast._entry.PreprocessSourceForParser;
 import ast._entry.PreprocessSourceForParserVariant;
 import ast._typesnew.CType;
 import ast.expr.main.CExpression;
+import ast.expr.sem.TaStage;
 import ast.expr.sem.TypeApplier;
 import ast.parse.Parse;
 import ast.stmt.main.CStatementBase;
@@ -81,9 +82,10 @@ public class _TestInternalConversions3 {
       if (block.getStatement() != null) {
         if (block.getStatement().getBase() == CStatementBase.SEXPR) {
           final CExpression expr = block.getStatement().getExpr();
-          TypeApplier.applytype(expr);
+          TypeApplier.applytype(expr, TaStage.stage_start);
           final CType resultType = expr.getResultType();
           //System.out.println(resultType.toString() + " : " + expr.toString());
+          //System.out.println();
         }
       }
     }

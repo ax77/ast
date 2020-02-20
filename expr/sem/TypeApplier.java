@@ -1,7 +1,6 @@
 package ast.expr.sem;
 
 import static ast._typesnew.CTypeImpl.FUNC_DESIGNATOR_TODO_STUB;
-import static ast._typesnew.CTypeImpl.TYPE_CHAR;
 import static ast._typesnew.CTypeImpl.TYPE_DOUBLE;
 import static ast._typesnew.CTypeImpl.TYPE_FLOAT;
 import static ast._typesnew.CTypeImpl.TYPE_INT;
@@ -15,9 +14,8 @@ import static ast.expr.main.CExpressionBase.ECOMPSEL;
 import static ast.expr.main.CExpressionBase.EFCALL;
 import static ast.expr.main.CExpressionBase.EPOSTINCDEC;
 import static ast.expr.main.CExpressionBase.EPREINCDEC;
-import static ast.expr.main.CExpressionBase.EPRIMARY_NUMBER;
-import static ast.expr.main.CExpressionBase.EPRIMARY_GENERIC;
 import static ast.expr.main.CExpressionBase.EPRIMARY_IDENT;
+import static ast.expr.main.CExpressionBase.EPRIMARY_NUMBER;
 import static ast.expr.main.CExpressionBase.ETERNARY;
 import static ast.expr.main.CExpressionBase.EUNARY;
 import static jscan.tokenize.T.T_AND;
@@ -59,7 +57,7 @@ public abstract class TypeApplier {
     }
   }
 
-  public static void applytype(CExpression e) {
+  public static void applytype(CExpression e, TaStage stage) {
 
     final CExpressionBase base = e.getBase();
     if (e.getResultType() != null) {
@@ -67,8 +65,8 @@ public abstract class TypeApplier {
     }
 
     if (base == EASSIGN) {
-      applytype(e.getLhs());
-      applytype(e.getRhs());
+      applytype(e.getLhs(), TaStage.assign_lhs);
+      applytype(e.getRhs(), TaStage.assign_rhs);
 
       assertType(e.getLhs());
       assertType(e.getRhs());
@@ -78,8 +76,8 @@ public abstract class TypeApplier {
 
     else if (base == EBINARY) {
 
-      applytype(e.getLhs());
-      applytype(e.getRhs());
+      applytype(e.getLhs(), TaStage.binary_lhs);
+      applytype(e.getRhs(), TaStage.binary_rhs);
 
       assertType(e.getLhs());
       assertType(e.getRhs());
@@ -89,8 +87,8 @@ public abstract class TypeApplier {
     }
 
     else if (base == ECOMMA) {
-      applytype(e.getLhs());
-      applytype(e.getRhs());
+      applytype(e.getLhs(), TaStage.comma_lhs);
+      applytype(e.getRhs(), TaStage.comma_rhs);
 
       assertType(e.getLhs());
       assertType(e.getRhs());
@@ -99,9 +97,9 @@ public abstract class TypeApplier {
     }
 
     else if (base == ETERNARY) {
-      applytype(e.getCnd());
-      applytype(e.getLhs());
-      applytype(e.getRhs());
+      applytype(e.getCnd(), TaStage.tern_cnd);
+      applytype(e.getLhs(), TaStage.tern_true);
+      applytype(e.getRhs(), TaStage.tern_false);
 
       assertType(e.getCnd());
       assertType(e.getLhs());
@@ -112,45 +110,46 @@ public abstract class TypeApplier {
     }
 
     else if (base == EUNARY) {
-      applytype(e.getLhs());
+      applytype(e.getLhs(), TaStage.unary_operand);
 
       assertType(e.getLhs());
       applyUnary(e);
     }
 
     else if (base == EPRIMARY_IDENT) {
+      //System.out.printf("stage=%-16s, ident=%s\n", stage.toString(), e.getSymbol().getName().getName());
+
       final CType symtype = e.getSymbol().getType();
       e.setResultType(symtype);
+
+      if (stage == TaStage.generic_control_expr) {
+        genPointer(e);
+      }
     }
 
     else if (base == EPRIMARY_NUMBER) {
+      //System.out.printf("stage=%-16s, number=%d\n", stage.toString(), e.getCnumber().getClong());
+
       final NumType numtype = e.getCnumber().getNumtype();
       e.setResultType(CTypeImpl.bindings.get(numtype));
     }
 
-    else if (base == EPRIMARY_GENERIC) {
-      applytype(e.getLhs());
-
-      assertType(e.getLhs());
-      e.setResultType(e.getLhs().getResultType());
-    }
-
     else if (base == ECOMPSEL) {
-      applytype(e.getLhs());
+      applytype(e.getLhs(), TaStage.compsel_postfix);
 
       assertType(e.getLhs());
       e.setResultType(e.getField().getType());
     }
 
     else if (base == EFCALL) {
-      applytype(e.getLhs());
+      applytype(e.getLhs(), TaStage.fcall_function);
 
       assertType(e.getLhs());
       applyFcall(e);
     }
 
     else if (base == EPREINCDEC) {
-      applytype(e.getLhs());
+      applytype(e.getLhs(), TaStage.preincdec_operand);
 
       assertType(e.getLhs());
 
@@ -159,7 +158,7 @@ public abstract class TypeApplier {
     }
 
     else if (base == EPOSTINCDEC) {
-      applytype(e.getLhs());
+      applytype(e.getLhs(), TaStage.postincdec_operand);
 
       assertType(e.getLhs());
 
@@ -228,7 +227,9 @@ public abstract class TypeApplier {
     final Token operator = e.getToken();
     final CExpression operand = e.getLhs();
 
-    genPointer(operand);
+    if (!operator.ofType(T_AND)) {
+      genPointer(operand);
+    }
 
     // !
     //

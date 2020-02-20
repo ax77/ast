@@ -10,6 +10,7 @@ import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import ast._typesnew.CType;
 import ast.expr.main.CExpression;
+import ast.expr.sem.TaStage;
 import ast.expr.sem.TypeApplier;
 import ast.parse.Parse;
 
@@ -91,12 +92,12 @@ public class ExpandGenericResult {
 
   private CExpression selectResultExpression(GenericSelection genericSelection) {
     for (GenericAssociation e : genericSelection.getAssociations()) {
-      TypeApplier.applytype(e.getAssignment());
+      TypeApplier.applytype(e.getAssignment(), TaStage.stage_start);
     }
 
-    TypeApplier.applytype(genericSelection.getControlExpression());
+    TypeApplier.applytype(genericSelection.getControlExpression(), TaStage.generic_control_expr);
     if (genericSelection.getDefaultAssociation() != null) {
-      TypeApplier.applytype(genericSelection.getDefaultAssociation());
+      TypeApplier.applytype(genericSelection.getDefaultAssociation(), TaStage.stage_start);
     }
 
     CType need = genericSelection.getControlExpression().getResultType();
