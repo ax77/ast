@@ -104,8 +104,7 @@ public abstract class TypeApplier {
       assertType(e.getLhs());
       assertType(e.getRhs());
 
-      // TODO: more checks
-      e.setResultType(e.getRhs().getResultType());
+      applyTernary(e);
     }
 
     else if (base == EUNARY) {
@@ -180,30 +179,31 @@ public abstract class TypeApplier {
 
     // allow pointer to function, but NOT an array
     genPointerFn(lhs);
+
     // allow pointer to function, AND array
     genPointer(rhs);
 
-    final CType lhsRT = lhs.getResultType();
-    final CType rhsRT = rhs.getResultType();
-    CType resRT = lhsRT;
+    final CType Ltype = lhs.getResultType();
+    final CType Rtype = rhs.getResultType();
+    CType tpOfResult = Ltype;
 
     if (operator.ofType(T_ASSIGN)) {
-      if (lhsRT.isArithmetic() && rhsRT.isArithmetic()) {
-      } else if (lhsRT.isPointer() && rhs.isIntegerZero()) {
-      } else if (lhsRT.isPointer() && rhsRT.isEqualTo(lhsRT)) {
-      } else if (lhsRT.isStruct() && rhsRT.isEqualTo(lhsRT)) {
-      } else if (lhsRT.isUnion() && rhsRT.isEqualTo(lhsRT)) {
-      } else if (lhsRT.isPointerToVoid() && rhsRT.isPointerToObject()) {
-      } else if (lhsRT.isPointerToVoid() && rhsRT.isPointerToIncomplete()) {
-      } else if (lhsRT.isPointerToObject() && rhsRT.isPointerToVoid()) {
-      } else if (lhsRT.isPointerToIncomplete() && rhsRT.isPointerToVoid()) {
+      if (Ltype.isArithmetic() && Rtype.isArithmetic()) {
+      } else if (Ltype.isPointer() && rhs.isIntegerZero()) {
+      } else if (Ltype.isPointer() && Rtype.isEqualTo(Ltype)) {
+      } else if (Ltype.isStruct() && Rtype.isEqualTo(Ltype)) {
+      } else if (Ltype.isUnion() && Rtype.isEqualTo(Ltype)) {
+      } else if (Ltype.isPointerToVoid() && Rtype.isPointerToObject()) {
+      } else if (Ltype.isPointerToVoid() && Rtype.isPointerToIncomplete()) {
+      } else if (Ltype.isPointerToObject() && Rtype.isPointerToVoid()) {
+      } else if (Ltype.isPointerToIncomplete() && Rtype.isPointerToVoid()) {
       } else {
         errorExpr("Assign binary expression error: ", operator, lhs, rhs);
       }
     }
 
-    checkResultType(resRT, operator, lhs, rhs);
-    e.setResultType(resRT);
+    checkResultType(tpOfResult, operator, lhs, rhs);
+    e.setResultType(tpOfResult);
   }
 
   private static void applyFcall(CExpression e) {
@@ -451,9 +451,44 @@ public abstract class TypeApplier {
     e.setResultType(tpOfResult);
   }
 
+  private static void applyTernary(CExpression e) {
+
+    final CExpression lhs = e.getLhs();
+    final CExpression rhs = e.getRhs();
+
+    genPointer(lhs);
+    genPointer(rhs);
+
+    final CType Ltype = lhs.getResultType();
+    final CType Rtype = rhs.getResultType();
+    CType tpOfResult = null;
+
+    if (Ltype.isArithmetic() && Rtype.isArithmetic()) {
+      tpOfResult = balanced(lhs, rhs);
+    } else if (Ltype.isStrUnion() && Rtype.isStrUnion()) {
+      tpOfResult = Ltype;
+    } else if (Ltype.isPointer() && rhs.isIntegerZero()) {
+      tpOfResult = Ltype;
+    } else if (lhs.isIntegerZero() && Rtype.isPointer()) {
+      tpOfResult = Rtype;
+    } else if (Ltype.isPointer() && Rtype.isPointerToCompat(Ltype)) {
+      tpOfResult = Ltype; // TODO: composite
+    } else if (Ltype.isPointerToVoid() && (Rtype.isPointerToObject() || Rtype.isPointerToIncomplete())) {
+      tpOfResult = Ltype;
+    } else if ((Ltype.isPointerToObject() || Ltype.isPointerToIncomplete()) && Rtype.isPointerToVoid()) {
+      tpOfResult = Rtype;
+    } else if (Ltype.isVoid() && Rtype.isVoid()) {
+      tpOfResult = TYPE_VOID;
+    } else {
+      errorExpr("Ternary expression error: ", e.getToken(), lhs, rhs);
+    }
+
+    checkResultType(tpOfResult, e.getToken(), lhs, rhs);
+    e.setResultType(tpOfResult);
+  }
+
   private static void checkModLvalue(CExpression lhs) {
     // TODO Auto-generated method stub
-
   }
 
   private static void errorUnknownBinaryOperator(Token operator) {
