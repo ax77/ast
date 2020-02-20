@@ -4,7 +4,7 @@ package ast._typesnew.main;
 public enum TypeKind {
   TP_POINTER_TO
  ,TP_ARRAY_OF
- ,TP_FUNCTION
+ ,TP_FUNCTION_DESIGNATOR
  ,TP_STRUCT
  ,TP_ENUM
  ,TP_UNION

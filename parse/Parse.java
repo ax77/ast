@@ -684,7 +684,7 @@ public class Parse {
 
     // and corner case: ANSI function-definition
     //
-    if (tp() != T_LEFT_BRACE || !type.isFunction()) {
+    if (tp() != T_LEFT_BRACE || !type.isFunctionDesignator()) {
       perror("expect function definition...");
     }
 
@@ -717,7 +717,7 @@ public class Parse {
   private void applyTypes(List<Declaration> decllist, CDecl decl) {
     final List<CDeclEntry> typelist = decl.getTypelist();
     assertTrue(typelist.size() == 1);
-    assertTrue(typelist.get(0).getBase() == TypeKind.TP_FUNCTION);
+    assertTrue(typelist.get(0).getBase() == TypeKind.TP_FUNCTION_DESIGNATOR);
     List<CFuncParam> parameters = typelist.get(0).getParameters();
 
     Map<Ident, CType> vars = new HashMap<Ident, CType>(0);

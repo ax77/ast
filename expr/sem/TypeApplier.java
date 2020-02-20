@@ -1,6 +1,5 @@
 package ast.expr.sem;
 
-import static ast._typesnew.CTypeImpl.FUNC_DESIGNATOR_TODO_STUB;
 import static ast._typesnew.CTypeImpl.TYPE_DOUBLE;
 import static ast._typesnew.CTypeImpl.TYPE_FLOAT;
 import static ast._typesnew.CTypeImpl.TYPE_INT;
@@ -210,7 +209,7 @@ public abstract class TypeApplier {
   private static void applyFcall(CExpression e) {
     final CExpression function = e.getLhs();
     final CType resultType = function.getResultType();
-    final boolean isFunction = resultType.isFunction();
+    final boolean isFunction = resultType.isFunctionDesignator();
 
     if (!(isFunction || resultType.isPointerToFunction())) {
       throw new ParseException("expect function: " + resultType.toString());
@@ -273,7 +272,7 @@ public abstract class TypeApplier {
         resRT = genPtrTo(lhsRT);
       }
 
-      else if (lhsRT.isFunction()) {
+      else if (lhsRT.isFunctionDesignator()) {
         resRT = genPtrTo(lhsRT);
       }
 
@@ -289,18 +288,29 @@ public abstract class TypeApplier {
     else if (operator.ofType(T_TIMES)) {
       CType lhsRT = operand.getResultType();
       CType resRT = null;
+
       if (lhsRT.isPointerToObject()) {
         resRT = lhsRT.getTpPointer().getPointerTo(); // XXX:
-      } else if (lhsRT.isPointerToFunction()) {
-        resRT = FUNC_DESIGNATOR_TODO_STUB;
-      } else if (lhsRT.isPointerToVoid()) {
+      }
+
+      // result is function-designator.
+
+      else if (lhsRT.isPointerToFunction()) {
+        resRT = lhsRT.getTpPointer().getPointerTo(); 
+      }
+
+      else if (lhsRT.isPointerToVoid()) {
         resRT = TYPE_VOID;
-      } else {
+      }
+
+      else {
         errorUnaryExpr("Unary expression error: ", operator, operand);
       }
+
       if (resRT == null) {
-        System.out.println();
+        //System.out.println();
       }
+
       checkResultType(resRT, operator, operand);
       e.setResultType(resRT);
     }
@@ -458,16 +468,16 @@ public abstract class TypeApplier {
   private static void genPointer(CExpression inputExpr) {
 
     NullChecker.check(inputExpr);
-    final CType typeOfNode = inputExpr.getResultType();
+    final CType origType = inputExpr.getResultType();
 
-    if (typeOfNode.isArray()) {
-      CType arrtype = typeOfNode.getTpArray().getArrayOf();
+    if (origType.isArray()) {
+      CType arrtype = origType.getTpArray().getArrayOf();
       CType ptrtype = new CType(new CPointerType(arrtype, false));
       inputExpr.setResultType(ptrtype);
     }
 
-    if (typeOfNode.isFunction()) {
-      CType ptrtype = new CType(new CPointerType(typeOfNode, false));
+    if (origType.isFunctionDesignator()) {
+      CType ptrtype = new CType(new CPointerType(origType, false));
       inputExpr.setResultType(ptrtype);
     }
 
@@ -478,7 +488,7 @@ public abstract class TypeApplier {
     NullChecker.check(inputExpr);
     final CType typeOfNode = inputExpr.getResultType();
 
-    if (typeOfNode.isFunction()) {
+    if (typeOfNode.isFunctionDesignator()) {
       CType ptrtype = new CType(new CPointerType(typeOfNode, false));
       inputExpr.setResultType(ptrtype);
     }

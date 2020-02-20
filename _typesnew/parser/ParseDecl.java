@@ -103,7 +103,7 @@ public class ParseDecl {
       p.move();
       if (saved.ofType(T.T_LEFT_PAREN)) {
 
-        CDeclEntry e = new CDeclEntry(TypeKind.TP_FUNCTION);
+        CDeclEntry e = new CDeclEntry(TypeKind.TP_FUNCTION_DESIGNATOR);
         List<CFuncParam> params = parseParams(e);
         e.setParameters(params);
 

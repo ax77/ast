@@ -7,7 +7,6 @@ import ast._typesnew.main.TypeKind;
 import jscan.cstrtox.NumType;
 
 public class CTypeImpl {
-  //@formatter:off
   public static final CType TYPE_VOID = new CType(TypeKind.TP_VOID);
   public static final CType TYPE_BOOL = new CType(TypeKind.TP_BOOL);
   public static final CType TYPE_CHAR = new CType(TypeKind.TP_CHAR);
@@ -23,22 +22,19 @@ public class CTypeImpl {
   public static final CType TYPE_FLOAT = new CType(TypeKind.TP_FLOAT);
   public static final CType TYPE_DOUBLE = new CType(TypeKind.TP_DOUBLE);
   public static final CType TYPE_LONG_DOUBLE = new CType(TypeKind.TP_LONG_DOUBLE);
-  
-  public static final CType FUNC_DESIGNATOR_TODO_STUB = null; // TODO:
-  
+
   public static Map<NumType, CType> bindings = new HashMap<NumType, CType>();
   static {
-    bindings.put(NumType.N_INT           , TYPE_INT);
-    bindings.put(NumType.N_UINT          , TYPE_UINT);
-    bindings.put(NumType.N_LONG          , TYPE_LONG);
-    bindings.put(NumType.N_ULONG         , TYPE_ULONG);
-    bindings.put(NumType.N_LONG_LONG     , TYPE_LONG_LONG);
-    bindings.put(NumType.N_ULONG_LONG    , TYPE_ULONG_LONG);
-    bindings.put(NumType.N_FLOAT         , TYPE_FLOAT);
-    bindings.put(NumType.N_DOUBLE        , TYPE_DOUBLE);
-    bindings.put(NumType.N_LONG_DOUBLE   , TYPE_LONG_DOUBLE);
+    bindings.put(NumType.N_INT, TYPE_INT);
+    bindings.put(NumType.N_UINT, TYPE_UINT);
+    bindings.put(NumType.N_LONG, TYPE_LONG);
+    bindings.put(NumType.N_ULONG, TYPE_ULONG);
+    bindings.put(NumType.N_LONG_LONG, TYPE_LONG_LONG);
+    bindings.put(NumType.N_ULONG_LONG, TYPE_ULONG_LONG);
+    bindings.put(NumType.N_FLOAT, TYPE_FLOAT);
+    bindings.put(NumType.N_DOUBLE, TYPE_DOUBLE);
+    bindings.put(NumType.N_LONG_DOUBLE, TYPE_LONG_DOUBLE);
   }
-  //@formatter:on
 
   public static final int QCONST = 1 << 0;
   public static final int QRESTR = 1 << 1;

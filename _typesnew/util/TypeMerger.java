@@ -49,7 +49,7 @@ public abstract class TypeMerger {
       final CPointerType ptrTo = new CPointerType(type, e.isConstPointer());
       return new CType(ptrTo);
     }
-    if (base == TypeKind.TP_FUNCTION) {
+    if (base == TypeKind.TP_FUNCTION_DESIGNATOR) {
       CFunctionType fn = new CFunctionType(type, e.getParameters(), e.isVariadicFunction());
       return new CType(fn);
     }

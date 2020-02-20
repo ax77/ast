@@ -123,7 +123,7 @@ public class _TestCTypeNew {
     type = build(type, decl);
 
     assertEquals("a", decl.getName().getName());
-    assertEquals(TypeKind.TP_FUNCTION, type.getKind());
+    assertEquals(TypeKind.TP_FUNCTION_DESIGNATOR, type.getKind());
     assertEquals(TypeKind.TP_INT, type.getTpFunction().getReturnType().getKind());
     assertEquals(2, type.chainLength());
   }
@@ -139,7 +139,7 @@ public class _TestCTypeNew {
     type = build(type, decl);
 
     assertEquals("a", decl.getName().getName());
-    assertEquals(TypeKind.TP_FUNCTION, type.getKind());
+    assertEquals(TypeKind.TP_FUNCTION_DESIGNATOR, type.getKind());
     assertEquals(TypeKind.TP_INT, type.getTpFunction().getReturnType().getKind());
     assertEquals(2, type.chainLength());
 
@@ -167,7 +167,7 @@ public class _TestCTypeNew {
     type = build(type, decl);
 
     assertEquals("a", decl.getName().getName());
-    assertEquals(TypeKind.TP_FUNCTION, type.getKind());
+    assertEquals(TypeKind.TP_FUNCTION_DESIGNATOR, type.getKind());
     assertEquals(TypeKind.TP_INT, type.getTpFunction().getReturnType().getKind());
     assertEquals(2, type.chainLength());
     assertTrue(type.getTpFunction().isVariadic());
@@ -256,7 +256,7 @@ public class _TestCTypeNew {
     assertEquals(3, type.chainLength());
 
     assertEquals(TypeKind.TP_POINTER_TO, type.getKind());
-    assertEquals(TypeKind.TP_FUNCTION, type.getTpPointer().getPointerTo().getKind());
+    assertEquals(TypeKind.TP_FUNCTION_DESIGNATOR, type.getTpPointer().getPointerTo().getKind());
     assertEquals(TypeKind.TP_INT, type.getTpPointer().getPointerTo().getTpFunction().getReturnType().getKind());
 
   }
@@ -398,7 +398,7 @@ public class _TestCTypeNew {
     CDecl decl = parseDecl(p);
     CType type = build(base, decl);
 
-    assertEquals(TypeKind.TP_FUNCTION, type.getKind());
+    assertEquals(TypeKind.TP_FUNCTION_DESIGNATOR, type.getKind());
 
     List<CFuncParam> params = type.getTpFunction().getParameters();
     assertEquals("pi", params.get(0).getName().getName());
@@ -1047,7 +1047,7 @@ public class _TestCTypeNew {
     CDecl decl = parseDecl(p);
     CType type = build(base, decl);
 
-    assertEquals(TypeKind.TP_FUNCTION, type.getKind());
+    assertEquals(TypeKind.TP_FUNCTION_DESIGNATOR, type.getKind());
     final CType rtype = type.getTpFunction().getReturnType();
 
     assertTrue(rtype.isConst());
