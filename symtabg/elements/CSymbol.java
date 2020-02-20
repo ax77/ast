@@ -95,7 +95,7 @@ public class CSymbol implements CTypeApi, ILocation {
   //@formatter:off
   @Override public int     getSize()                       {  return type.getSize()                 ; }
   @Override public int     getAlign()                      {  return type.getAlign()                ; }
-  @Override public boolean isFunctionDesignator()                    {  return type.isFunctionDesignator()              ; }
+  @Override public boolean isFunction()                    {  return type.isFunction()              ; }
   @Override public boolean isObject()                      {  return type.isObject()                ; }
   @Override public boolean isScalar()                      {  return type.isScalar()                ; }
   @Override public boolean isNoScalar()                    {  return type.isNoScalar()              ; }

@@ -66,7 +66,7 @@ public class _TestTypeCompat {
     if (lhs.isArray()) {
       return isArrayCompatible(lhs.getTpArray(), rhs.getTpArray());
     }
-    if (lhs.isFunctionDesignator()) {
+    if (lhs.isFunction()) {
       return isFunctionCompatible(lhs.getTpFunction(), rhs.getTpFunction());
     }
     if (lhs.isStrUnion()) {

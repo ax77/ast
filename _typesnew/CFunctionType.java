@@ -36,7 +36,7 @@ public class CFunctionType {
 
   @Override
   public String toString() {
-    return "func_ret(" + returnType.toString() + ")";
+    return "fn(" + returnType.toString() + ")";
   }
 
 }

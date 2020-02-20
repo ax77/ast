@@ -24,7 +24,7 @@ public abstract class TypeSizes {
     BSIZES.put(TypeKind.TP_DOUBLE         , 8);
     BSIZES.put(TypeKind.TP_LONG_DOUBLE    , 16);
     
-    BSIZES.put(TypeKind.TP_FUNCTION_DESIGNATOR       , 1);
+    BSIZES.put(TypeKind.TP_FUNCTION       , 1);
     BSIZES.put(TypeKind.TP_ENUM           , 4);
     BSIZES.put(TypeKind.TP_POINTER_TO     , 8);
   }

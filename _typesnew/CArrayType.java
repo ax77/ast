@@ -38,7 +38,7 @@ public class CArrayType {
 
   @Override
   public String toString() {
-    return "array_of(" + String.format("%d", arrayLen) + " " + arrayOf.toString() + ")";
+    return "ar(" + String.format("%d", arrayLen) + " " + arrayOf.toString() + ")";
   }
 
   public int getArrayLen() {

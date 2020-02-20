@@ -23,7 +23,7 @@ public class CPointerType {
 
   @Override
   public String toString() {
-    return pointerTo.toString() + (isConst ? " const" : "") + " *";
+    return "p(" + pointerTo.toString() + ")";
   }
 
 }

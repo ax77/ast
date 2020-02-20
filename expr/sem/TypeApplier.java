@@ -209,7 +209,7 @@ public abstract class TypeApplier {
   private static void applyFcall(CExpression e) {
     final CExpression function = e.getLhs();
     final CType resultType = function.getResultType();
-    final boolean isFunction = resultType.isFunctionDesignator();
+    final boolean isFunction = resultType.isFunction();
 
     if (!(isFunction || resultType.isPointerToFunction())) {
       throw new ParseException("expect function: " + resultType.toString());
@@ -272,7 +272,7 @@ public abstract class TypeApplier {
         resRT = genPtrTo(lhsRT);
       }
 
-      else if (lhsRT.isFunctionDesignator()) {
+      else if (lhsRT.isFunction()) {
         resRT = genPtrTo(lhsRT);
       }
 
@@ -295,8 +295,13 @@ public abstract class TypeApplier {
 
       // result is function-designator.
 
+      // A function-designator subcontext designates a function. 
+      // Hence, its expression has a function type. 
+      // You create a function-designator subcontext wherever 
+      // you need to call a function or determine its address.
+
       else if (lhsRT.isPointerToFunction()) {
-        resRT = lhsRT.getTpPointer().getPointerTo(); 
+        resRT = lhsRT.getTpPointer().getPointerTo();
       }
 
       else if (lhsRT.isPointerToVoid()) {
@@ -476,7 +481,7 @@ public abstract class TypeApplier {
       inputExpr.setResultType(ptrtype);
     }
 
-    if (origType.isFunctionDesignator()) {
+    if (origType.isFunction()) {
       CType ptrtype = new CType(new CPointerType(origType, false));
       inputExpr.setResultType(ptrtype);
     }
@@ -488,7 +493,7 @@ public abstract class TypeApplier {
     NullChecker.check(inputExpr);
     final CType typeOfNode = inputExpr.getResultType();
 
-    if (typeOfNode.isFunctionDesignator()) {
+    if (typeOfNode.isFunction()) {
       CType ptrtype = new CType(new CPointerType(typeOfNode, false));
       inputExpr.setResultType(ptrtype);
     }

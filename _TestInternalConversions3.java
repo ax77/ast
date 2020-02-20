@@ -20,7 +20,6 @@ import ast.unit.TranslationUnit;
 
 public class _TestInternalConversions3 {
 
-  //  @Ignore
   @Test
   public void testConv3() throws IOException {
     //@formatter:off
@@ -45,11 +44,11 @@ public class _TestInternalConversions3 {
     sb.append(" /*018*/    //                   \n");
     sb.append(" /*019*/    c       ;            \n");
     sb.append(" /*020*/    &c      ;            \n");
-    //sb.append(" /*021*/    *c      ;            \n");
+    sb.append(" /*021*/    *c      ;            \n");
     sb.append(" /*022*/    //                   \n");
     sb.append(" /*023*/    d       ;            \n");
     sb.append(" /*024*/    &d      ;            \n");
-    //sb.append(" /*025*/    *d      ;            \n");
+    sb.append(" /*025*/    *d      ;            \n");
     sb.append(" /*026*/    //                   \n");
     sb.append(" /*027*/      return 0;          \n");
     sb.append(" /*028*/  }                      \n");

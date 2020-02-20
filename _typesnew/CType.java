@@ -47,9 +47,9 @@ public class CType implements CTypeApi {
   }
 
   public CType(CFunctionType cFunctionType) {
-    this.kind = TypeKind.TP_FUNCTION_DESIGNATOR;
+    this.kind = TypeKind.TP_FUNCTION;
     this.tpFunction = cFunctionType;
-    this.size = TypeSizes.get(TypeKind.TP_FUNCTION_DESIGNATOR);
+    this.size = TypeSizes.get(TypeKind.TP_FUNCTION);
     this.align = this.size;
 
   }
@@ -97,7 +97,7 @@ public class CType implements CTypeApi {
     switch (kind) {
     case TP_POINTER_TO:
     case TP_ARRAY_OF:
-    case TP_FUNCTION_DESIGNATOR:
+    case TP_FUNCTION:
     case TP_STRUCT:
     case TP_ENUM:
     case TP_UNION:
@@ -118,7 +118,7 @@ public class CType implements CTypeApi {
   }
 
   public CFunctionType getTpFunction() {
-    assertGetType(TypeKind.TP_FUNCTION_DESIGNATOR);
+    assertGetType(TypeKind.TP_FUNCTION);
     return tpFunction;
   }
 
@@ -147,7 +147,7 @@ public class CType implements CTypeApi {
         r++;
         r += tpArray.getArrayOf().chainLength();
       }
-      if (kind == TypeKind.TP_FUNCTION_DESIGNATOR) {
+      if (kind == TypeKind.TP_FUNCTION) {
         r++;
         r += tpFunction.getReturnType().chainLength();
       }
@@ -166,7 +166,7 @@ public class CType implements CTypeApi {
       return tpPointer.toString();
     } else if (kind == TypeKind.TP_ARRAY_OF) {
       return tpArray.toString();
-    } else if (kind == TypeKind.TP_FUNCTION_DESIGNATOR) {
+    } else if (kind == TypeKind.TP_FUNCTION) {
       return tpFunction.toString();
     } else if (isStruct()) {
       return tpStruct.toString();
@@ -198,8 +198,8 @@ public class CType implements CTypeApi {
   }
 
   @Override
-  public boolean isFunctionDesignator() {
-    return kind == TypeKind.TP_FUNCTION_DESIGNATOR;
+  public boolean isFunction() {
+    return kind == TypeKind.TP_FUNCTION;
   }
 
   @Override
@@ -317,7 +317,7 @@ public class CType implements CTypeApi {
     if (isPointer()) {
       return cmpPointers(another.getTpPointer());
     }
-    if (isFunctionDesignator()) {
+    if (isFunction()) {
       return cmpFunctions(another);
     }
     return true;
@@ -425,7 +425,7 @@ public class CType implements CTypeApi {
 
   @Override
   public boolean isPointerToFunction() {
-    return isPointer() && tpPointer.getPointerTo().isFunctionDesignator();
+    return isPointer() && tpPointer.getPointerTo().isFunction();
   }
 
   @Override

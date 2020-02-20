@@ -6,7 +6,7 @@ public interface CTypeApi {
   public int getAlign();
   
   // I)
-  public boolean isFunctionDesignator();
+  public boolean isFunction();
   
   // II)
   // object types hierarchy
