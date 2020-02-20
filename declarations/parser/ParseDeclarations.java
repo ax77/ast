@@ -191,7 +191,7 @@ public class ParseDeclarations {
     CType type = TypeMerger.build(basetype, decl);
 
     if (p.tp() != T.T_ASSIGN) {
-      CSymbolBase base = CSymbolBase.SYM_VAR;
+      CSymbolBase base = CSymbolBase.SYM_LVAR;
       if (storagespec == StorageKind.ST_TYPEDEF) {
         base = CSymbolBase.SYM_TYPEDEF;
       }
@@ -207,7 +207,7 @@ public class ParseDeclarations {
       p.perror("typedef with initializer.");
     }
 
-    final CSymbol sym = new CSymbol(CSymbolBase.SYM_VAR, decl.getName(), type, initializer, saved);
+    final CSymbol sym = new CSymbol(CSymbolBase.SYM_LVAR, decl.getName(), type, initializer, saved);
     p.defineSym(decl.getName(), sym);
 
     return sym;

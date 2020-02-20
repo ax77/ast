@@ -17,7 +17,6 @@ public class CSymbol implements CTypeApi, ILocation {
   private final Ident name;
   private final CType type;
 
-  private String stringConstant;
   private NumericConstant numericConstant;
   private Initializer initializer;
 
@@ -75,14 +74,6 @@ public class CSymbol implements CTypeApi, ILocation {
 
   public void setInitializer(Initializer initializer) {
     this.initializer = initializer;
-  }
-
-  public String getStringConstant() {
-    return stringConstant;
-  }
-
-  public void setStringConstant(String stringConstant) {
-    this.stringConstant = stringConstant;
   }
 
   public NumericConstant getNumericConstant() {

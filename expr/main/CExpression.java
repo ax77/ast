@@ -14,6 +14,7 @@ import static ast.expr.main.CExpressionBase.EUNARY;
 
 import java.util.List;
 
+import jscan.cconst.CStr;
 import jscan.cstrtox.C_strtox;
 import jscan.sourceloc.SourceLocation;
 import jscan.tokenize.Token;
@@ -24,6 +25,7 @@ import ast.errors.ParseException;
 import ast.parse.ILocation;
 import ast.symtabg.elements.CSymbol;
 import ast.symtabg.elements.NumericConstant;
+import ast.symtabg.elements.StringConstant;
 
 abstract class NodeTemp {
   private static long iter = 0;
@@ -52,7 +54,7 @@ public class CExpression implements ILocation {
   private List<CExpression> arglist;
 
   // primary
-  private String cstring;
+  private StringConstant cstring;
   private NumericConstant cnumber;
   private CSymbol symbol;
 
@@ -76,7 +78,7 @@ public class CExpression implements ILocation {
   }
 
   public CExpression getRhs() {
-    assertBaseIsOneOf(EASSIGN, EBINARY, ETERNARY, ECOMMA /*, ESUBSCRIPT*/);
+    assertBaseIsOneOf(EASSIGN, EBINARY, ETERNARY, ECOMMA);
     return tree[RHS_INDEX];
   }
 
@@ -210,7 +212,7 @@ public class CExpression implements ILocation {
     this.location = new SourceLocation(token);
     this.tree = emptyTree();
     this.token = token;
-    this.base = CExpressionBase.EPRIMARY_CONST;
+    this.base = CExpressionBase.EPRIMARY_NUMBER;
 
     NumericConstant number = null;
     if (e.isIntegerKind()) {
@@ -222,7 +224,7 @@ public class CExpression implements ILocation {
     this.cnumber = number;
   }
 
-  public CExpression(String cstring, Token token) {
+  public CExpression(StringConstant cstring, Token token) {
     this.tname = NodeTemp.gettemp();
     this.location = new SourceLocation(token);
     this.tree = emptyTree();
@@ -246,7 +248,7 @@ public class CExpression implements ILocation {
     this.location = new SourceLocation(from);
     this.tree = emptyTree();
     this.token = from;
-    this.base = CExpressionBase.EPRIMARY_CONST;
+    this.base = CExpressionBase.EPRIMARY_NUMBER;
     this.cnumber = number;
   }
 
@@ -290,10 +292,6 @@ public class CExpression implements ILocation {
     this.arglist = arglist;
   }
 
-  public CExpression getGenericSelectionResult() {
-    return getLhs();
-  }
-
   public long getTname() {
     return tname;
   }
@@ -310,15 +308,19 @@ public class CExpression implements ILocation {
   public String toString() {
 
     switch (base) {
+
     case EASSIGN: {
       return "(" + getLhs().toString().trim() + tokenTos(getToken()) + getRhs().toString().trim() + ")";
     }
+
     case EBINARY: {
       return "(" + getLhs().toString() + tokenTos(getToken()) + getRhs().toString() + ")";
     }
+
     case ECOMMA: {
       return getLhs().toString() + tokenTos(getToken()) + getRhs().toString();
     }
+
     case ETERNARY: {
       return "("
           + getCnd().toString().trim()
@@ -328,16 +330,19 @@ public class CExpression implements ILocation {
           + getRhs().toString().trim()
           + ")";
     }
+
     case EUNARY: {
       return "(" + getToken().getValue() + getLhs().toString() + ")";
     }
+
     case ECOMPSEL: {
-      // TODO:
-      return "(" + getLhs().toString() + ")." + field.getName().getName();
+      return "(" + getLhs().toString() + getToken().getValue() + field.getName().getName() + ")";
     }
+
     case ECAST: {
       return "(" + resultType.toString() + ") " + "(" + getLhs().toString() + ")";
     }
+
     case EFCALL: {
       StringBuilder sb = new StringBuilder();
       sb.append(getLhs().toString() + "(");
@@ -354,41 +359,44 @@ public class CExpression implements ILocation {
       sb.append(")");
       return sb.toString();
     }
+
     case EPREINCDEC: {
       return "(" + getToken().getValue() + getLhs().toString() + ")";
     }
+
     case EPOSTINCDEC: {
       return "(" + getLhs().toString() + getToken().getValue() + ")";
     }
+
     case ECOMPLITERAL: {
       return "(" + resultType.toString() + ") {" + initializerList.toString() + " }";
     }
+
     case EPRIMARY_IDENT: {
-      return token.getValue(); // TODO: this for unit-tests now.
+      return symbol.getName().getName();
     }
-    case EPRIMARY_CONST: {
-      // TODO:
-      return String.format("%d", cnumber.getClong());
+
+    case EPRIMARY_NUMBER: {
+      if (cnumber.isInteger()) {
+        return String.format("%d", cnumber.getClong());
+      } else {
+        return String.format("%f", cnumber.getCdouble());
+      }
     }
+
     case EPRIMARY_STRING: {
-      return cstring;
+      return cstring.toString();
     }
+
     case EPRIMARY_GENERIC: {
-      return getGenericSelectionResult().toString();
+      return getLhs().toString();
     }
+
     default: {
       throw new ParseException("unknown: " + base.toString());
     }
     }
 
-  }
-
-  public String getCstring() {
-    return cstring;
-  }
-
-  public void setCstring(String cstring) {
-    this.cstring = cstring;
   }
 
   public NumericConstant getCnumber() {
@@ -425,7 +433,7 @@ public class CExpression implements ILocation {
   }
 
   public boolean isIntegerZero() {
-    return base == CExpressionBase.EPRIMARY_CONST && cnumber.isInteger() && cnumber.getClong() == 0;
+    return base == CExpressionBase.EPRIMARY_NUMBER && cnumber.isInteger() && cnumber.getClong() == 0;
   }
 
   public boolean isModifiableLvalue() {

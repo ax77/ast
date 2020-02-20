@@ -145,7 +145,7 @@ public class ConstexprEval {
       return ce(expression.getRhs());
     }
 
-    if (base == CExpressionBase.EPRIMARY_CONST) {
+    if (base == CExpressionBase.EPRIMARY_NUMBER) {
       //TODO:
       return expression.getCnumber().getClong();
     }
@@ -159,7 +159,7 @@ public class ConstexprEval {
     // int a1[_Generic(0, int: 1, short: 2, float: 3, default: 4) == 1 ? 1 : -1];
     //
     if (base == CExpressionBase.EPRIMARY_GENERIC) {
-      final CExpression genericSelectionResult = expression.getGenericSelectionResult();
+      final CExpression genericSelectionResult = expression.getLhs();
       return ce(genericSelectionResult);
     }
 

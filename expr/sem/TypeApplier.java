@@ -15,10 +15,9 @@ import static ast.expr.main.CExpressionBase.ECOMPSEL;
 import static ast.expr.main.CExpressionBase.EFCALL;
 import static ast.expr.main.CExpressionBase.EPOSTINCDEC;
 import static ast.expr.main.CExpressionBase.EPREINCDEC;
-import static ast.expr.main.CExpressionBase.EPRIMARY_CONST;
+import static ast.expr.main.CExpressionBase.EPRIMARY_NUMBER;
 import static ast.expr.main.CExpressionBase.EPRIMARY_GENERIC;
 import static ast.expr.main.CExpressionBase.EPRIMARY_IDENT;
-import static ast.expr.main.CExpressionBase.EPRIMARY_STRING;
 import static ast.expr.main.CExpressionBase.ETERNARY;
 import static ast.expr.main.CExpressionBase.EUNARY;
 import static jscan.tokenize.T.T_AND;
@@ -124,14 +123,9 @@ public abstract class TypeApplier {
       e.setResultType(symtype);
     }
 
-    else if (base == EPRIMARY_CONST) {
+    else if (base == EPRIMARY_NUMBER) {
       final NumType numtype = e.getCnumber().getNumtype();
       e.setResultType(CTypeImpl.bindings.get(numtype));
-    }
-
-    else if (base == EPRIMARY_STRING) {
-      final CType ptrToChar = genPtrTo(TYPE_CHAR);
-      e.setResultType(ptrToChar);
     }
 
     else if (base == EPRIMARY_GENERIC) {

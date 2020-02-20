@@ -38,9 +38,12 @@ import jscan.hashed.Hash_ident;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import ast._typesnew.CArrayType;
 import ast._typesnew.CStructField;
 import ast._typesnew.CStructType;
 import ast._typesnew.CType;
+import ast._typesnew.CTypeImpl;
+import ast.declarations.Initializer;
 import ast.declarations.InitializerListEntry;
 import ast.declarations.parser.ParseDeclarations;
 import ast.expr.main.CExpression;
@@ -51,6 +54,8 @@ import ast.parse.Parse;
 import ast.parse.ParseState;
 import ast.parse.Pcheckers;
 import ast.symtabg.elements.CSymbol;
+import ast.symtabg.elements.CSymbolBase;
+import ast.symtabg.elements.StringConstant;
 
 public class ParseExpression {
   private final Parse parser;
@@ -65,6 +70,10 @@ public class ParseExpression {
 
   private CExpression build_binary(Token operator, CExpression lhs, CExpression rhs) {
     return new CExpression(CExpressionBase.EBINARY, lhs, rhs, operator);
+  }
+
+  private CExpression build_ternary(CExpression cnd, CExpression btrue, CExpression bfalse, Token tok) {
+    return new CExpression(cnd, btrue, bfalse, tok);
   }
 
   private CExpression build_assign(Token tok, CExpression lvalue, CExpression rvalue) {
@@ -97,6 +106,35 @@ public class ParseExpression {
 
   private CExpression build_incdec(CExpressionBase base, Token op, CExpression lhs) {
     return new CExpression(base, op, lhs);
+  }
+
+  private CExpression build_compliteral(CType typename, List<InitializerListEntry> initializerList, Token saved) {
+    return new CExpression(typename, initializerList, saved);
+  }
+
+  private static int globtempcnt = 0;
+
+  private String newgloblab() {
+    return String.format("t%d", globtempcnt++);
+  }
+
+  private CExpression build_strconst(Token saved) {
+
+    String str = saved.getValue();
+    if (str.startsWith("\"") && str.endsWith("\"")) {
+      str = str.substring(1, str.length() - 1);
+    }
+
+    final Ident varname = Hash_ident.getHashedIdent(newgloblab());
+    final CArrayType arrtype = new CArrayType(CTypeImpl.TYPE_CHAR, str.length() + 1);
+
+    final CExpression initexpr = new CExpression(new StringConstant(saved.getStrconstant(), str), saved);
+    final Initializer initializer = new Initializer(initexpr);
+
+    CSymbol sym = new CSymbol(CSymbolBase.SYM_GVAR, varname, new CType(arrtype), initializer, saved);
+    parser.defineSym(varname, sym);
+
+    return new CExpression(sym, saved);
   }
 
   public CExpression e_expression() {
@@ -170,14 +208,18 @@ public class ParseExpression {
 
   private CExpression e_cnd() {
     CExpression res = e_lor();
+
     if (parser.tp() != T_QUESTION) {
       return res;
     }
+
     Token saved = parser.tok();
     parser.move();
+
     CExpression btrue = e_expression();
     parser.checkedMove(T_COLON);
-    return new CExpression(res, btrue, e_cnd(), saved);
+
+    return build_ternary(res, btrue, e_cnd(), saved);
   }
 
   private CExpression e_lor() {
@@ -391,10 +433,7 @@ public class ParseExpression {
         Token saved = parser.tok();
 
         List<InitializerListEntry> initializerList = new ParseDeclarations(parser).parseInitializerList();
-        CExpression compliteral = new CExpression(typename, initializerList, saved);
-
-        compliteral.setResultType(typename);
-        return compliteral;
+        return build_compliteral(typename, initializerList, saved);
       }
 
       parser.restoreState(state);
@@ -534,10 +573,12 @@ public class ParseExpression {
     if (parser.tp() == TOKEN_NUMBER || parser.tp() == TOKEN_CHAR || parser.tp() == TOKEN_STRING) {
       Token saved = parser.tok();
       parser.move();
+
       if (saved.ofType(TOKEN_STRING)) {
-        CExpression e = new CExpression(saved.getValue(), saved);
-        return e;
-      } else {
+        return build_strconst(saved);
+      }
+
+      else {
 
         //TODO:NUMBERS
         String toeval = "";
@@ -549,8 +590,7 @@ public class ParseExpression {
 
         // TODO:NUMBERS
         C_strtox strtox = new C_strtox(toeval);
-        CExpression e = build_number(strtox, saved);
-        return e;
+        return build_number(strtox, saved);
       }
     }
 
@@ -563,8 +603,7 @@ public class ParseExpression {
         parser.perror("symbol '" + saved.getValue() + "' was not declared in the scope.");
       }
 
-      CExpression e = build_var(sym, saved);
-      return e;
+      return build_var(sym, saved);
     }
 
     if (parser.tp() == T_LEFT_PAREN) {

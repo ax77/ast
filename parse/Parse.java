@@ -521,15 +521,16 @@ public class Parse {
     }
   }
 
+  // TODO:
   private void define__func__(Ident funcName) {
-    CArrayType arr = new CArrayType(CTypeImpl.TYPE_UCHAR, funcName.getName().length() + 1);
-    final Ident func = Hash_ident.__func___ident;
-
-    CSymbol sym = new CSymbol(CSymbolBase.SYM_VAR, func, new CType(arr), tok());
-    CExpression init = new CExpression(funcName.getName(), tok());
-    sym.setInitializer(new Initializer(init));
-
-    defineSym(func, sym);
+    //    CArrayType arr = new CArrayType(CTypeImpl.TYPE_UCHAR, funcName.getName().length() + 1);
+    //    final Ident func = Hash_ident.__func___ident;
+    //
+    //    CSymbol sym = new CSymbol(CSymbolBase.SYM_VAR, func, new CType(arr), tok());
+    //    CExpression init = new CExpression(funcName.getName(), tok());
+    //    sym.setInitializer(new Initializer(init));
+    //
+    //    defineSym(func, sym);
   }
 
   private void defineParameters(CType signature) {
@@ -544,7 +545,7 @@ public class Parse {
     }
 
     for (CFuncParam fparam : parameters) {
-      CSymbol paramsym = new CSymbol(CSymbolBase.SYM_VAR, fparam.getName(), fparam.getType(), tok());
+      CSymbol paramsym = new CSymbol(CSymbolBase.SYM_LVAR, fparam.getName(), fparam.getType(), tok());
       defineSym(fparam.getName(), paramsym);
     }
   }
@@ -590,7 +591,7 @@ public class Parse {
     // int x;
     // .....^
     if (current.ofType(T_SEMI_COLON)) {
-      CSymbolBase base = CSymbolBase.SYM_VAR;
+      CSymbolBase base = CSymbolBase.SYM_LVAR;
       if (storageSpec == StorageKind.ST_TYPEDEF) {
         base = CSymbolBase.SYM_TYPEDEF;
       }
@@ -613,7 +614,7 @@ public class Parse {
         List<CSymbol> initDeclaratorList = new ArrayList<CSymbol>(0);
 
         // head
-        CSymbolBase base = CSymbolBase.SYM_VAR;
+        CSymbolBase base = CSymbolBase.SYM_LVAR;
         if (storageSpec == StorageKind.ST_TYPEDEF) {
           base = CSymbolBase.SYM_TYPEDEF;
         }
@@ -650,7 +651,7 @@ public class Parse {
           perror("typedef with initializer.");
         }
 
-        CSymbol sym = new CSymbol(CSymbolBase.SYM_VAR, declarator.getName(), type, initializer, current);
+        CSymbol sym = new CSymbol(CSymbolBase.SYM_LVAR, declarator.getName(), type, initializer, current);
         defineSym(declarator.getName(), sym);
 
         initDeclaratorList.add(sym);
