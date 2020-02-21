@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jscan.cstrtox.C_strtox;
+import jscan.cstrtox.NumType;
 import jscan.hashed.Hash_ident;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
@@ -56,6 +57,7 @@ import ast.parse.ParseState;
 import ast.parse.Pcheckers;
 import ast.symtabg.elements.CSymbol;
 import ast.symtabg.elements.CSymbolBase;
+import ast.symtabg.elements.NumericConstant;
 import ast.symtabg.elements.StringConstant;
 
 public class ParseExpression {
@@ -85,8 +87,15 @@ public class ParseExpression {
     return new CExpression(CExpressionBase.ECOMMA, lhs, rhs, tok);
   }
 
+  // numeric-char-constants
   private CExpression build_number(C_strtox e, Token token) {
     return new CExpression(e, token);
+  }
+
+  // sizeof, alignof
+  private CExpression build_usize(long u64, Token token) {
+    NumericConstant nc = new NumericConstant(u64, NumType.N_ULONG_LONG);
+    return new CExpression(nc, token);
   }
 
   private CExpression build_cast(Parse parser, CType typename, CExpression tocast, Token token) {
@@ -119,6 +128,8 @@ public class ParseExpression {
     return String.format("t%d", globtempcnt++);
   }
 
+  // TODO: define in global scope as label
+  //
   private CExpression build_strconst(Token saved) {
 
     String str = saved.getValue();
@@ -367,6 +378,7 @@ public class ParseExpression {
       return build_incdec(CExpressionBase.EPREINCDEC, operator, e_unary());
     }
 
+    // TODO: merge with _Alignof()
     if (parser.tok().isIdent(Hash_ident.sizeof_ident)) {
       return e_sizeof();
     }
@@ -380,16 +392,18 @@ public class ParseExpression {
     if (parser.tp() == T_LEFT_PAREN) {
       parser.lparen();
 
+      // sizeof(int)
+
       if (parser.isDeclSpecStart()) {
 
         CType typename = parser.parse_typename();
         parser.rparen();
 
-        C_strtox strtox = new C_strtox(String.format("%d", typename.getSize()));
-        final CExpression ret = build_number(strtox, id);
-        return ret;
+        return build_usize(typename.getSize(), id);
 
       } else {
+
+        // sizeof(any-varname)
 
         CExpression sizeofexpr = e_expression();
         TypeApplier.applytype(sizeofexpr, TaStage.stage_start);
@@ -399,8 +413,7 @@ public class ParseExpression {
           parser.perror("unimplemented sizeof for: " + sizeofexpr.toString());
         }
 
-        C_strtox strtox = new C_strtox(String.format("%d", sizeofexpr.getResultType().getSize()));
-        return build_number(strtox, id);
+        return build_usize(sizeofexpr.getResultType().getSize(), id);
 
       }
 
@@ -411,8 +424,11 @@ public class ParseExpression {
     CExpression sizeofexpr = e_unary();
     TypeApplier.applytype(sizeofexpr, TaStage.stage_start);
 
-    C_strtox strtox = new C_strtox(String.format("%d", sizeofexpr.getResultType().getSize()));
-    return build_number(strtox, id);
+    if (sizeofexpr.getResultType() == null) {
+      parser.perror("unimplemented sizeof for: " + sizeofexpr.toString());
+    }
+
+    return build_usize(sizeofexpr.getResultType().getSize(), id);
 
   }
 
@@ -483,18 +499,7 @@ public class ParseExpression {
 
           final Token operatorDeref = CExpressionBuilderHelper.derefOperator(operator);
           final Token operatorDot = CExpressionBuilderHelper.dotOperator(operator);
-
-          //////////////////////////////////////////////////////////////////////
-          final CType lhsRT = lhs.getResultType();
-          if (!lhsRT.isPointerToStructUnion()) {
-            parser.perror("expect pointer to struct or union for '->' operator");
-          }
-          final CStructType tpStruct = lhsRT.getTpPointer().getPointerTo().getTpStruct();
-          CStructField field = tpStruct.findFiled(fieldName);
-          if (field == null) {
-            parser.perror("error: struct has no field: " + fieldName.getName());
-          }
-          //////////////////////////////////////////////////////////////////////
+          final CStructField field = get_field_arrow(lhs, fieldName);
 
           CExpression inBrace = build_unary(operatorDeref, lhs);
           lhs = build_compsel(inBrace, operatorDot, field);
@@ -502,22 +507,7 @@ public class ParseExpression {
 
         else {
 
-          //////////////////////////////////////////////////////////////////////
-          final CType lhsRT = lhs.getResultType();
-          if (!lhsRT.isStrUnion()) {
-            parser.perror("expect struct or union for '.' operator");
-          }
-
-          if (lhsRT.getTpStruct() == null || lhsRT.getTpStruct().isIncomplete()) {
-            System.out.printf("");
-          }
-
-          CStructField field = lhsRT.getTpStruct().findFiled(fieldName);
-          if (field == null) {
-            parser.perror("error: struct has no field: " + fieldName.getName());
-          }
-          //////////////////////////////////////////////////////////////////////
-
+          final CStructField field = get_field_dot(lhs, fieldName);
           lhs = build_compsel(lhs, operator, field);
         }
 
@@ -554,6 +544,41 @@ public class ParseExpression {
     }
 
     return lhs;
+  }
+
+  private CStructField get_field_arrow(CExpression postfix, Ident fieldName) {
+
+    final CType tp = postfix.getResultType();
+    if (!tp.isPointerToStructUnion()) {
+      parser.perror("expect pointer to struct or union for '->' operator");
+    }
+
+    final CStructType tpStruct = tp.getTpPointer().getPointerTo().getTpStruct();
+    CStructField field = tpStruct.findFiled(fieldName);
+    if (field == null) {
+      parser.perror("error: struct has no field: " + fieldName.getName());
+    }
+
+    return field;
+  }
+
+  private CStructField get_field_dot(CExpression postfix, Ident fieldName) {
+
+    final CType tp = postfix.getResultType();
+    if (!tp.isStrUnion()) {
+      parser.perror("expect struct or union for '.' operator");
+    }
+
+    if (tp.getTpStruct() == null || tp.getTpStruct().isIncomplete()) {
+      System.out.printf("");
+    }
+
+    CStructField field = tp.getTpStruct().findFiled(fieldName);
+    if (field == null) {
+      parser.perror("error: struct has no field: " + fieldName.getName());
+    }
+
+    return field;
   }
 
   //  primary_expression

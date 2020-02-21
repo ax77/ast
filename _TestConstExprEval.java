@@ -21,7 +21,7 @@ import ast.parse.Parse;
 public class _TestConstExprEval {
 
   @Test
-  public void test() throws IOException {
+  public void ceEval() throws IOException {
     Map<String, Integer> toeval = new HashMap<String, Integer>();
 
     //@formatter:off

@@ -419,6 +419,24 @@ public class _TestStructFieldAccess {
     sb21.append(" /*009*/  }                              \n");
     //@formatter:on
 
+    //@formatter:off
+    StringBuilder sb22 = new StringBuilder();
+    sb22.append(" /*001*/  int main(int argc, char **argv)                             \n");
+    sb22.append(" /*002*/  {                                                           \n");
+    sb22.append(" /*003*/    struct num   { int i32; };                                \n");
+    sb22.append(" /*004*/    struct ntype { struct num *num; };                        \n");
+    sb22.append(" /*005*/    struct nref  { struct ntype *ntype; };                    \n");
+    sb22.append(" /*006*/    struct n     { struct nref *nref; };                      \n");
+    sb22.append(" /*007*/    struct num *num = &(struct num) { .i32 = 128, };          \n");
+    sb22.append(" /*008*/    struct ntype *ntype = &(struct ntype) { .num = num, };    \n");
+    sb22.append(" /*009*/    struct nref *nref = &(struct nref) { .ntype = ntype, };   \n");
+    sb22.append(" /*010*/    struct n *n = &(struct n) { .nref = nref };               \n");
+    sb22.append(" /*011*/    int a = n->nref->ntype->num->i32;                         \n");
+    sb22.append(" /*012*/    int b = (*(*(*(*n).nref).ntype).num).i32;                 \n");
+    sb22.append(" /*013*/    return a == 128 && b == 128;                              \n");
+    sb22.append(" /*014*/  }                                                           \n");
+    //@formatter:on
+
     List<StringBuilder> tests = new ArrayList<StringBuilder>();
     tests.add(sb0);
     tests.add(sb1);
@@ -442,6 +460,7 @@ public class _TestStructFieldAccess {
     tests.add(sb19);
     tests.add(sb20);
     tests.add(sb21);
+    tests.add(sb22);
 
     for (StringBuilder sb : tests) {
       Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();

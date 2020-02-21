@@ -7,7 +7,7 @@ import java.util.Random;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class _TestInitsTemplatesTextual {
+public class UtilTemplatesTextual {
 
   //  template = {{0,0,0},{0,0,0}}
   //
