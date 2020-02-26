@@ -60,6 +60,7 @@ public class Parse {
 
   private String lastloc;
   private List<Token> ringBuffer;
+  private Token prevtok;
 
   //for easy unit-testing, like printing, and parse some parts
   private boolean isSemanticEnable;
@@ -222,6 +223,14 @@ public class Parse {
     return lastloc;
   }
 
+  public Token getPrevtok() {
+    return prevtok;
+  }
+
+  public void setPrevtok(Token prevtok) {
+    this.prevtok = prevtok;
+  }
+
   public List<Token> getRingBuffer() {
     return ringBuffer;
   }
@@ -232,36 +241,23 @@ public class Parse {
 
   public void move() {
 
-    do {
-
-      savePositions();
-
+    tok = tokenlist.next();
+    if (tok.ofType(T.TOKEN_STREAMBEGIN) || tok.ofType(T.TOKEN_STREAMEND)) {
       tok = tokenlist.next();
+    }
 
-    } while (tok.ofType(T.TOKEN_STREAMBEGIN) || tok.ofType(T.TOKEN_STREAMEND));
-
+    addLoc();
   }
 
-  private void savePositions() {
+  private void addLoc() {
 
-    if (tok != null) {
-      addLoc(tok);
-    } else {
-      addLoc(tokenlist.peek());
+    if (ringBuffer.size() >= 230) {
+      ringBuffer.remove(0);
     }
+    ringBuffer.add(tok);
 
-    if (ringBuffer.size() > 120) {
-      for (int i = 0; i < 50; i++) {
-        ringBuffer.remove(0);
-      }
-    }
-  }
-
-  private void addLoc(Token from) {
-    if (!from.typeIsSpecialStreamMarks()) {
-      ringBuffer.add(from);
-      lastloc = from.loc();
-    }
+    lastloc = (prevtok == null ? tok.loc() : prevtok.loc());
+    prevtok = tok;
   }
 
   //////////////////////////////////////////////////////////////////////
@@ -504,12 +500,9 @@ public class Parse {
     this.tokenlist.setOffset(parseState.getTokenlistOffset());
     this.tok = parseState.getTok();
     this.currentFn = parseState.getCurrentFn();
-
-    this.ringBuffer.clear();// = parseState.getRingBuffer();
-    savePositions();
-
-    //TODO:
-    //this.lastloc = parseState.getLastloc();
+    this.ringBuffer = new ArrayList<Token>(parseState.getRingBuffer());
+    this.lastloc = parseState.getLastloc();
+    this.prevtok = parseState.getPrevtok();
   }
 
   ///////////////////////////////////////////////////////////////////

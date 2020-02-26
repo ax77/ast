@@ -1,5 +1,6 @@
 package ast.parse;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ast.unit.FunctionDefinition;
@@ -11,13 +12,15 @@ public class ParseState {
   private final FunctionDefinition currentFn;
   private final List<Token> ringBuffer;
   private final String lastloc;
+  private final Token prevtok;
 
   public ParseState(Parse parser) {
     this.tokenlistOffset = parser.getTokenlist().getOffset();
     this.tok = parser.tok();
     this.currentFn = parser.getCurrentFn();
-    this.ringBuffer = parser.getRingBuffer();
+    this.ringBuffer = new ArrayList<Token>(parser.getRingBuffer());
     this.lastloc = parser.getLastLoc();
+    this.prevtok = parser.getPrevtok();
   }
 
   public int getTokenlistOffset() {
@@ -38,6 +41,10 @@ public class ParseState {
 
   public String getLastloc() {
     return lastloc;
+  }
+
+  public Token getPrevtok() {
+    return prevtok;
   }
 
 }
