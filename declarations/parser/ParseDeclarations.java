@@ -22,6 +22,7 @@ import ast.parse.Parse;
 import ast.symtabg.elements.CSymbol;
 import ast.symtabg.elements.CSymbolBase;
 import jscan.hashed.Hash_ident;
+import jscan.sourceloc.SourceLocation;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 
@@ -226,9 +227,12 @@ public class ParseDeclarations {
     //    | initializer_list ',' initializer
     //    ;
 
+    SourceLocation location = new SourceLocation(p.tok());
+
     if (p.tp() != T.T_LEFT_BRACE) {
+
       CExpression assignment = new ParseExpression(p).e_assign();
-      return new Initializer(assignment);
+      return new Initializer(assignment, location);
     }
 
     p.checkedMove(T.T_LEFT_BRACE);
@@ -237,7 +241,7 @@ public class ParseDeclarations {
     // int a[5] = {};
     if (p.tp() == T.T_RIGHT_BRACE) {
       p.checkedMove(T.T_RIGHT_BRACE);
-      return new Initializer(new ArrayList<InitializerListEntry>(0));
+      return new Initializer(new ArrayList<InitializerListEntry>(0), location);
     }
 
     // otherwise - recursively expand braced initializers
@@ -245,7 +249,7 @@ public class ParseDeclarations {
     List<InitializerListEntry> initializerList = parseInitializerList(); // XXX: taint comma case here
     p.checkedMove(T.T_RIGHT_BRACE);
 
-    return new Initializer(initializerList);
+    return new Initializer(initializerList, location);
   }
 
   public List<InitializerListEntry> parseInitializerList() {
@@ -311,16 +315,18 @@ public class ParseDeclarations {
     //   | '.' IDENTIFIER
     //   ;
 
+    SourceLocation location = new SourceLocation(p.tok());
+
     if (p.tp() == T.T_LEFT_BRACKET || p.tp() == T.T_DOT) {
       List<Designator> designators = parseDesignatorList(p);
       p.checkedMove(T.T_ASSIGN);
 
       Initializer initializer = parseInitializer();
-      return new InitializerListEntry(designators, initializer);
+      return new InitializerListEntry(designators, initializer, location);
     }
 
     Initializer initializer = parseInitializer();
-    return new InitializerListEntry(initializer);
+    return new InitializerListEntry(initializer, location);
   }
 
   private List<Designator> parseDesignatorList(Parse p) {

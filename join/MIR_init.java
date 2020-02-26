@@ -1,39 +1,60 @@
 package ast.join;
 
+import static jscan.tokenize.T.TOKEN_NUMBER;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import jscan.cstrtox.NumType;
+import jscan.sourceloc.SourceLocation;
 import jscan.tokenize.Token;
 import ast._typesnew.CArrayType;
 import ast._typesnew.CType;
+import ast._typesnew.CTypeImpl;
 import ast.declarations.Initializer;
 import ast.declarations.InitializerListEntry;
 import ast.errors.ParseException;
 import ast.expr.main.CExpression;
-import ast.expr.sem.CExpressionBuilderHelper;
-import ast.symtabg.elements.CSymbol;
+import ast.parse.NullChecker;
+import ast.symtabg.elements.NumericConstant;
 
 public class MIR_init {
 
-  private final CSymbol symbol;
-  private final Token from;
+  private final SourceLocation startLocation;
+  private final CType type;
   private final List<InitNew> inits;
   private final Arrinfo arrinfo;
-
   private int level;
 
-  public MIR_init(CSymbol symbol) {
-    this.symbol = symbol;
-    this.from = symbol.getFrom();
+  public MIR_init(CType type, Initializer initializer) {
+    NullChecker.check(type, initializer);
+
+    this.startLocation = initializer.getLocation();
+    this.type = type;
     this.inits = new ArrayList<InitNew>();
-    this.arrinfo = new Arrinfo(symbol);
+    this.arrinfo = new Arrinfo(type);
     this.level = -1;
 
-    checkSymbol();
-    expandInitializers(symbol.getInitializer());
-    alignMultidimensionalArrayTail();
-    applyOffsetToResult();
-    applyArrayLengthAndTypeSize();
+    expand(type, initializer);
+  }
+
+  private void expand(CType type, Initializer initializer) {
+    if (type.isArray()) {
+      expandArrayInitializers(initializer);
+      alignMultidimensionalArrayTail();
+      applyOffsetToResult();
+      applyArrayLengthAndTypeSize();
+    }
+
+    else if (type.isStrUnion()) {
+      throw new ParseException("unimpl. struct-union initializers.");
+    }
+
+    else {
+      final InitNew simpleInit = new InitNew(initializer.getAssignment());
+      simpleInit.setOffset(0);
+      inits.add(simpleInit);
+    }
   }
 
   // inside array all elements already filling with zeros
@@ -78,7 +99,6 @@ public class MIR_init {
       return;
     }
 
-    CType type = symbol.getType();
     CArrayType array = type.getTpArray();
 
     if (!arrinfo.isMultiDimensionalArray()) {
@@ -95,19 +115,6 @@ public class MIR_init {
     }
   }
 
-  private void symErr(String m) {
-    throw new ParseException(symbol.getLocationToString() + ": error: " + m);
-  }
-
-  private void checkSymbol() {
-    if (!symbol.isArray()) {
-      symErr("expect array for this initializer");
-    }
-    if (symbol.getInitializer() == null) {
-      symErr("no initializer");
-    }
-  }
-
   private void applyOffsetToResult() {
     int offset = 0;
     for (InitNew init : inits) {
@@ -116,7 +123,7 @@ public class MIR_init {
     }
   }
 
-  private void expandInitializers(Initializer initializer) {
+  private void expandArrayInitializers(Initializer initializer) {
     if (!initializer.isInitializerList()) {
       InitNew init = new InitNew(initializer.getAssignment());
       inits.add(init);
@@ -173,15 +180,15 @@ public class MIR_init {
           int diff = expected - actual;
           for (int i = 0; i < diff; i++) {
             List<InitializerListEntry> initializerListZero = new ArrayList<InitializerListEntry>();
-            Initializer initializerZero = new Initializer(initializerListZero);
-            initializers.add(new InitializerListEntry(initializerZero));
+            Initializer initializerZero = new Initializer(initializerListZero, startLocation);
+            initializers.add(new InitializerListEntry(initializerZero, startLocation));
           }
         }
       }
 
       for (int j = 0; j < initializers.size(); j++) {
         InitializerListEntry entry = initializers.get(j);
-        expandInitializers(entry.getInitializer());
+        expandArrayInitializers(entry.getInitializer());
       }
 
       --level;
@@ -210,11 +217,23 @@ public class MIR_init {
   }
 
   private InitializerListEntry zeroInit() {
-    return new InitializerListEntry(new Initializer(zero()));
+    return new InitializerListEntry(new Initializer(zero(), startLocation), startLocation);
+  }
+
+  private CExpression digitZero() {
+    Token from = new Token();
+    from.set(TOKEN_NUMBER, "0");
+    from.setLocation(startLocation);
+
+    NumericConstant number = new NumericConstant(0, NumType.N_INT);
+    CExpression ret = new CExpression(number, from);
+
+    ret.setResultType(CTypeImpl.TYPE_INT);
+    return ret;
   }
 
   private CExpression zero() {
-    return CExpressionBuilderHelper.digitZero(from);
+    return digitZero();
   }
 
   public List<InitNew> getInits() {

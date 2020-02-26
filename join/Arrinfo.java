@@ -16,8 +16,8 @@ public class Arrinfo {
   private List<Integer> arrayDimensions;
   private List<Integer> indexedOffsets; // for designator offset calculation
 
-  public Arrinfo(CSymbol sym) {
-    this.type = sym.getType();
+  public Arrinfo(CType type) {
+    this.type = type;
     if (!type.isArray()) {
       throw new ParseException("expect array, but was: " + type.toString());
     }

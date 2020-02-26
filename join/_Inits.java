@@ -76,7 +76,7 @@ public class _Inits {
         continue;
       }
 
-      List<InitNew> inits = new MIR_init(sym).getInits();
+      List<InitNew> inits = new MIR_init(sym.getType(), sym.getInitializer()).getInits();
       final CType type = sym.getType();
 
       //      System.out.printf("name=%s, arrlen=%d, typesize=%d\n", name, type.getTpArray().getArrayLen(), type.getSize());
@@ -156,7 +156,7 @@ public class _Inits {
         continue;
       }
 
-      List<InitNew> inits = new MIR_init(sym).getInits();
+      List<InitNew> inits = new MIR_init(sym.getType(), sym.getInitializer()).getInits();
       final CType type = sym.getType();
 
       final int lenExpected = sizes.get(name).intValue();
@@ -261,7 +261,7 @@ public class _Inits {
         continue;
       }
 
-      List<InitNew> inits = new MIR_init(sym).getInits();
+      List<InitNew> inits = new MIR_init(sym.getType(), sym.getInitializer()).getInits();
       final CType type = sym.getType();
 
       final int lenExpected = sizes.get(name).intValue();
@@ -313,7 +313,7 @@ public class _Inits {
         continue;
       }
 
-      List<InitNew> inits = new MIR_init(sym).getInits();
+      List<InitNew> inits = new MIR_init(sym.getType(), sym.getInitializer()).getInits();
       String actual = "";
       for (InitNew init : inits) {
         actual += String.format("%s ", init.getInit());
@@ -354,7 +354,7 @@ public class _Inits {
         continue;
       }
 
-      List<InitNew> inits = new MIR_init(sym).getInits();
+      List<InitNew> inits = new MIR_init(sym.getType(), sym.getInitializer()).getInits();
       String actual = "";
       for (InitNew init : inits) {
         actual += String.format("%s ", init.getInit());
@@ -455,7 +455,7 @@ public class _Inits {
         continue;
       }
 
-      List<InitNew> inits = new MIR_init(sym).getInits();
+      List<InitNew> inits = new MIR_init(sym.getType(), sym.getInitializer()).getInits();
       CType type = sym.getType();
 
       //      System.out.printf("name=%s, arrlen=%d, typesize=%d\n", name, type.getTpArray().getArrayLen(), type.getSize());

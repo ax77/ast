@@ -36,6 +36,7 @@ import java.util.List;
 import jscan.cstrtox.C_strtox;
 import jscan.cstrtox.NumType;
 import jscan.hashed.Hash_ident;
+import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
@@ -141,7 +142,7 @@ public class ParseExpression {
     final CArrayType arrtype = new CArrayType(CTypeImpl.TYPE_CHAR, str.length() + 1);
 
     final CExpression initexpr = new CExpression(new StringConstant(saved.getStrconstant(), str), saved);
-    final Initializer initializer = new Initializer(initexpr);
+    final Initializer initializer = new Initializer(initexpr, new SourceLocation(saved));
 
     CSymbol sym = new CSymbol(CSymbolBase.SYM_GVAR, varname, new CType(arrtype), initializer, saved);
     parser.defineSym(varname, sym);
