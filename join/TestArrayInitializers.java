@@ -18,7 +18,7 @@ import ast.parse.Parse;
 import ast.symtabg.elements.CSymbol;
 import ast.unit.TranslationUnit;
 
-public class _Inits {
+public class TestArrayInitializers {
 
   @Test
   public void testArrayInitializers_0() throws IOException {

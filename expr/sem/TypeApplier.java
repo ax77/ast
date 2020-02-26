@@ -56,7 +56,7 @@ public abstract class TypeApplier {
     }
   }
 
-  public static void applytype(CExpression e, TaStage stage) {
+  public static void applytype(CExpression e, TypeApplierStage stage) {
 
     final CExpressionBase base = e.getBase();
     if (e.getResultType() != null) {
@@ -64,8 +64,8 @@ public abstract class TypeApplier {
     }
 
     if (base == EASSIGN) {
-      applytype(e.getLhs(), TaStage.assign_lhs);
-      applytype(e.getRhs(), TaStage.assign_rhs);
+      applytype(e.getLhs(), TypeApplierStage.assign_lhs);
+      applytype(e.getRhs(), TypeApplierStage.assign_rhs);
 
       assertType(e.getLhs());
       assertType(e.getRhs());
@@ -75,8 +75,8 @@ public abstract class TypeApplier {
 
     else if (base == EBINARY) {
 
-      applytype(e.getLhs(), TaStage.binary_lhs);
-      applytype(e.getRhs(), TaStage.binary_rhs);
+      applytype(e.getLhs(), TypeApplierStage.binary_lhs);
+      applytype(e.getRhs(), TypeApplierStage.binary_rhs);
 
       assertType(e.getLhs());
       assertType(e.getRhs());
@@ -86,8 +86,8 @@ public abstract class TypeApplier {
     }
 
     else if (base == ECOMMA) {
-      applytype(e.getLhs(), TaStage.comma_lhs);
-      applytype(e.getRhs(), TaStage.comma_rhs);
+      applytype(e.getLhs(), TypeApplierStage.comma_lhs);
+      applytype(e.getRhs(), TypeApplierStage.comma_rhs);
 
       assertType(e.getLhs());
       assertType(e.getRhs());
@@ -96,9 +96,9 @@ public abstract class TypeApplier {
     }
 
     else if (base == ETERNARY) {
-      applytype(e.getCnd(), TaStage.tern_cnd);
-      applytype(e.getLhs(), TaStage.tern_true);
-      applytype(e.getRhs(), TaStage.tern_false);
+      applytype(e.getCnd(), TypeApplierStage.tern_cnd);
+      applytype(e.getLhs(), TypeApplierStage.tern_true);
+      applytype(e.getRhs(), TypeApplierStage.tern_false);
 
       assertType(e.getCnd());
       assertType(e.getLhs());
@@ -108,7 +108,7 @@ public abstract class TypeApplier {
     }
 
     else if (base == EUNARY) {
-      applytype(e.getLhs(), TaStage.unary_operand);
+      applytype(e.getLhs(), TypeApplierStage.unary_operand);
 
       assertType(e.getLhs());
       applyUnary(e);
@@ -120,7 +120,7 @@ public abstract class TypeApplier {
       final CType symtype = e.getSymbol().getType();
       e.setResultType(symtype);
 
-      if (stage == TaStage.generic_control_expr) {
+      if (stage == TypeApplierStage.generic_control_expr) {
         genPointer(e);
       }
     }
@@ -133,21 +133,21 @@ public abstract class TypeApplier {
     }
 
     else if (base == ECOMPSEL) {
-      applytype(e.getLhs(), TaStage.compsel_postfix);
+      applytype(e.getLhs(), TypeApplierStage.compsel_postfix);
 
       assertType(e.getLhs());
       e.setResultType(e.getField().getType());
     }
 
     else if (base == EFCALL) {
-      applytype(e.getLhs(), TaStage.fcall_function);
+      applytype(e.getLhs(), TypeApplierStage.fcall_function);
 
       assertType(e.getLhs());
       applyFcall(e);
     }
 
     else if (base == EPREINCDEC) {
-      applytype(e.getLhs(), TaStage.preincdec_operand);
+      applytype(e.getLhs(), TypeApplierStage.preincdec_operand);
 
       assertType(e.getLhs());
 
@@ -156,7 +156,7 @@ public abstract class TypeApplier {
     }
 
     else if (base == EPOSTINCDEC) {
-      applytype(e.getLhs(), TaStage.postincdec_operand);
+      applytype(e.getLhs(), TypeApplierStage.postincdec_operand);
 
       assertType(e.getLhs());
 

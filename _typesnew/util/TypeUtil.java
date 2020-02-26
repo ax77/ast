@@ -1,8 +1,8 @@
-package ast.join;
+package ast._typesnew.util;
 
 import ast.errors.ParseException;
 
-public abstract class TypesUtil {
+public abstract class TypeUtil {
   public static int align(int value, int alignment) {
     if (alignment <= 0) {
       throw new ParseException("negative or zero alignment.");

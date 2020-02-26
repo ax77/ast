@@ -5,7 +5,6 @@ import java.util.List;
 
 import ast._typesnew.CType;
 import ast.errors.ParseException;
-import ast.symtabg.elements.CSymbol;
 
 public class Arrinfo {
   private final CType type;

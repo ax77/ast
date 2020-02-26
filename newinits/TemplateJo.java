@@ -7,11 +7,11 @@ import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import ast._typesnew.CArrayType;
 import ast._typesnew.CType;
-import ast.declarations.Initializer;
-import ast.declarations.InitializerListEntry;
+import ast.declarations.inits.Initializer;
+import ast.declarations.inits.InitializerListEntry;
 import ast.errors.ParseException;
 import ast.expr.main.CExpression;
-import ast.expr.sem.CExpressionBuilderHelper;
+import ast.expr.util.ExprUtil;
 import ast.symtabg.elements.CSymbol;
 
 public class TemplateJo {
@@ -35,7 +35,7 @@ public class TemplateJo {
     this.sym = sym;
 
     from = sym.getFrom();
-    zero = CExpressionBuilderHelper.digitZero(from);
+    zero = ExprUtil.digitZero(from);
 
     outlist = new ArrayList<JustOut>();
     buildIndices(sym.getInitializer());
@@ -145,11 +145,11 @@ public class TemplateJo {
   }
 
   private Token rbr() {
-    return CExpressionBuilderHelper.copyTokenAddNewType(from, T.T_RIGHT_BRACE, "}");
+    return ExprUtil.copyTokenAddNewType(from, T.T_RIGHT_BRACE, "}");
   }
 
   private Token lbr() {
-    return CExpressionBuilderHelper.copyTokenAddNewType(from, T.T_LEFT_BRACE, "{");
+    return ExprUtil.copyTokenAddNewType(from, T.T_LEFT_BRACE, "{");
   }
 
   private JustOut joRbr() {

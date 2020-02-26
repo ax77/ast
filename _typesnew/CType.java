@@ -7,8 +7,8 @@ import static ast._typesnew.CTypeImpl.QCONST;
 import java.util.List;
 
 import ast._typesnew.main.TypeKind;
-import ast._typesnew.main.TypeSizes;
 import ast._typesnew.util.TypePrinter;
+import ast._typesnew.util.TypeSizes;
 import ast.errors.ParseException;
 
 public class CType implements CTypeApi {

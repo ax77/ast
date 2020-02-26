@@ -21,8 +21,8 @@ import ast._typesnew.decl.CDecl;
 import ast._typesnew.parser.ParseBase;
 import ast._typesnew.parser.ParseDecl;
 import ast._typesnew.util.TypeMerger;
-import ast.expr.sem.CExpressionBuilderHelper;
 import ast.expr.sem.TypeApplier;
+import ast.expr.util.ExprUtil;
 import ast.parse.Parse;
 import jscan.Tokenlist;
 

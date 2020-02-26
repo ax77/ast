@@ -11,8 +11,9 @@ import jscan.tokenize.Token;
 import ast._typesnew.CArrayType;
 import ast._typesnew.CType;
 import ast._typesnew.CTypeImpl;
-import ast.declarations.Initializer;
-import ast.declarations.InitializerListEntry;
+import ast._typesnew.util.TypeUtil;
+import ast.declarations.inits.Initializer;
+import ast.declarations.inits.InitializerListEntry;
 import ast.errors.ParseException;
 import ast.expr.main.CExpression;
 import ast.parse.NullChecker;
@@ -71,7 +72,7 @@ public class MIR_init {
     int actualLen = getKnownLenOfMultidimensionalArray();
     int initsLen = inits.size();
 
-    int alignLen = TypesUtil.align(initsLen, actualLen);
+    int alignLen = TypeUtil.align(initsLen, actualLen);
     int alignDiff = alignLen - initsLen;
 
     for (int i = 0; i < alignDiff; i++) {

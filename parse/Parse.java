@@ -3,9 +3,7 @@ package ast.parse;
 import static jscan.tokenize.T.TOKEN_EOF;
 import static jscan.tokenize.T.TOKEN_IDENT;
 import static jscan.tokenize.T.T_LEFT_BRACE;
-import static jscan.tokenize.T.T_LEFT_PAREN;
 import static jscan.tokenize.T.T_SEMI_COLON;
-import static jscan.tokenize.T.T_TIMES;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,10 +11,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-import ast._typesnew.CArrayType;
+import jscan.Tokenlist;
+import jscan.symtab.Ident;
+import jscan.tokenize.T;
+import jscan.tokenize.Token;
 import ast._typesnew.CFuncParam;
 import ast._typesnew.CType;
-import ast._typesnew.CTypeImpl;
 import ast._typesnew.decl.CDecl;
 import ast._typesnew.decl.CDeclEntry;
 import ast._typesnew.main.StorageKind;
@@ -24,13 +24,12 @@ import ast._typesnew.main.TypeKind;
 import ast._typesnew.parser.ParseBase;
 import ast._typesnew.parser.ParseDecl;
 import ast._typesnew.util.TypeMerger;
-import ast.declarations.Initializer;
+import ast.declarations.inits.Initializer;
 import ast.declarations.main.Declaration;
 import ast.declarations.parser.ParseDeclarations;
 import ast.declarations.sem.FinalizeInitializers;
 import ast.errors.ParseErrors;
 import ast.errors.ParseException;
-import ast.expr.main.CExpression;
 import ast.stmt.Sswitch;
 import ast.stmt.main.CStatement;
 import ast.stmt.parser.ParseStatement;
@@ -40,11 +39,6 @@ import ast.symtabg.elements.CSymbolBase;
 import ast.unit.ExternalDeclaration;
 import ast.unit.FunctionDefinition;
 import ast.unit.TranslationUnit;
-import jscan.Tokenlist;
-import jscan.hashed.Hash_ident;
-import jscan.symtab.Ident;
-import jscan.tokenize.T;
-import jscan.tokenize.Token;
 
 public class Parse {
 
@@ -61,9 +55,6 @@ public class Parse {
   private String lastloc;
   private List<Token> ringBuffer;
   private Token prevtok;
-
-  //for easy unit-testing, like printing, and parse some parts
-  private boolean isSemanticEnable;
 
   public Symtab<Ident, CSymbol> getSymbols() {
     return symbols;
@@ -87,14 +78,6 @@ public class Parse {
 
   public Symtab<Ident, CSymbol> getTags() {
     return tags;
-  }
-
-  public boolean isSemanticEnable() {
-    return isSemanticEnable;
-  }
-
-  public void setSemanticEnable(boolean isSemanticEnable) {
-    this.isSemanticEnable = isSemanticEnable;
   }
 
   public Token tok() {
@@ -205,7 +188,6 @@ public class Parse {
   }
 
   private void initDefaults() {
-    this.isSemanticEnable = true;
     this.currentFn = null;
     this.ringBuffer = new ArrayList<Token>(0);
     this.lastloc = "";
@@ -382,7 +364,6 @@ public class Parse {
 
   //////////////////////////////////////////////////////////////////////
 
-  //TODO:move to Pexpression
   public boolean isAssignOperator() {
     return Pcheckers.isAssignOperator(tok);
   }
@@ -468,12 +449,6 @@ public class Parse {
     return tok.ofType(T.TOKEN_EOF);
   }
 
-  @SuppressWarnings("unused")
-  private boolean isAbstractDeclaratorStart(Token what) {
-    T tp = what.getType();
-    return tp == T_LEFT_PAREN || tp == T.T_LEFT_BRACKET || tp == T_TIMES;
-  }
-
   public CType parse_typename() {
 
     // TODO: simplify...
@@ -516,14 +491,6 @@ public class Parse {
 
   // TODO:
   private void define__func__(Ident funcName) {
-    //    CArrayType arr = new CArrayType(CTypeImpl.TYPE_UCHAR, funcName.getName().length() + 1);
-    //    final Ident func = Hash_ident.__func___ident;
-    //
-    //    CSymbol sym = new CSymbol(CSymbolBase.SYM_VAR, func, new CType(arr), tok());
-    //    CExpression init = new CExpression(funcName.getName(), tok());
-    //    sym.setInitializer(new Initializer(init));
-    //
-    //    defineSym(func, sym);
   }
 
   private void defineParameters(CType signature) {

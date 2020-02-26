@@ -5,10 +5,10 @@ import java.util.List;
 
 import ast._typesnew.CArrayType;
 import ast._typesnew.CType;
-import ast.declarations.Initializer;
-import ast.declarations.InitializerListEntry;
+import ast.declarations.inits.Initializer;
+import ast.declarations.inits.InitializerListEntry;
 import ast.errors.ParseException;
-import ast.expr.sem.CExpressionBuilderHelper;
+import ast.expr.util.ExprUtil;
 import ast.symtabg.elements.CSymbol;
 
 class InitBlock {
@@ -254,7 +254,7 @@ class Blocks {
   }
 
   private JustOut zero() {
-    return new JustOut(CExpressionBuilderHelper.digitZero(symbol.getFrom()));
+    return new JustOut(ExprUtil.digitZero(symbol.getFrom()));
   }
 
   private void finishArrayType(int withLen) {

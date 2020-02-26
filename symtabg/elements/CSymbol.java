@@ -2,7 +2,7 @@ package ast.symtabg.elements;
 
 import ast._typesnew.CType;
 import ast._typesnew.CTypeApi;
-import ast.declarations.Initializer;
+import ast.declarations.inits.Initializer;
 import ast.parse.ILocation;
 import jscan.cstrtox.NumType;
 import jscan.sourceloc.SourceLocation;

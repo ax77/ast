@@ -10,7 +10,7 @@ import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import ast._typesnew.CType;
 import ast.expr.main.CExpression;
-import ast.expr.sem.TaStage;
+import ast.expr.sem.TypeApplierStage;
 import ast.expr.sem.TypeApplier;
 import ast.parse.Parse;
 
@@ -87,36 +87,7 @@ public class ExpandGenericResult {
   }
 
   public CExpression getGenericResult(Token from) {
-    return e_generic(from);
-  }
-
-  private CExpression selectResultExpression(GenericSelection genericSelection) {
-    for (GenericAssociation e : genericSelection.getAssociations()) {
-      TypeApplier.applytype(e.getAssignment(), TaStage.stage_start);
-    }
-
-    TypeApplier.applytype(genericSelection.getControlExpression(), TaStage.generic_control_expr);
-    if (genericSelection.getDefaultAssociation() != null) {
-      TypeApplier.applytype(genericSelection.getDefaultAssociation(), TaStage.stage_start);
-    }
-
-    CType need = genericSelection.getControlExpression().getResultType();
-    if (need == null) {
-      parser.perror("no type for control expression.");
-    }
-
-    for (GenericAssociation assoc : genericSelection.getAssociations()) {
-      if (assoc.getTypename().isEqualTo(need)) {
-        return assoc.getAssignment();
-      }
-    }
-
-    final CExpression defaultAssociation = genericSelection.getDefaultAssociation();
-    if (defaultAssociation == null) {
-      parser.perror("you need specify default association for this type: " + need.toString());
-    }
-
-    return defaultAssociation;
+    return parseGenericSelection(from);
   }
 
   //generic_selection
@@ -133,7 +104,7 @@ public class ExpandGenericResult {
   //  | DEFAULT ':' assignment_expression
   //  ;
 
-  private CExpression e_generic(Token from) {
+  private CExpression parseGenericSelection(Token from) {
     Token id = parser.checkedMoveIdent(Hash_ident._Generic_ident);
     parser.lparen();
 
@@ -150,23 +121,12 @@ public class ExpandGenericResult {
 
     parser.rparen();
 
-    CExpression result = getResultExpressionWithType(genericSelection);
+    CExpression result = selectResultExpression(genericSelection);
 
     CExpression e = new CExpression(result, id);
     e.setResultType(result.getResultType());
 
     return e;
-  }
-
-  public CExpression getResultExpressionWithType(GenericSelection genericSelection) {
-
-    @SuppressWarnings("unused")
-    final List<GenericAssociation> associations = genericSelection.getAssociations();
-    @SuppressWarnings("unused")
-    final CExpression defaultAssociation = genericSelection.getDefaultAssociation();
-
-    CExpression result = selectResultExpression(genericSelection);
-    return result;
   }
 
   private void parseGenericAssociation(GenericSelection gs) {
@@ -188,6 +148,35 @@ public class ExpandGenericResult {
 
   private CExpression e_assign() {
     return new ParseExpression(parser).e_assign();
+  }
+
+  private CExpression selectResultExpression(GenericSelection genericSelection) {
+    for (GenericAssociation e : genericSelection.getAssociations()) {
+      TypeApplier.applytype(e.getAssignment(), TypeApplierStage.stage_start);
+    }
+
+    TypeApplier.applytype(genericSelection.getControlExpression(), TypeApplierStage.generic_control_expr);
+    if (genericSelection.getDefaultAssociation() != null) {
+      TypeApplier.applytype(genericSelection.getDefaultAssociation(), TypeApplierStage.stage_start);
+    }
+
+    CType need = genericSelection.getControlExpression().getResultType();
+    if (need == null) {
+      parser.perror("no type for control expression.");
+    }
+
+    for (GenericAssociation assoc : genericSelection.getAssociations()) {
+      if (assoc.getTypename().isEqualTo(need)) {
+        return assoc.getAssignment();
+      }
+    }
+
+    final CExpression defaultAssociation = genericSelection.getDefaultAssociation();
+    if (defaultAssociation == null) {
+      parser.perror("you need specify default association for this type: " + need.toString());
+    }
+
+    return defaultAssociation;
   }
 
 }

@@ -8,18 +8,18 @@ import ast.parse.Parse;
 
 public class SemanticStruct {
 
-  private final Parse p;
+  private final Parse parser;
 
   public SemanticStruct(Parse p) {
-    this.p = p;
+    this.parser = p;
   }
 
-  public CStructUnionSizeAlign finalizeStructType(CStructType tpStruct) {
+  public StructAligner finalizeStructType(CStructType tpStruct) {
     List<CStructField> fields = null;
     if (!tpStruct.isIncomplete()) {
       fields = tpStruct.getFields();
     }
-    return new CStructUnionSizeAlign(tpStruct.isUnion(), tpStruct.isIncomplete(), fields);
+    return new StructAligner(tpStruct.isUnion(), tpStruct.isIncomplete(), fields);
   }
 
 }

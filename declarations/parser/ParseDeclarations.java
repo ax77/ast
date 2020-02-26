@@ -9,9 +9,9 @@ import ast._typesnew.main.StorageKind;
 import ast._typesnew.parser.ParseBase;
 import ast._typesnew.parser.ParseDecl;
 import ast._typesnew.util.TypeMerger;
-import ast.declarations.Designator;
-import ast.declarations.Initializer;
-import ast.declarations.InitializerListEntry;
+import ast.declarations.inits.Designator;
+import ast.declarations.inits.Initializer;
+import ast.declarations.inits.InitializerListEntry;
 import ast.declarations.main.Declaration;
 import ast.declarations.sem.FinalizeInitializers;
 import ast.expr.main.CExpression;
@@ -27,19 +27,19 @@ import jscan.tokenize.T;
 import jscan.tokenize.Token;
 
 public class ParseDeclarations {
-  private final Parse p;
+  private final Parse parser;
   private CType basetype;
   private StorageKind storagespec;
 
   public ParseDeclarations(Parse parser) {
-    this.p = parser;
+    this.parser = parser;
   }
 
   // constructor need for entry point.
   // when we parse basetype, and don't know yet, function is, or declaration
   // and build first
   public ParseDeclarations(Parse parser, CType basetype, StorageKind storagespec) {
-    this.p = parser;
+    this.parser = parser;
     this.basetype = basetype;
     this.storagespec = storagespec;
   }
@@ -101,26 +101,26 @@ public class ParseDeclarations {
 
   public Declaration parseDeclaration() {
 
-    Token startLocation = p.tok();
+    Token startLocation = parser.tok();
 
     // TODO: more clean.
     if (isStaticAssertAndItsOk()) {
       return new Declaration();
     }
 
-    ParseBase pb = new ParseBase(p);
+    ParseBase pb = new ParseBase(parser);
     basetype = pb.parseBase();
     storagespec = pb.getStorageSpec();
     NullChecker.check(basetype, storagespec); // paranoia
 
     /// this may be struct/union/enum declaration
     ///
-    if (p.tp() == T.T_SEMI_COLON) {
-      Token endLocation = p.semicolon();
+    if (parser.tp() == T.T_SEMI_COLON) {
+      Token endLocation = parser.semicolon();
 
       boolean isStructUnionEnum = basetype.isStrUnion() || basetype.isEnumeration();
       if (!isStructUnionEnum) {
-        p.perror("expect struct/union/enum declaration. but was: " + basetype.toString());
+        parser.perror("expect struct/union/enum declaration. but was: " + basetype.toString());
       }
 
       // semicolon after mean: this declaration has no name, no declarator after...
@@ -131,7 +131,7 @@ public class ParseDeclarations {
     }
 
     List<CSymbol> initDeclaratorList = parseInitDeclaratorList();
-    Token endLocation = p.semicolon();
+    Token endLocation = parser.semicolon();
 
     final Declaration declaration = FinalizeInitializers.sVarlist(startLocation, endLocation, initDeclaratorList);
     return declaration;
@@ -142,23 +142,23 @@ public class ParseDeclarations {
   //    ;
 
   public boolean isStaticAssertAndItsOk() {
-    if (!p.tok().isIdent(Hash_ident._Static_assert_ident)) {
+    if (!parser.tok().isIdent(Hash_ident._Static_assert_ident)) {
       return false;
     }
 
-    p.checkedMoveIdent(Hash_ident._Static_assert_ident);
-    p.lparen();
+    parser.checkedMoveIdent(Hash_ident._Static_assert_ident);
+    parser.lparen();
 
-    CExpression ce = new ParseExpression(p).e_const_expr();
-    p.checkedMove(T.T_COMMA);
+    CExpression ce = new ParseExpression(parser).e_const_expr();
+    parser.checkedMove(T.T_COMMA);
 
-    Token message = p.checkedGetT(T.TOKEN_STRING);
-    p.rparen();
-    p.semicolon();
+    Token message = parser.checkedGetT(T.TOKEN_STRING);
+    parser.rparen();
+    parser.semicolon();
 
-    long sares = new ConstexprEval(p).ce(ce);
+    long sares = new ConstexprEval(parser).ce(ce);
     if (sares == 0) {
-      p.perror("static-assert fail with message: " + message.getValue());
+      parser.perror("static-assert fail with message: " + message.getValue());
     }
 
     return true;
@@ -170,8 +170,8 @@ public class ParseDeclarations {
     CSymbol initDeclarator = parseInitDeclarator();
     initDeclaratorList.add(initDeclarator);
 
-    while (p.tp() == T.T_COMMA) {
-      p.move();
+    while (parser.tp() == T.T_COMMA) {
+      parser.move();
 
       CSymbol initDeclaratorSeq = parseInitDeclarator();
       initDeclaratorList.add(initDeclaratorSeq);
@@ -186,30 +186,30 @@ public class ParseDeclarations {
     //    | declarator
     //    ;
 
-    Token saved = p.tok();
+    Token saved = parser.tok();
 
-    CDecl decl = new ParseDecl(p).parseDecl();
+    CDecl decl = new ParseDecl(parser).parseDecl();
     CType type = TypeMerger.build(basetype, decl);
 
-    if (p.tp() != T.T_ASSIGN) {
+    if (parser.tp() != T.T_ASSIGN) {
       CSymbolBase base = CSymbolBase.SYM_LVAR;
       if (storagespec == StorageKind.ST_TYPEDEF) {
         base = CSymbolBase.SYM_TYPEDEF;
       }
       final CSymbol sym = new CSymbol(base, decl.getName(), type, saved);
-      p.defineSym(decl.getName(), sym);
+      parser.defineSym(decl.getName(), sym);
       return sym;
     }
 
-    p.checkedMove(T.T_ASSIGN);
+    parser.checkedMove(T.T_ASSIGN);
     Initializer initializer = parseInitializer();
 
     if (storagespec == StorageKind.ST_TYPEDEF) {
-      p.perror("typedef with initializer.");
+      parser.perror("typedef with initializer.");
     }
 
     final CSymbol sym = new CSymbol(CSymbolBase.SYM_LVAR, decl.getName(), type, initializer, saved);
-    p.defineSym(decl.getName(), sym);
+    parser.defineSym(decl.getName(), sym);
 
     return sym;
   }
@@ -227,27 +227,27 @@ public class ParseDeclarations {
     //    | initializer_list ',' initializer
     //    ;
 
-    SourceLocation location = new SourceLocation(p.tok());
+    SourceLocation location = new SourceLocation(parser.tok());
 
-    if (p.tp() != T.T_LEFT_BRACE) {
+    if (parser.tp() != T.T_LEFT_BRACE) {
 
-      CExpression assignment = new ParseExpression(p).e_assign();
+      CExpression assignment = new ParseExpression(parser).e_assign();
       return new Initializer(assignment, location);
     }
 
-    p.checkedMove(T.T_LEFT_BRACE);
+    parser.checkedMove(T.T_LEFT_BRACE);
 
     // if is empty array initialization - return initializer with empty initializer-list
     // int a[5] = {};
-    if (p.tp() == T.T_RIGHT_BRACE) {
-      p.checkedMove(T.T_RIGHT_BRACE);
+    if (parser.tp() == T.T_RIGHT_BRACE) {
+      parser.checkedMove(T.T_RIGHT_BRACE);
       return new Initializer(new ArrayList<InitializerListEntry>(0), location);
     }
 
     // otherwise - recursively expand braced initializers
     //
     List<InitializerListEntry> initializerList = parseInitializerList(); // XXX: taint comma case here
-    p.checkedMove(T.T_RIGHT_BRACE);
+    parser.checkedMove(T.T_RIGHT_BRACE);
 
     return new Initializer(initializerList, location);
   }
@@ -273,17 +273,17 @@ public class ParseDeclarations {
     InitializerListEntry entry = parseInitializerListEntry();
     initializerList.add(entry);
 
-    while (p.tp() == T.T_COMMA) {
+    while (parser.tp() == T.T_COMMA) {
 
       // | '{' initializer_list ',' '}'
       //
-      Token lookBrace = p.getTokenlist().peek();
+      Token lookBrace = parser.getTokenlist().peek();
       if (lookBrace.ofType(T.T_RIGHT_BRACE)) {
-        p.checkedMove(T.T_COMMA);
+        parser.checkedMove(T.T_COMMA);
         return initializerList;
       }
 
-      p.checkedMove(T.T_COMMA);
+      parser.checkedMove(T.T_COMMA);
 
       InitializerListEntry initializerSeq = parseInitializerListEntry();
       initializerList.add(initializerSeq);
@@ -315,11 +315,11 @@ public class ParseDeclarations {
     //   | '.' IDENTIFIER
     //   ;
 
-    SourceLocation location = new SourceLocation(p.tok());
+    SourceLocation location = new SourceLocation(parser.tok());
 
-    if (p.tp() == T.T_LEFT_BRACKET || p.tp() == T.T_DOT) {
-      List<Designator> designators = parseDesignatorList(p);
-      p.checkedMove(T.T_ASSIGN);
+    if (parser.tp() == T.T_LEFT_BRACKET || parser.tp() == T.T_DOT) {
+      List<Designator> designators = parseDesignatorList(parser);
+      parser.checkedMove(T.T_ASSIGN);
 
       Initializer initializer = parseInitializer();
       return new InitializerListEntry(designators, initializer, location);

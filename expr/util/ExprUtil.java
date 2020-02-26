@@ -1,4 +1,4 @@
-package ast.expr.sem;
+package ast.expr.util;
 
 import static jscan.tokenize.T.TOKEN_NUMBER;
 import static jscan.tokenize.T.T_AND;
@@ -34,7 +34,7 @@ import ast.expr.main.CExpression;
 import ast.parse.NullChecker;
 import ast.symtabg.elements.NumericConstant;
 
-public abstract class CExpressionBuilderHelper {
+public abstract class ExprUtil {
 
   public static Token copyTokenAddNewType(Token from, T newtype, String newvalue) {
     NullChecker.check(from, newtype, newvalue);

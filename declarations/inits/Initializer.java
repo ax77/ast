@@ -1,4 +1,4 @@
-package ast.declarations;
+package ast.declarations.inits;
 
 import java.util.List;
 

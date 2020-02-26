@@ -12,7 +12,7 @@ import ast._typesnew.CStructType;
 import ast._typesnew.CType;
 import ast._typesnew.decl.CDecl;
 import ast._typesnew.main.StorageKind;
-import ast._typesnew.sem.CStructUnionSizeAlign;
+import ast._typesnew.sem.StructAligner;
 import ast._typesnew.sem.SemanticBitfield;
 import ast._typesnew.sem.SemanticStruct;
 import ast._typesnew.util.TypeMerger;
@@ -98,7 +98,7 @@ public class ParseStruct {
 
           if (type.isIncomplete()) {
             type.getTpStruct().setFields(fields);
-            CStructUnionSizeAlign sizeAlignDto = new SemanticStruct(parser).finalizeStructType(type.getTpStruct());
+            StructAligner sizeAlignDto = new SemanticStruct(parser).finalizeStructType(type.getTpStruct());
 
             type.setSize(sizeAlignDto.getSize());
             type.setAlign(sizeAlignDto.getAlign());
@@ -114,7 +114,7 @@ public class ParseStruct {
             CStructType newstruct = new CStructType(isUnion, tag.getIdent());
             newstruct.setFields(fields);
 
-            CStructUnionSizeAlign sizeAlignDto = new SemanticStruct(parser).finalizeStructType(newstruct);
+            StructAligner sizeAlignDto = new SemanticStruct(parser).finalizeStructType(newstruct);
             CType newtype = new CType(newstruct, sizeAlignDto.getSize(), sizeAlignDto.getAlign());
 
             parser.defineTag(tag.getIdent(), new CSymbol(CSymbolBase.SYM_STRUCT, tag.getIdent(), newtype, tag));
@@ -157,7 +157,7 @@ public class ParseStruct {
           CType type = parser.getTag(tag.getIdent()).getType();
 
           type.getTpStruct().setFields(parseFields(parser));
-          CStructUnionSizeAlign sizeAlignDto = new SemanticStruct(parser).finalizeStructType(type.getTpStruct());
+          StructAligner sizeAlignDto = new SemanticStruct(parser).finalizeStructType(type.getTpStruct());
 
           type.setSize(sizeAlignDto.getSize());
           type.setAlign(sizeAlignDto.getAlign());
@@ -191,7 +191,7 @@ public class ParseStruct {
         CStructType newstruct = new CStructType(isUnion, null);
         newstruct.setFields(parseFields(parser));
 
-        CStructUnionSizeAlign sizeAlignDto = new SemanticStruct(parser).finalizeStructType(newstruct);
+        StructAligner sizeAlignDto = new SemanticStruct(parser).finalizeStructType(newstruct);
         CType type = new CType(newstruct, sizeAlignDto.getSize(), sizeAlignDto.getAlign());
 
         if (paranoia) {

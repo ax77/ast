@@ -45,14 +45,14 @@ import ast._typesnew.CStructField;
 import ast._typesnew.CStructType;
 import ast._typesnew.CType;
 import ast._typesnew.CTypeImpl;
-import ast.declarations.Initializer;
-import ast.declarations.InitializerListEntry;
+import ast.declarations.inits.Initializer;
+import ast.declarations.inits.InitializerListEntry;
 import ast.declarations.parser.ParseDeclarations;
 import ast.expr.main.CExpression;
 import ast.expr.main.CExpressionBase;
-import ast.expr.sem.CExpressionBuilderHelper;
-import ast.expr.sem.TaStage;
+import ast.expr.sem.TypeApplierStage;
 import ast.expr.sem.TypeApplier;
+import ast.expr.util.ExprUtil;
 import ast.parse.Parse;
 import ast.parse.ParseState;
 import ast.parse.Pcheckers;
@@ -201,8 +201,8 @@ public class ParseExpression {
         // += lhs(a) rhs(b)
         // = lhs(a) rhs( + lhs(a) rhs(b) )
 
-        Token assignOperator = CExpressionBuilderHelper.assignOperator(saved);
-        Token binaryOperator = CExpressionBuilderHelper.getOperatorFromCompAssign(saved);
+        Token assignOperator = ExprUtil.assignOperator(saved);
+        Token binaryOperator = ExprUtil.getOperatorFromCompAssign(saved);
 
         CExpression rhs = build_binary(binaryOperator, lhs, e_assign());
         lhs = build_assign(assignOperator, lhs, rhs);
@@ -407,7 +407,7 @@ public class ParseExpression {
         // sizeof(any-varname)
 
         CExpression sizeofexpr = e_expression();
-        TypeApplier.applytype(sizeofexpr, TaStage.stage_start);
+        TypeApplier.applytype(sizeofexpr, TypeApplierStage.stage_start);
         parser.rparen();
 
         if (sizeofexpr.getResultType() == null) {
@@ -423,7 +423,7 @@ public class ParseExpression {
     // sizeof 1
 
     CExpression sizeofexpr = e_unary();
-    TypeApplier.applytype(sizeofexpr, TaStage.stage_start);
+    TypeApplier.applytype(sizeofexpr, TypeApplierStage.stage_start);
 
     if (sizeofexpr.getResultType() == null) {
       parser.perror("unimplemented sizeof for: " + sizeofexpr.toString());
@@ -493,13 +493,13 @@ public class ParseExpression {
         Token fieldNameTok = parser.expectIdentifier();
         Ident fieldName = fieldNameTok.getIdent();
 
-        TypeApplier.applytype(lhs, TaStage.stage_start);
+        TypeApplier.applytype(lhs, TypeApplierStage.stage_start);
 
         // a->b :: (*a).b
         if (operator.ofType(T_ARROW)) {
 
-          final Token operatorDeref = CExpressionBuilderHelper.derefOperator(operator);
-          final Token operatorDot = CExpressionBuilderHelper.dotOperator(operator);
+          final Token operatorDeref = ExprUtil.derefOperator(operator);
+          final Token operatorDot = ExprUtil.dotOperator(operator);
           final CStructField field = get_field_arrow(lhs, fieldName);
 
           CExpression inBrace = build_unary(operatorDeref, lhs);
@@ -529,8 +529,8 @@ public class ParseExpression {
           Token lbrack = parser.lbracket();
 
           // a[5] :: *(a+5)
-          Token operatorPlus = CExpressionBuilderHelper.plusOperator(lbrack);
-          Token operatorDeref = CExpressionBuilderHelper.derefOperator(lbrack);
+          Token operatorPlus = ExprUtil.plusOperator(lbrack);
+          Token operatorDeref = ExprUtil.derefOperator(lbrack);
 
           CExpression inBrace = build_binary(operatorPlus, lhs, e_expression());
           lhs = build_unary(operatorDeref, inBrace);
@@ -626,7 +626,7 @@ public class ParseExpression {
       parser.move();
 
       CSymbol sym = parser.getSym(saved.getIdent());
-      if (sym == null && parser.isSemanticEnable()) {
+      if (sym == null) {
         parser.perror("symbol '" + saved.getValue() + "' was not declared in the scope.");
       }
 

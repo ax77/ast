@@ -1,11 +1,8 @@
 package ast;
 
 import java.io.IOException;
-import java.util.List;
 
 import jscan.Tokenlist;
-import jscan.tokenize.Stream;
-import jscan.tokenize.Token;
 
 import org.junit.Test;
 

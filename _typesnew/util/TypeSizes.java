@@ -1,7 +1,9 @@
-package ast._typesnew.main;
+package ast._typesnew.util;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import ast._typesnew.main.TypeKind;
 
 public abstract class TypeSizes {
 

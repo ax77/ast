@@ -5,11 +5,12 @@ import java.util.List;
 import java.util.Set;
 
 import ast._typesnew.CStructField;
+import ast._typesnew.util.TypeUtil;
 import ast.errors.ParseException;
 import ast.parse.NullChecker;
 import jscan.symtab.Ident;
 
-public class CStructUnionSizeAlign {
+public class StructAligner {
 
   private final boolean isUnion;
   private final boolean isReference;
@@ -18,7 +19,7 @@ public class CStructUnionSizeAlign {
   private int size;
   private int align;
 
-  public CStructUnionSizeAlign(boolean isUnion, boolean isReference, List<CStructField> fields) {
+  public StructAligner(boolean isUnion, boolean isReference, List<CStructField> fields) {
     this.isUnion = isUnion;
     this.isReference = isReference;
 
@@ -47,20 +48,9 @@ public class CStructUnionSizeAlign {
     }
   }
 
-  private int align(int value, int alignment) {
-    if (alignment <= 0) {
-      throw new ParseException("negative or zero alignment.");
-    }
-    int mod = value % alignment;
-    if (mod != 0) {
-      return value + alignment - mod;
-    }
-    return value;
-  }
-
   private void applyAlignment() {
     for (CStructField f : fields) {
-      align = align(align, f.getType().getAlign());
+      align = TypeUtil.align(align, f.getType().getAlign());
     }
   }
 
@@ -94,7 +84,7 @@ public class CStructUnionSizeAlign {
   private void calcStructFieldsOffsets() {
     int offset = 0;
     for (CStructField f : fields) {
-      offset = align(offset, f.getType().getAlign());
+      offset = TypeUtil.align(offset, f.getType().getAlign());
       f.setOffset(offset);
       offset += f.getType().getSize();
     }

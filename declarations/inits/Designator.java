@@ -1,4 +1,4 @@
-package ast.declarations;
+package ast.declarations.inits;
 
 import ast.expr.main.CExpression;
 import jscan.tokenize.Token;

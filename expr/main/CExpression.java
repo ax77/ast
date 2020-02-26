@@ -20,7 +20,7 @@ import jscan.sourceloc.SourceLocation;
 import jscan.tokenize.Token;
 import ast._typesnew.CStructField;
 import ast._typesnew.CType;
-import ast.declarations.InitializerListEntry;
+import ast.declarations.inits.InitializerListEntry;
 import ast.errors.ParseException;
 import ast.parse.ILocation;
 import ast.symtabg.elements.CSymbol;

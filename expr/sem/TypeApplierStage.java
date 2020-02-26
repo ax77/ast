@@ -1,6 +1,6 @@
 package ast.expr.sem;
 
-public enum TaStage {
+public enum TypeApplierStage {
   stage_start,
   assign_lhs,
   assign_rhs,
