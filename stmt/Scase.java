@@ -1,6 +1,6 @@
 package ast.stmt;
 
-import ast.expr.main.CExpression;
+import ast.expr.CExpression;
 import ast.stmt.main.CStatement;
 
 public class Scase {

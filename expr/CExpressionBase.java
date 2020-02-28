@@ -1,4 +1,4 @@
-package ast.expr.main;
+package ast.expr;
 
 //@formatter:off
 public enum CExpressionBase {

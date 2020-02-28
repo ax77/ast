@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ast.errors.ParseException;
-import ast.expr.main.CExpression;
+import ast.expr.CExpression;
 import ast.stmt.main.CStatement;
 
 public class Sswitch {

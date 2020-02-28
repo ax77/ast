@@ -1,8 +1,8 @@
 package ast.expr.sem;
 
 import ast.errors.ParseException;
-import ast.expr.main.CExpression;
-import ast.expr.main.CExpressionBase;
+import ast.expr.CExpression;
+import ast.expr.CExpressionBase;
 import ast.parse.Parse;
 import jscan.tokenize.T;
 

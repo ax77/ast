@@ -12,7 +12,7 @@ import java.util.List;
 
 import ast.declarations.Declaration;
 import ast.declarations.parser.ParseDeclarations;
-import ast.expr.main.CExpression;
+import ast.expr.CExpression;
 import ast.expr.parser.ParseExpression;
 import ast.parse.Parse;
 import ast.stmt.Scase;

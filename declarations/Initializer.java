@@ -1,6 +1,6 @@
 package ast.declarations;
 
-import ast.expr.main.CExpression;
+import ast.expr.CExpression;
 
 public class Initializer implements Comparable<Initializer> {
   private final CExpression init;

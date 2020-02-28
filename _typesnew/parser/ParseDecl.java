@@ -14,7 +14,7 @@ import ast._typesnew.decl.CDecl;
 import ast._typesnew.decl.CDeclEntry;
 import ast._typesnew.main.TypeKind;
 import ast._typesnew.util.TypeMerger;
-import ast.expr.main.CExpression;
+import ast.expr.CExpression;
 import ast.expr.parser.ParseExpression;
 import ast.expr.sem.ConstexprEval;
 import ast.parse.Parse;

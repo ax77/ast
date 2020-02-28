@@ -9,7 +9,7 @@ import ast._typesnew.CEnumType;
 import ast._typesnew.CType;
 import ast._typesnew.CTypeImpl;
 import ast._typesnew.main.StorageKind;
-import ast.expr.main.CExpression;
+import ast.expr.CExpression;
 import ast.expr.parser.ParseExpression;
 import ast.expr.sem.ConstexprEval;
 import ast.parse.Parse;

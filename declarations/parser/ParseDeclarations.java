@@ -17,7 +17,7 @@ import ast._typesnew.parser.ParseDecl;
 import ast._typesnew.util.TypeMerger;
 import ast.declarations.Declaration;
 import ast.declarations.Initializer;
-import ast.expr.main.CExpression;
+import ast.expr.CExpression;
 import ast.expr.parser.ParseExpression;
 import ast.expr.sem.ConstexprEval;
 import ast.parse.NullChecker;

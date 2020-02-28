@@ -3,7 +3,7 @@ package ast.stmt.main;
 import java.util.List;
 
 import ast.declarations.Declaration;
-import ast.expr.main.CExpression;
+import ast.expr.CExpression;
 import ast.parse.ILocation;
 import ast.stmt.Scase;
 import ast.stmt.Sdefault;

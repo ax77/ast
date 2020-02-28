@@ -18,7 +18,7 @@ import ast._typesnew.sem.SemanticStruct;
 import ast._typesnew.util.TypeMerger;
 import ast.declarations.parser.ParseDeclarations;
 import ast.errors.ParseErrors;
-import ast.expr.main.CExpression;
+import ast.expr.CExpression;
 import ast.expr.parser.ParseExpression;
 import ast.expr.sem.ConstexprEval;
 import ast.parse.Parse;

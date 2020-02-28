@@ -3,6 +3,7 @@ package ast.stmt.sem;
 import ast.parse.Parse;
 import ast.stmt.main.CStatement;
 import ast.stmt.main.CStatementBase;
+import jscan.hashed.Hash_ident;
 import jscan.tokenize.Token;
 
 public class BreakContinueStrayCheck {
@@ -37,7 +38,7 @@ public class BreakContinueStrayCheck {
   public CStatement breakStatement() {
     checkBreak();
 
-    Token from = parser.expectIdentifier();
+    Token from = parser.checkedMove(Hash_ident.break_ident);
     parser.semicolon();
     return new CStatement(from, CStatementBase.SBREAK);
   }
@@ -45,7 +46,7 @@ public class BreakContinueStrayCheck {
   public CStatement continueStatement() {
     checkContinue();
 
-    Token from = parser.expectIdentifier();
+    Token from = parser.checkedMove(Hash_ident.continue_ident);
     parser.semicolon();
     return new CStatement(from, CStatementBase.SCONTINUE);
   }

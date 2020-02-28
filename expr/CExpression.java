@@ -1,16 +1,16 @@
-package ast.expr.main;
+package ast.expr;
 
-import static ast.expr.main.CExpressionBase.EASSIGN;
-import static ast.expr.main.CExpressionBase.EBINARY;
-import static ast.expr.main.CExpressionBase.ECAST;
-import static ast.expr.main.CExpressionBase.ECOMMA;
-import static ast.expr.main.CExpressionBase.ECOMPSEL;
-import static ast.expr.main.CExpressionBase.EFCALL;
-import static ast.expr.main.CExpressionBase.EPOSTINCDEC;
-import static ast.expr.main.CExpressionBase.EPREINCDEC;
-import static ast.expr.main.CExpressionBase.EPRIMARY_GENERIC;
-import static ast.expr.main.CExpressionBase.ETERNARY;
-import static ast.expr.main.CExpressionBase.EUNARY;
+import static ast.expr.CExpressionBase.EASSIGN;
+import static ast.expr.CExpressionBase.EBINARY;
+import static ast.expr.CExpressionBase.ECAST;
+import static ast.expr.CExpressionBase.ECOMMA;
+import static ast.expr.CExpressionBase.ECOMPSEL;
+import static ast.expr.CExpressionBase.EFCALL;
+import static ast.expr.CExpressionBase.EPOSTINCDEC;
+import static ast.expr.CExpressionBase.EPREINCDEC;
+import static ast.expr.CExpressionBase.EPRIMARY_GENERIC;
+import static ast.expr.CExpressionBase.ETERNARY;
+import static ast.expr.CExpressionBase.EUNARY;
 
 import java.util.List;
 

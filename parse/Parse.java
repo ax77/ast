@@ -2,42 +2,31 @@ package ast.parse;
 
 import static jscan.tokenize.T.TOKEN_EOF;
 import static jscan.tokenize.T.TOKEN_IDENT;
-import static jscan.tokenize.T.T_LEFT_BRACE;
 import static jscan.tokenize.T.T_SEMI_COLON;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Stack;
 
 import jscan.Tokenlist;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import ast._typesnew.CFuncParam;
 import ast._typesnew.CType;
 import ast._typesnew.decl.CDecl;
-import ast._typesnew.decl.CDeclEntry;
-import ast._typesnew.main.StorageKind;
-import ast._typesnew.main.TypeKind;
 import ast._typesnew.parser.ParseBase;
 import ast._typesnew.parser.ParseDecl;
 import ast._typesnew.util.TypeMerger;
-import ast.declarations.Declaration;
-import ast.declarations.Initializer;
-import ast.declarations.parser.ParseDeclarations;
 import ast.errors.ParseErrors;
 import ast.errors.ParseException;
 import ast.stmt.Sswitch;
-import ast.stmt.main.CStatement;
-import ast.stmt.parser.ParseStatement;
 import ast.symtabg.Symtab;
 import ast.symtabg.elements.CSymbol;
 import ast.symtabg.elements.CSymbolBase;
 import ast.unit.ExternalDeclaration;
 import ast.unit.FunctionDefinition;
 import ast.unit.TranslationUnit;
+import ast.unit.parser.ParseToplevel;
 
 public class Parse {
 
@@ -488,221 +477,6 @@ public class Parse {
     }
   }
 
-  // TODO:
-  private void define__func__(Ident funcName) {
-  }
-
-  private void defineParameters(CType signature) {
-
-    final List<CFuncParam> parameters = signature.getTpFunction().getParameters();
-
-    if (parameters.size() == 1) {
-      CFuncParam first = parameters.get(0);
-      if (first.getType().isVoid() && first.getName() == null) {
-        return;
-      }
-    }
-
-    for (CFuncParam fparam : parameters) {
-      CSymbol paramsym = new CSymbol(CSymbolBase.SYM_LVAR, fparam.getName(), fparam.getType(), tok());
-      defineSym(fparam.getName(), paramsym);
-    }
-  }
-
-  public ExternalDeclaration parse_external_declaration() {
-
-    ParseBase pb = new ParseBase(this);
-    CType declspecs = pb.findTypeAgain();
-    StorageKind storageSpec = pb.getStorageSpec();
-
-    if (tp() == T_SEMI_COLON) {
-      boolean isStructUnionEnum = declspecs.isStrUnion() || declspecs.isEnumeration();
-      if (!isStructUnionEnum) {
-        perror("strange declaration-specifiers: " + declspecs.toString());
-      }
-      Declaration declaration = new Declaration(tok(), tok(), declspecs); // TODO:pos
-
-      semicolon(); // XXX:
-      return new ExternalDeclaration(declaration);
-    }
-
-    CDecl declarator = new ParseDecl(this).parseDecl();
-    CType type = TypeMerger.build(declspecs, declarator);
-
-    // if we here -> the next may one of
-    // 1) KnR declarations
-    // 2) {
-    // 3) ;
-    // 4) , for this: int f(void), *fip(), (*pfi)(), *ap[3];
-
-    boolean isDeclstartOrSemicolonOrLbraceOrComma = tp() == T.T_SEMI_COLON
-        || tp() == T.T_LEFT_BRACE
-        || tp() == T.T_COMMA
-        || tp() == T.T_ASSIGN
-        || isDeclSpecStart();
-
-    if (!isDeclstartOrSemicolonOrLbraceOrComma) {
-      perror("strange declarator: " + type.toString());
-    }
-
-    Token current = tok();
-
-    // int x;
-    // .....^
-    if (current.ofType(T_SEMI_COLON)) {
-      CSymbolBase base = CSymbolBase.SYM_LVAR;
-      if (storageSpec == StorageKind.ST_TYPEDEF) {
-        base = CSymbolBase.SYM_TYPEDEF;
-      }
-      CSymbol sym = new CSymbol(base, declarator.getName(), type, current);
-      defineSym(declarator.getName(), sym);
-
-      List<CSymbol> initDeclaratorList = new ArrayList<CSymbol>(0);
-
-      initDeclaratorList.add(sym);
-      Declaration declaration = new Declaration(current, current, initDeclaratorList);
-
-      semicolon(); // XXX:
-      return new ExternalDeclaration(declaration);
-    }
-
-    if (current.ofType(T.T_COMMA) || current.ofType(T.T_ASSIGN)) {
-
-      if (current.ofType(T.T_COMMA)) {
-
-        List<CSymbol> initDeclaratorList = new ArrayList<CSymbol>(0);
-
-        // head
-        CSymbolBase base = CSymbolBase.SYM_LVAR;
-        if (storageSpec == StorageKind.ST_TYPEDEF) {
-          base = CSymbolBase.SYM_TYPEDEF;
-        }
-        CSymbol sym = new CSymbol(base, declarator.getName(), type, current);
-        defineSym(declarator.getName(), sym);
-        initDeclaratorList.add(sym);
-
-        // tail from 'parse-declaration'
-        //
-        while (tp() == T.T_COMMA) {
-          move();
-          CSymbol initDeclaratorSeq = new ParseDeclarations(this, declspecs, storageSpec).parseInitDeclarator();
-          initDeclaratorList.add(initDeclaratorSeq);
-        }
-
-        Declaration declaration = new Declaration(current, current, initDeclaratorList);
-
-        semicolon(); // XXX:
-        return new ExternalDeclaration(declaration);
-
-      }
-
-      else {
-
-        List<CSymbol> initDeclaratorList = new ArrayList<CSymbol>(0);
-
-        // initializer's
-        //
-
-        checkedMove(T.T_ASSIGN);
-        List<Initializer> initializer = new ParseDeclarations(this, type, storageSpec).parseInitializer(type);
-
-        if (storageSpec == StorageKind.ST_TYPEDEF) {
-          perror("typedef with initializer.");
-        }
-
-        CSymbol sym = new CSymbol(CSymbolBase.SYM_LVAR, declarator.getName(), type, initializer, current);
-        defineSym(declarator.getName(), sym);
-
-        initDeclaratorList.add(sym);
-
-        // tail from 'parse-declaration'
-        //
-        while (tp() == T.T_COMMA) {
-          move();
-          CSymbol initDeclaratorSeq = new ParseDeclarations(this, declspecs, storageSpec).parseInitDeclarator();
-          initDeclaratorList.add(initDeclaratorSeq);
-        }
-
-        Declaration declaration = new Declaration(current, current, initDeclaratorList);
-
-        semicolon(); // XXX:
-        return new ExternalDeclaration(declaration);
-      }
-
-    }
-
-    //////////////////////////////////////////////////////////////////////
-    //
-    // normal cases for function begin here
-
-    // K&R function style declaration-list
-    //
-    if (isDeclSpecStart()) {
-      perror("unimpl. KnR function declaration.");
-    }
-
-    // and corner case: ANSI function-definition
-    //
-    if (tp() != T_LEFT_BRACE || !type.isFunction()) {
-      perror("expect function definition...");
-    }
-
-    CSymbol funcSymbol = new CSymbol(CSymbolBase.SYM_FUNC, declarator.getName(), type, tok());
-    defineSym(declarator.getName(), funcSymbol);
-    FunctionDefinition fd = new FunctionDefinition(funcSymbol);
-
-    currentFn = fd;
-    pushscope();
-
-    defineParameters(fd.getSignature().getType());
-    define__func__(fd.getSymbol().getName());
-
-    CStatement cst = new ParseStatement(this).parse_coumpound_stmt(true);
-    fd.setCompoundStatement(cst);
-
-    currentFn = null;
-    popscope();
-
-    return new ExternalDeclaration(fd);
-
-  }
-
-  private void assertTrue(boolean what) {
-    if (!what) {
-      perror("assertion fail.");
-    }
-  }
-
-  private void applyTypes(List<Declaration> decllist, CDecl decl) {
-    final List<CDeclEntry> typelist = decl.getTypelist();
-    assertTrue(typelist.size() == 1);
-    assertTrue(typelist.get(0).getBase() == TypeKind.TP_FUNCTION);
-    List<CFuncParam> parameters = typelist.get(0).getParameters();
-
-    Map<Ident, CType> vars = new HashMap<Ident, CType>(0);
-    for (Declaration declaration : decllist) {
-      if (!declaration.isVarlist()) {
-        perror("expect variables declaration for old-style function-definition.");
-      }
-      for (CSymbol id : declaration.getVariables()) {
-        final Ident name = id.getName();
-        if (vars.containsKey(name)) {
-          perror("declaration name duplicate: " + name.getName()); // TODO: not here.
-        }
-        vars.put(name, id.getType());
-      }
-    }
-
-    if (vars.size() != parameters.size()) {
-      perror("different size between parameters and declarations.");
-    }
-
-    for (CFuncParam p : typelist.get(0).getParameters()) {
-      CType tp = vars.get(p.getName());
-      p.setType(tp);
-    }
-  }
-
   public TranslationUnit parse_unit() {
     TranslationUnit tu = new TranslationUnit();
     pushscope();
@@ -715,7 +489,7 @@ public class Parse {
       // before each function or global declaration
       moveStraySemicolon();
 
-      ExternalDeclaration ed = parse_external_declaration();
+      ExternalDeclaration ed = new ParseToplevel(this).parse_external_declaration();
       tu.push(ed);
     }
 

@@ -30,7 +30,7 @@ import jscan.cstrtox.NumType;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import ast._typesnew.CTypeImpl;
-import ast.expr.main.CExpression;
+import ast.expr.CExpression;
 import ast.parse.NullChecker;
 import ast.symtabg.elements.NumericConstant;
 
