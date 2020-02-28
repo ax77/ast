@@ -1,14 +1,14 @@
-package ast.join;
+package ast.declarations;
 
 import ast.expr.main.CExpression;
 
-public class InitNew implements Comparable<InitNew> {
+public class Initializer implements Comparable<Initializer> {
   private final CExpression init;
-  private int offset;
+  private final int offset;
 
-  public InitNew(CExpression init) {
+  public Initializer(CExpression init, int offset) {
     this.init = init;
-    this.offset = -1;
+    this.offset = offset;
   }
 
   public CExpression getInit() {
@@ -19,17 +19,13 @@ public class InitNew implements Comparable<InitNew> {
     return offset;
   }
 
-  public void setOffset(int offset) {
-    this.offset = offset;
-  }
-
   @Override
   public String toString() {
     return String.format("%d=%s", offset, init);
   }
 
   @Override
-  public int compareTo(InitNew o) {
+  public int compareTo(Initializer o) {
     if (offset < o.getOffset()) {
       return -1;
     }

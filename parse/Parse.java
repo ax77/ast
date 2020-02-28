@@ -24,10 +24,9 @@ import ast._typesnew.main.TypeKind;
 import ast._typesnew.parser.ParseBase;
 import ast._typesnew.parser.ParseDecl;
 import ast._typesnew.util.TypeMerger;
-import ast.declarations.inits.Initializer;
-import ast.declarations.main.Declaration;
+import ast.declarations.Declaration;
+import ast.declarations.Initializer;
 import ast.declarations.parser.ParseDeclarations;
-import ast.declarations.sem.FinalizeInitializers;
 import ast.errors.ParseErrors;
 import ast.errors.ParseException;
 import ast.stmt.Sswitch;
@@ -302,6 +301,14 @@ public class Parse {
     move();
     return saved;
   }
+  
+  public boolean moveOptional(T t) {
+    if ((tp() == t)) {
+      move();
+      return true;
+    }
+    return false;
+  }
 
   public String ringBufferToStringLines() {
 
@@ -561,7 +568,7 @@ public class Parse {
       List<CSymbol> initDeclaratorList = new ArrayList<CSymbol>(0);
 
       initDeclaratorList.add(sym);
-      Declaration declaration = FinalizeInitializers.sVarlist(current, current, initDeclaratorList);
+      Declaration declaration = new Declaration(current, current, initDeclaratorList);
 
       semicolon(); // XXX:
       return new ExternalDeclaration(declaration);
@@ -586,11 +593,11 @@ public class Parse {
         //
         while (tp() == T.T_COMMA) {
           move();
-          CSymbol initDeclaratorSeq = new ParseDeclarations(this, declspecs, storageSpec).parseInitDeclarator();
+          CSymbol initDeclaratorSeq = new ParseDeclarations(this, declspecs, storageSpec).parseDeclaratorOrInitializedDeclarator();
           initDeclaratorList.add(initDeclaratorSeq);
         }
 
-        Declaration declaration = FinalizeInitializers.sVarlist(current, current, initDeclaratorList);
+        Declaration declaration = new Declaration(current, current, initDeclaratorList);
 
         semicolon(); // XXX:
         return new ExternalDeclaration(declaration);
@@ -605,7 +612,7 @@ public class Parse {
         //
 
         checkedMove(T.T_ASSIGN);
-        Initializer initializer = new ParseDeclarations(this, type, storageSpec).parseInitializer();
+        List<Initializer> initializer = new ParseDeclarations(this, type, storageSpec).parse_initlist(type);
 
         if (storageSpec == StorageKind.ST_TYPEDEF) {
           perror("typedef with initializer.");
@@ -620,11 +627,11 @@ public class Parse {
         //
         while (tp() == T.T_COMMA) {
           move();
-          CSymbol initDeclaratorSeq = new ParseDeclarations(this, declspecs, storageSpec).parseInitDeclarator();
+          CSymbol initDeclaratorSeq = new ParseDeclarations(this, declspecs, storageSpec).parseDeclaratorOrInitializedDeclarator();
           initDeclaratorList.add(initDeclaratorSeq);
         }
 
-        Declaration declaration = FinalizeInitializers.sVarlist(current, current, initDeclaratorList);
+        Declaration declaration = new Declaration(current, current, initDeclaratorList);
 
         semicolon(); // XXX:
         return new ExternalDeclaration(declaration);

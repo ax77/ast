@@ -20,7 +20,7 @@ import jscan.sourceloc.SourceLocation;
 import jscan.tokenize.Token;
 import ast._typesnew.CStructField;
 import ast._typesnew.CType;
-import ast.declarations.inits.InitializerListEntry;
+import ast.declarations.Initializer;
 import ast.errors.ParseException;
 import ast.parse.ILocation;
 import ast.symtabg.elements.CSymbol;
@@ -49,7 +49,7 @@ public class CExpression implements ILocation {
   private final Token token; // operator, position
   private final CExpression tree[];
 
-  private List<InitializerListEntry> initializerList; // (resultType) { initializer-list } compound literal
+  private List<Initializer> initializerList; // (resultType) { initializer-list } compound literal
   private CStructField field;
   private List<CExpression> arglist;
 
@@ -141,7 +141,7 @@ public class CExpression implements ILocation {
     setLhs(lhs);
   }
 
-  public CExpression(CType typename, List<InitializerListEntry> initializerList, Token token) {
+  public CExpression(CType typename, List<Initializer> initializerList, Token token) {
     this.tname = NodeTemp.gettemp();
     this.tree = emptyTree();
     this.location = new SourceLocation(token);
@@ -264,11 +264,11 @@ public class CExpression implements ILocation {
     return base;
   }
 
-  public List<InitializerListEntry> getInitializerList() {
+  public List<Initializer> getInitializerList() {
     return initializerList;
   }
 
-  public void setInitializerList(List<InitializerListEntry> initializerList) {
+  public void setInitializerList(List<Initializer> initializerList) {
     this.initializerList = initializerList;
   }
 

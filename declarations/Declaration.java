@@ -1,4 +1,4 @@
-package ast.declarations.main;
+package ast.declarations;
 
 import java.util.List;
 

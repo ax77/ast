@@ -16,6 +16,7 @@ import jscan.Tokenlist;
 
 public class _TestStructFieldAccess {
 
+  @Ignore
   @Test
   public void testFields_0() throws IOException {
     //@formatter:off

@@ -17,6 +17,7 @@ import jscan.Tokenlist;
 
 public class TestSimple3 {
 
+  @Ignore
   @Test
   public void testJustParse() throws IOException {
     //@formatter:off

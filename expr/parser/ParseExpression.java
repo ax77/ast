@@ -45,8 +45,7 @@ import ast._typesnew.CStructField;
 import ast._typesnew.CStructType;
 import ast._typesnew.CType;
 import ast._typesnew.CTypeImpl;
-import ast.declarations.inits.Initializer;
-import ast.declarations.inits.InitializerListEntry;
+import ast.declarations.Initializer;
 import ast.declarations.parser.ParseDeclarations;
 import ast.expr.main.CExpression;
 import ast.expr.main.CExpressionBase;
@@ -119,7 +118,7 @@ public class ParseExpression {
     return new CExpression(base, op, lhs);
   }
 
-  private CExpression build_compliteral(CType typename, List<InitializerListEntry> initializerList, Token saved) {
+  private CExpression build_compliteral(CType typename, List<Initializer> initializerList, Token saved) {
     return new CExpression(typename, initializerList, saved);
   }
 
@@ -142,9 +141,12 @@ public class ParseExpression {
     final CArrayType arrtype = new CArrayType(CTypeImpl.TYPE_CHAR, str.length() + 1);
 
     final CExpression initexpr = new CExpression(new StringConstant(saved.getStrconstant(), str), saved);
-    final Initializer initializer = new Initializer(initexpr, new SourceLocation(saved));
+    final Initializer initializer = new Initializer(initexpr, 0);
 
-    CSymbol sym = new CSymbol(CSymbolBase.SYM_GVAR, varname, new CType(arrtype), initializer, saved);
+    List<Initializer> initlist = new ArrayList<Initializer>();
+    initlist.add(initializer);
+
+    CSymbol sym = new CSymbol(CSymbolBase.SYM_GVAR, varname, new CType(arrtype), initlist, saved);
     parser.defineSym(varname, sym);
 
     return new CExpression(sym, saved);
@@ -450,7 +452,7 @@ public class ParseExpression {
       if (parser.tp() == T.T_LEFT_BRACE) {
         Token saved = parser.tok();
 
-        List<InitializerListEntry> initializerList = new ParseDeclarations(parser).parseInitializerList();
+        List<Initializer> initializerList = new ParseDeclarations(parser).parse_initlist(typename);
         return build_compliteral(typename, initializerList, saved);
       }
 

@@ -1,8 +1,10 @@
 package ast.symtabg.elements;
 
+import java.util.List;
+
 import ast._typesnew.CType;
 import ast._typesnew.CTypeApi;
-import ast.declarations.inits.Initializer;
+import ast.declarations.Initializer;
 import ast.parse.ILocation;
 import jscan.cstrtox.NumType;
 import jscan.sourceloc.SourceLocation;
@@ -18,7 +20,7 @@ public class CSymbol implements CTypeApi, ILocation {
   private final CType type;
 
   private NumericConstant numericConstant;
-  private Initializer initializer;
+  private List<Initializer> initializer;
 
   private int offset;
 
@@ -30,7 +32,7 @@ public class CSymbol implements CTypeApi, ILocation {
     this.type = type;
   }
 
-  public CSymbol(CSymbolBase base, Ident name, CType type, Initializer initializer, Token from) {
+  public CSymbol(CSymbolBase base, Ident name, CType type, List<Initializer> initializer, Token from) {
     this.location = new SourceLocation(from);
     this.from = from;
     this.base = base;
@@ -68,12 +70,8 @@ public class CSymbol implements CTypeApi, ILocation {
         + ") ";
   }
 
-  public Initializer getInitializer() {
+  public List<Initializer> getInitializer() {
     return initializer;
-  }
-
-  public void setInitializer(Initializer initializer) {
-    this.initializer = initializer;
   }
 
   public NumericConstant getNumericConstant() {

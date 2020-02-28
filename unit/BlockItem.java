@@ -1,6 +1,6 @@
 package ast.unit;
 
-import ast.declarations.main.Declaration;
+import ast.declarations.Declaration;
 import ast.stmt.main.CStatement;
 
 public class BlockItem {

@@ -24,7 +24,7 @@ import ast._typesnew.parser.ParseBase;
 import ast._typesnew.parser.ParseDecl;
 import ast._typesnew.util.TypeMerger;
 import ast._typesnew.util.TypeSizes;
-import ast.declarations.main.Declaration;
+import ast.declarations.Declaration;
 import ast.errors.ParseException;
 import ast.parse.Parse;
 import ast.symtabg.elements.CSymbol;

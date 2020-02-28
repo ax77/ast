@@ -10,7 +10,7 @@ import static jscan.tokenize.T.T_SEMI_COLON;
 import java.util.ArrayList;
 import java.util.List;
 
-import ast.declarations.main.Declaration;
+import ast.declarations.Declaration;
 import ast.declarations.parser.ParseDeclarations;
 import ast.expr.main.CExpression;
 import ast.expr.parser.ParseExpression;
