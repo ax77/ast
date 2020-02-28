@@ -183,12 +183,12 @@ public class ParseDecl {
   }
 
   private void parseIdentifierList(Parse p, List<CFuncParam> params) {
-    Token id = p.checkedGetT(TOKEN_IDENT);
+    Token id = p.checkedMove(TOKEN_IDENT);
     params.add(new CFuncParam(id.getIdent()));
 
     while (p.tp() == T.T_COMMA) {
       p.move();
-      Token idSeq = p.checkedGetT(TOKEN_IDENT);
+      Token idSeq = p.checkedMove(TOKEN_IDENT);
       params.add(new CFuncParam(idSeq.getIdent()));
     }
   }

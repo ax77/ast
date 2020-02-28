@@ -84,20 +84,20 @@ public class ParseDeclarations {
   private List<CSymbol> parseInitDeclaratorList() {
     List<CSymbol> initDeclaratorList = new ArrayList<CSymbol>(0);
 
-    CSymbol initDeclarator = parseDeclaratorOrInitializedDeclarator();
+    CSymbol initDeclarator = parseInitDeclarator();
     initDeclaratorList.add(initDeclarator);
 
     while (parser.tp() == T.T_COMMA) {
       parser.move();
 
-      CSymbol initDeclaratorSeq = parseDeclaratorOrInitializedDeclarator();
+      CSymbol initDeclaratorSeq = parseInitDeclarator();
       initDeclaratorList.add(initDeclaratorSeq);
     }
 
     return initDeclaratorList;
   }
 
-  public CSymbol parseDeclaratorOrInitializedDeclarator() {
+  public CSymbol parseInitDeclarator() {
     //  init_declarator
     //    : declarator '=' initializer
     //    | declarator
@@ -109,39 +109,20 @@ public class ParseDeclarations {
     CType type = TypeMerger.build(basetype, decl);
 
     if (parser.tp() != T.T_ASSIGN) {
-      return uninitializedDeclarator(saved, decl, type);
+      CSymbolBase base = CSymbolBase.SYM_LVAR;
+
+      if (storagespec == StorageKind.ST_TYPEDEF) {
+        base = CSymbolBase.SYM_TYPEDEF;
+      }
+
+      CSymbol sym1 = new CSymbol(base, decl.getName(), type, saved);
+      parser.defineSym(decl.getName(), sym1);
+
+      return sym1;
     }
 
     parser.checkedMove(T.T_ASSIGN);
-    return parseInitializedDeclarator(saved, decl, type);
-  }
-
-  private CSymbol uninitializedDeclarator(Token saved, CDecl decl, CType type) {
-
-    CSymbolBase base = CSymbolBase.SYM_LVAR;
-
-    if (storagespec == StorageKind.ST_TYPEDEF) {
-      base = CSymbolBase.SYM_TYPEDEF;
-    }
-
-    CSymbol sym = new CSymbol(base, decl.getName(), type, saved);
-    parser.defineSym(decl.getName(), sym);
-
-    return sym;
-  }
-
-  private CSymbol parseInitializedDeclarator(Token saved, CDecl decl, CType type) {
-
-    List<Initializer> inits = new ArrayList<Initializer>();
-
-    if (parser.tok().ofType(T.T_LEFT_BRACE)) {
-      read_initializer_list(inits, type, 0);
-    } else {
-      CExpression expr = new ParseExpression(parser).e_assign();
-      inits.add(new Initializer(expr, 0));
-    }
-
-    Collections.sort(inits);
+    List<Initializer> inits = parseInitializer(type);
 
     if (storagespec == StorageKind.ST_TYPEDEF) {
       parser.perror("typedef with initializer.");
@@ -151,6 +132,20 @@ public class ParseDeclarations {
     parser.defineSym(decl.getName(), sym);
 
     return sym;
+  }
+
+  public List<Initializer> parseInitializer(CType type) {
+    List<Initializer> inits = new ArrayList<Initializer>();
+
+    if (parser.tok().ofType(T.T_LEFT_BRACE)) {
+      read_initializer_list(inits, type, 0);
+      Collections.sort(inits);
+    } else {
+      CExpression expr = new ParseExpression(parser).e_assign();
+      inits.add(new Initializer(expr, 0));
+    }
+
+    return inits;
   }
 
   public List<Initializer> parse_initlist(CType type) {
@@ -284,13 +279,13 @@ public class ParseDeclarations {
       return false;
     }
 
-    parser.checkedMoveIdent(Hash_ident._Static_assert_ident);
+    parser.checkedMove(Hash_ident._Static_assert_ident);
     parser.lparen();
 
     CExpression ce = new ParseExpression(parser).e_const_expr();
     parser.checkedMove(T.T_COMMA);
 
-    Token message = parser.checkedGetT(T.TOKEN_STRING);
+    Token message = parser.checkedMove(T.TOKEN_STRING);
     parser.rparen();
     parser.semicolon();
 

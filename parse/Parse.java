@@ -267,15 +267,7 @@ public class Parse {
     perror(code.toString());
   }
 
-  public void checkedMove(T expected) {
-    if (tp() == expected) {
-      move();
-    } else {
-      perror("expect " + expected + ", but was " + tp().toString());
-    }
-  }
-
-  public Token checkedMoveIdent(Ident expect) {
+  public Token checkedMove(Ident expect) {
     if (!tok.isIdent(expect)) {
       perror("expect id: " + expect.getName() + ", but was: " + tok.getValue());
     }
@@ -293,7 +285,7 @@ public class Parse {
     return saved;
   }
 
-  public Token checkedGetT(T expect) {
+  public Token checkedMove(T expect) {
     if (tp() != expect) {
       perror("expect: " + expect.toString() + ", but was: " + tok.getValue());
     }
@@ -301,7 +293,7 @@ public class Parse {
     move();
     return saved;
   }
-  
+
   public boolean moveOptional(T t) {
     if ((tp() == t)) {
       move();
@@ -350,23 +342,23 @@ public class Parse {
   }
 
   public Token lparen() {
-    return checkedGetT(T.T_LEFT_PAREN);
+    return checkedMove(T.T_LEFT_PAREN);
   }
 
   public Token rparen() {
-    return checkedGetT(T.T_RIGHT_PAREN);
+    return checkedMove(T.T_RIGHT_PAREN);
   }
 
   public Token lbracket() {
-    return checkedGetT(T.T_LEFT_BRACKET);
+    return checkedMove(T.T_LEFT_BRACKET);
   }
 
   public Token rbracket() {
-    return checkedGetT(T.T_RIGHT_BRACKET);
+    return checkedMove(T.T_RIGHT_BRACKET);
   }
 
   public Token semicolon() {
-    return checkedGetT(T_SEMI_COLON);
+    return checkedMove(T_SEMI_COLON);
   }
 
   //////////////////////////////////////////////////////////////////////
@@ -593,7 +585,7 @@ public class Parse {
         //
         while (tp() == T.T_COMMA) {
           move();
-          CSymbol initDeclaratorSeq = new ParseDeclarations(this, declspecs, storageSpec).parseDeclaratorOrInitializedDeclarator();
+          CSymbol initDeclaratorSeq = new ParseDeclarations(this, declspecs, storageSpec).parseInitDeclarator();
           initDeclaratorList.add(initDeclaratorSeq);
         }
 
@@ -612,7 +604,7 @@ public class Parse {
         //
 
         checkedMove(T.T_ASSIGN);
-        List<Initializer> initializer = new ParseDeclarations(this, type, storageSpec).parse_initlist(type);
+        List<Initializer> initializer = new ParseDeclarations(this, type, storageSpec).parseInitializer(type);
 
         if (storageSpec == StorageKind.ST_TYPEDEF) {
           perror("typedef with initializer.");
@@ -627,7 +619,7 @@ public class Parse {
         //
         while (tp() == T.T_COMMA) {
           move();
-          CSymbol initDeclaratorSeq = new ParseDeclarations(this, declspecs, storageSpec).parseDeclaratorOrInitializedDeclarator();
+          CSymbol initDeclaratorSeq = new ParseDeclarations(this, declspecs, storageSpec).parseInitDeclarator();
           initDeclaratorList.add(initDeclaratorSeq);
         }
 

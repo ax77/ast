@@ -105,7 +105,7 @@ public class ExpandGenericResult {
   //  ;
 
   private CExpression parseGenericSelection(Token from) {
-    Token id = parser.checkedMoveIdent(Hash_ident._Generic_ident);
+    Token id = parser.checkedMove(Hash_ident._Generic_ident);
     parser.lparen();
 
     CExpression assignment = e_assign();
@@ -136,7 +136,7 @@ public class ExpandGenericResult {
         parser.perror("duplicate default in generic selection.");
       }
 
-      parser.checkedMoveIdent(Hash_ident.default_ident);
+      parser.checkedMove(Hash_ident.default_ident);
       parser.checkedMove(T_COLON);
       gs.setDefaultAssociation(e_assign());
       return;

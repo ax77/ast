@@ -46,10 +46,10 @@ public class ParseStatement {
 
     List<BlockItem> blocks = new ArrayList<BlockItem>(0);
 
-    Token lbrace = parser.checkedGetT(T.T_LEFT_BRACE);
+    Token lbrace = parser.checkedMove(T.T_LEFT_BRACE);
 
     if (parser.tp() == T.T_RIGHT_BRACE) {
-      Token rbrace = parser.checkedGetT(T.T_RIGHT_BRACE);
+      Token rbrace = parser.checkedMove(T.T_RIGHT_BRACE);
 
       if (!isFunctionStart) {
         parser.popscope(); // XXX:
@@ -70,7 +70,7 @@ public class ParseStatement {
       block = parse_one_block();
     }
 
-    Token rbrace = parser.checkedGetT(T.T_RIGHT_BRACE);
+    Token rbrace = parser.checkedMove(T.T_RIGHT_BRACE);
 
     if (!isFunctionStart) {
       parser.popscope();
@@ -189,8 +189,8 @@ public class ParseStatement {
       }
     }
 
-    parser.checkedGetT(T.T_RIGHT_PAREN);
-    parser.checkedGetT(T_SEMI_COLON);
+    parser.checkedMove(T.T_RIGHT_PAREN);
+    parser.checkedMove(T_SEMI_COLON);
 
     return new CStatement(startLoc, asmlist);
   }
@@ -229,8 +229,8 @@ public class ParseStatement {
 
   private CStatement parse_default() {
 
-    Token from = parser.checkedMoveIdent(Hash_ident.default_ident);
-    parser.checkedGetT(T_COLON);
+    Token from = parser.checkedMove(Hash_ident.default_ident);
+    parser.checkedMove(T_COLON);
 
     if (parser.tp() == T.T_RIGHT_BRACE) {
       parser.perror("default label without statement");
@@ -262,7 +262,7 @@ public class ParseStatement {
 
     Token from = parser.expectIdentifier();
     label = from.getIdent();
-    parser.checkedGetT(T_COLON);
+    parser.checkedMove(T_COLON);
 
     labelstmt = parse_statement();
 
@@ -280,7 +280,7 @@ public class ParseStatement {
     }
     function = parser.getCurrentFn();
 
-    Token from = parser.checkedMoveIdent(Hash_ident.goto_ident);
+    Token from = parser.checkedMove(Hash_ident.goto_ident);
 
     Token identTok = parser.expectIdentifier();
     label = identTok.getIdent();
@@ -290,7 +290,7 @@ public class ParseStatement {
   }
 
   private CStatement parse_return() {
-    Token from = parser.checkedMoveIdent(Hash_ident.return_ident);
+    Token from = parser.checkedMove(Hash_ident.return_ident);
 
     if (parser.tp() == T_SEMI_COLON) {
       parser.move();
@@ -299,7 +299,7 @@ public class ParseStatement {
 
     CExpression retexpr = e_expression();
 
-    parser.checkedGetT(T_SEMI_COLON);
+    parser.checkedMove(T_SEMI_COLON);
     return new CStatement(from, CStatementBase.SRETURN, retexpr);
   }
 
@@ -309,10 +309,10 @@ public class ParseStatement {
 
     parser.pushLoop("do_while");
 
-    Token from = parser.checkedMoveIdent(Hash_ident.do_ident);
+    Token from = parser.checkedMove(Hash_ident.do_ident);
 
     loop = parse_statement();
-    parser.checkedMoveIdent(Hash_ident.while_ident);
+    parser.checkedMove(Hash_ident.while_ident);
 
     test = new ParseExpression(parser).getExprInParen();
     parser.semicolon();
@@ -332,7 +332,7 @@ public class ParseStatement {
     parser.pushLoop("for");
     parser.pushscope(); // TODO:
 
-    Token from = parser.checkedMoveIdent(Hash_ident.for_ident);
+    Token from = parser.checkedMove(Hash_ident.for_ident);
     parser.lparen();
 
     if (parser.tp() != T_SEMI_COLON) {
@@ -370,7 +370,7 @@ public class ParseStatement {
 
   private CStatement parse_switch() {
 
-    Token from = parser.checkedMoveIdent(Hash_ident.switch_ident);
+    Token from = parser.checkedMove(Hash_ident.switch_ident);
     CExpression expr = new ParseExpression(parser).getExprInParen();
 
     Sswitch nodeSwitch = new Sswitch(expr);
@@ -389,7 +389,7 @@ public class ParseStatement {
       parser.perror("case outside switch");
     }
 
-    Token from = parser.checkedMoveIdent(Hash_ident.case_ident);
+    Token from = parser.checkedMove(Hash_ident.case_ident);
     CExpression expr = new ParseExpression(parser).e_const_expr();
     parser.checkedMove(T_COLON);
 
@@ -408,13 +408,13 @@ public class ParseStatement {
     CStatement ifstmt = null;
     CStatement ifelse = null;
 
-    Token from = parser.checkedMoveIdent(Hash_ident.if_ident);
+    Token from = parser.checkedMove(Hash_ident.if_ident);
 
     ifexpr = new ParseExpression(parser).getExprInParen();
     ifstmt = parse_statement();
 
     if (parser.tok().isIdent(Hash_ident.else_ident)) {
-      Token elsekw = parser.checkedMoveIdent(Hash_ident.else_ident);
+      Token elsekw = parser.checkedMove(Hash_ident.else_ident);
       ifelse = parse_statement();
 
       return new CStatement(elsekw, ifexpr, ifstmt, ifelse);
@@ -429,7 +429,7 @@ public class ParseStatement {
 
     parser.pushLoop("while");
 
-    Token from = parser.checkedMoveIdent(Hash_ident.while_ident);
+    Token from = parser.checkedMove(Hash_ident.while_ident);
     test = new ParseExpression(parser).getExprInParen();
     loop = parse_statement();
 

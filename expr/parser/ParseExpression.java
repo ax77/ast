@@ -156,7 +156,7 @@ public class ParseExpression {
     CExpression e = e_assign();
 
     while (parser.tp() == T.T_COMMA) {
-      Token saved = parser.checkedGetT(T.T_COMMA);
+      Token saved = parser.checkedMove(T.T_COMMA);
       e = build_comma(saved, saved.getType(), e, e_expression());
     }
 
@@ -390,7 +390,7 @@ public class ParseExpression {
   }
 
   private CExpression e_sizeof() {
-    Token id = parser.checkedMoveIdent(Hash_ident.sizeof_ident);
+    Token id = parser.checkedMove(Hash_ident.sizeof_ident);
 
     if (parser.tp() == T_LEFT_PAREN) {
       parser.lparen();
