@@ -29,10 +29,10 @@ import jscan.cstrtox.C_strtox;
 import jscan.cstrtox.NumType;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import ast._typesnew.CTypeImpl;
 import ast.expr.CExpression;
 import ast.parse.NullChecker;
-import ast.symtabg.elements.NumericConstant;
+import ast.symtab.elements.NumericConstant;
+import ast.types.CTypeImpl;
 
 public abstract class ExprUtil {
 

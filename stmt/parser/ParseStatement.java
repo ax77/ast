@@ -10,8 +10,8 @@ import static jscan.tokenize.T.T_SEMI_COLON;
 import java.util.ArrayList;
 import java.util.List;
 
-import ast.declarations.Declaration;
-import ast.declarations.parser.ParseDeclarations;
+import ast.decls.Declaration;
+import ast.decls.parser.ParseDeclarations;
 import ast.expr.CExpression;
 import ast.expr.parser.ParseExpression;
 import ast.parse.Parse;
@@ -200,7 +200,7 @@ public class ParseStatement {
     // TODO: doe's it correct, or maybe clean way exists?
     // different scope between names of labels and all other names.
     // why ??? 
-    if (parser.tok().ofType(TOKEN_IDENT) || !parser.tok().isBuiltinIdent()) {
+    if (isUserDefinedId()) {
       Token peek = parser.getTokenlist().peek();
       if (peek.ofType(T_COLON)) {
         BlockItem block = new BlockItem();
@@ -225,6 +225,10 @@ public class ParseStatement {
     }
 
     return null;
+  }
+
+  private boolean isUserDefinedId() {
+    return parser.tok().ofType(TOKEN_IDENT) && !parser.tok().isBuiltinIdent();
   }
 
   private CStatement parse_default() {
@@ -252,7 +256,6 @@ public class ParseStatement {
   private CStatement parse_label() {
 
     FunctionDefinition function = null;
-    Ident label = null;
     CStatement labelstmt = null;
 
     if (parser.getCurrentFn() == null) {
@@ -260,8 +263,8 @@ public class ParseStatement {
     }
     function = parser.getCurrentFn();
 
-    Token from = parser.expectIdentifier();
-    label = from.getIdent();
+    Token from = parser.tok();
+    Ident label = parser.getIdent();
     parser.checkedMove(T_COLON);
 
     labelstmt = parse_statement();
@@ -272,7 +275,6 @@ public class ParseStatement {
   private CStatement parse_goto() {
 
     FunctionDefinition function = null;
-    Ident label = null;
     CStatement labelstmt = null;
 
     if (parser.getCurrentFn() == null) {
@@ -281,9 +283,7 @@ public class ParseStatement {
     function = parser.getCurrentFn();
 
     Token from = parser.checkedMove(Hash_ident.goto_ident);
-
-    Token identTok = parser.expectIdentifier();
-    label = identTok.getIdent();
+    Ident label = parser.getIdent();
 
     parser.semicolon();
     return new CStatement(from, CStatementBase.SGOTO, function, label, labelstmt);

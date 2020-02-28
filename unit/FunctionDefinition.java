@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ast.stmt.main.CStatement;
-import ast.symtabg.elements.CSymbol;
+import ast.symtab.elements.CSymbol;
 
 public class FunctionDefinition {
 

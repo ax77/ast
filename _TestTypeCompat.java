@@ -10,20 +10,20 @@ import org.junit.Test;
 
 import ast._entry.PreprocessSourceForParser;
 import ast._entry.PreprocessSourceForParserVariant;
-import ast._typesnew.CArrayType;
-import ast._typesnew.CEnumType;
-import ast._typesnew.CFuncParam;
-import ast._typesnew.CFunctionType;
-import ast._typesnew.CPointerType;
-import ast._typesnew.CStructType;
-import ast._typesnew.CType;
-import ast._typesnew.decl.CDecl;
-import ast._typesnew.parser.ParseBase;
-import ast._typesnew.parser.ParseDecl;
-import ast._typesnew.util.TypeMerger;
 import ast.expr.sem.TypeApplier;
 import ast.expr.util.ExprUtil;
 import ast.parse.Parse;
+import ast.types.CArrayType;
+import ast.types.CEnumType;
+import ast.types.CFuncParam;
+import ast.types.CFunctionType;
+import ast.types.CPointerType;
+import ast.types.CStructType;
+import ast.types.CType;
+import ast.types.decl.CDecl;
+import ast.types.parser.ParseBase;
+import ast.types.parser.ParseDecl;
+import ast.types.util.TypeMerger;
 import jscan.Tokenlist;
 
 public class _TestTypeCompat {

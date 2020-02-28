@@ -8,9 +8,9 @@ import org.junit.Test;
 
 import ast._entry.PreprocessSourceForParser;
 import ast._entry.PreprocessSourceForParserVariant;
-import ast.declarations.Initializer;
+import ast.decls.Initializer;
 import ast.parse.Parse;
-import ast.symtabg.elements.CSymbol;
+import ast.symtab.elements.CSymbol;
 import ast.unit.TranslationUnit;
 
 public class TestTrace {

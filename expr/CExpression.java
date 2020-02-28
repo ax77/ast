@@ -18,14 +18,14 @@ import jscan.cconst.CStr;
 import jscan.cstrtox.C_strtox;
 import jscan.sourceloc.SourceLocation;
 import jscan.tokenize.Token;
-import ast._typesnew.CStructField;
-import ast._typesnew.CType;
-import ast.declarations.Initializer;
+import ast.decls.Initializer;
 import ast.errors.ParseException;
 import ast.parse.ILocation;
-import ast.symtabg.elements.CSymbol;
-import ast.symtabg.elements.NumericConstant;
-import ast.symtabg.elements.StringConstant;
+import ast.symtab.elements.CSymbol;
+import ast.symtab.elements.NumericConstant;
+import ast.symtab.elements.StringConstant;
+import ast.types.CStructField;
+import ast.types.CType;
 
 abstract class NodeTemp {
   private static long iter = 0;

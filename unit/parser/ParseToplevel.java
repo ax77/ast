@@ -11,23 +11,23 @@ import java.util.Map;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import ast._typesnew.CFuncParam;
-import ast._typesnew.CType;
-import ast._typesnew.decl.CDecl;
-import ast._typesnew.decl.CDeclEntry;
-import ast._typesnew.main.StorageKind;
-import ast._typesnew.main.TypeKind;
-import ast._typesnew.parser.ParseBase;
-import ast._typesnew.parser.ParseDecl;
-import ast._typesnew.util.TypeMerger;
-import ast.declarations.Declaration;
-import ast.declarations.Initializer;
-import ast.declarations.parser.ParseDeclarations;
+import ast.decls.Declaration;
+import ast.decls.Initializer;
+import ast.decls.parser.ParseDeclarations;
 import ast.parse.Parse;
 import ast.stmt.main.CStatement;
 import ast.stmt.parser.ParseStatement;
-import ast.symtabg.elements.CSymbol;
-import ast.symtabg.elements.CSymbolBase;
+import ast.symtab.elements.CSymbol;
+import ast.symtab.elements.CSymbolBase;
+import ast.types.CFuncParam;
+import ast.types.CType;
+import ast.types.decl.CDecl;
+import ast.types.decl.CDeclEntry;
+import ast.types.main.StorageKind;
+import ast.types.main.TypeKind;
+import ast.types.parser.ParseBase;
+import ast.types.parser.ParseDecl;
+import ast.types.util.TypeMerger;
 import ast.unit.ExternalDeclaration;
 import ast.unit.FunctionDefinition;
 
@@ -165,6 +165,11 @@ public class ParseToplevel {
     //
     // normal cases for function begin here
 
+    return parseFunction(declarator, type);
+
+  }
+
+  public ExternalDeclaration parseFunction(CDecl declarator, CType type) {
     // K&R function style declaration-list
     //
     if (parser.isDeclSpecStart()) {
@@ -194,7 +199,6 @@ public class ParseToplevel {
     parser.popscope();
 
     return new ExternalDeclaration(fd);
-
   }
 
   // TODO:

@@ -1,6 +1,6 @@
 package ast.unit;
 
-import ast.declarations.Declaration;
+import ast.decls.Declaration;
 
 public class ExternalDeclaration {
   private final boolean isFunctionDefinition;

@@ -12,17 +12,17 @@ import jscan.Tokenlist;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import ast._typesnew.CType;
-import ast._typesnew.decl.CDecl;
-import ast._typesnew.parser.ParseBase;
-import ast._typesnew.parser.ParseDecl;
-import ast._typesnew.util.TypeMerger;
 import ast.errors.ParseErrors;
 import ast.errors.ParseException;
 import ast.stmt.Sswitch;
-import ast.symtabg.Symtab;
-import ast.symtabg.elements.CSymbol;
-import ast.symtabg.elements.CSymbolBase;
+import ast.symtab.Symtab;
+import ast.symtab.elements.CSymbol;
+import ast.symtab.elements.CSymbolBase;
+import ast.types.CType;
+import ast.types.decl.CDecl;
+import ast.types.parser.ParseBase;
+import ast.types.parser.ParseDecl;
+import ast.types.util.TypeMerger;
 import ast.unit.ExternalDeclaration;
 import ast.unit.FunctionDefinition;
 import ast.unit.TranslationUnit;
@@ -265,13 +265,17 @@ public class Parse {
     return saved;
   }
 
-  public Token expectIdentifier() {
+  public Ident getIdent() {
     if (!tok.ofType(TOKEN_IDENT)) {
       perror("expect ident, but was: " + tok.getValue());
     }
     Token saved = tok;
     move();
-    return saved;
+    final Ident ident = saved.getIdent();
+    if (ident.isBuiltin()) {
+      perror("unexpected builtin ident: " + ident.getName());
+    }
+    return ident;
   }
 
   public Token checkedMove(T expect) {

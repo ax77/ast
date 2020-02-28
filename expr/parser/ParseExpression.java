@@ -40,13 +40,8 @@ import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import ast._typesnew.CArrayType;
-import ast._typesnew.CStructField;
-import ast._typesnew.CStructType;
-import ast._typesnew.CType;
-import ast._typesnew.CTypeImpl;
-import ast.declarations.Initializer;
-import ast.declarations.parser.ParseDeclarations;
+import ast.decls.Initializer;
+import ast.decls.parser.ParseDeclarations;
 import ast.expr.CExpression;
 import ast.expr.CExpressionBase;
 import ast.expr.sem.TypeApplierStage;
@@ -55,10 +50,15 @@ import ast.expr.util.ExprUtil;
 import ast.parse.Parse;
 import ast.parse.ParseState;
 import ast.parse.Pcheckers;
-import ast.symtabg.elements.CSymbol;
-import ast.symtabg.elements.CSymbolBase;
-import ast.symtabg.elements.NumericConstant;
-import ast.symtabg.elements.StringConstant;
+import ast.symtab.elements.CSymbol;
+import ast.symtab.elements.CSymbolBase;
+import ast.symtab.elements.NumericConstant;
+import ast.symtab.elements.StringConstant;
+import ast.types.CArrayType;
+import ast.types.CStructField;
+import ast.types.CStructType;
+import ast.types.CType;
+import ast.types.CTypeImpl;
 
 public class ParseExpression {
   private final Parse parser;
@@ -492,9 +492,7 @@ public class ParseExpression {
         Token operator = parser.tok();
         parser.move(); // move . or ->
 
-        Token fieldNameTok = parser.expectIdentifier();
-        Ident fieldName = fieldNameTok.getIdent();
-
+        Ident fieldName = parser.getIdent();
         TypeApplier.applytype(lhs, TypeApplierStage.stage_start);
 
         // a->b :: (*a).b

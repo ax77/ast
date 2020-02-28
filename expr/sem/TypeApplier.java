@@ -1,11 +1,5 @@
 package ast.expr.sem;
 
-import static ast._typesnew.CTypeImpl.TYPE_DOUBLE;
-import static ast._typesnew.CTypeImpl.TYPE_FLOAT;
-import static ast._typesnew.CTypeImpl.TYPE_INT;
-import static ast._typesnew.CTypeImpl.TYPE_LONG_DOUBLE;
-import static ast._typesnew.CTypeImpl.TYPE_LONG_LONG;
-import static ast._typesnew.CTypeImpl.TYPE_VOID;
 import static ast.expr.CExpressionBase.EASSIGN;
 import static ast.expr.CExpressionBase.EBINARY;
 import static ast.expr.CExpressionBase.ECOMMA;
@@ -17,6 +11,12 @@ import static ast.expr.CExpressionBase.EPRIMARY_IDENT;
 import static ast.expr.CExpressionBase.EPRIMARY_NUMBER;
 import static ast.expr.CExpressionBase.ETERNARY;
 import static ast.expr.CExpressionBase.EUNARY;
+import static ast.types.CTypeImpl.TYPE_DOUBLE;
+import static ast.types.CTypeImpl.TYPE_FLOAT;
+import static ast.types.CTypeImpl.TYPE_INT;
+import static ast.types.CTypeImpl.TYPE_LONG_DOUBLE;
+import static ast.types.CTypeImpl.TYPE_LONG_LONG;
+import static ast.types.CTypeImpl.TYPE_VOID;
 import static jscan.tokenize.T.T_AND;
 import static jscan.tokenize.T.T_AND_AND;
 import static jscan.tokenize.T.T_ASSIGN;
@@ -40,13 +40,13 @@ import static jscan.tokenize.T.T_TIMES;
 import static jscan.tokenize.T.T_XOR;
 import jscan.cstrtox.NumType;
 import jscan.tokenize.Token;
-import ast._typesnew.CPointerType;
-import ast._typesnew.CType;
-import ast._typesnew.CTypeImpl;
 import ast.errors.ParseException;
 import ast.expr.CExpression;
 import ast.expr.CExpressionBase;
 import ast.parse.NullChecker;
+import ast.types.CPointerType;
+import ast.types.CType;
+import ast.types.CTypeImpl;
 
 public abstract class TypeApplier {
 
