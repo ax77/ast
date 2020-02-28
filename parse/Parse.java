@@ -493,7 +493,7 @@ public class Parse {
       // before each function or global declaration
       moveStraySemicolon();
 
-      ExternalDeclaration ed = new ParseToplevel(this).parse_external_declaration();
+      ExternalDeclaration ed = new ParseToplevel(this).parseExternalDeclaration();
       tu.push(ed);
     }
 

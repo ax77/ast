@@ -4,13 +4,8 @@ import static jscan.tokenize.T.T_LEFT_BRACE;
 import static jscan.tokenize.T.T_SEMI_COLON;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import jscan.symtab.Ident;
-import jscan.tokenize.T;
-import jscan.tokenize.Token;
 import ast.decls.Declaration;
 import ast.decls.Initializer;
 import ast.decls.parser.ParseDeclarations;
@@ -22,14 +17,15 @@ import ast.symtab.elements.CSymbolBase;
 import ast.types.CFuncParam;
 import ast.types.CType;
 import ast.types.decl.CDecl;
-import ast.types.decl.CDeclEntry;
 import ast.types.main.StorageKind;
-import ast.types.main.TypeKind;
 import ast.types.parser.ParseBase;
 import ast.types.parser.ParseDecl;
 import ast.types.util.TypeMerger;
 import ast.unit.ExternalDeclaration;
 import ast.unit.FunctionDefinition;
+import jscan.symtab.Ident;
+import jscan.tokenize.T;
+import jscan.tokenize.Token;
 
 public class ParseToplevel {
 
@@ -39,7 +35,7 @@ public class ParseToplevel {
     this.parser = parser;
   }
 
-  public ExternalDeclaration parse_external_declaration() {
+  public ExternalDeclaration parseExternalDeclaration() {
 
     ParseBase pb = new ParseBase(parser);
     CType declspecs = pb.findTypeAgain();
@@ -165,11 +161,11 @@ public class ParseToplevel {
     //
     // normal cases for function begin here
 
-    return parseFunction(declarator, type);
+    return functionDef(declarator, type);
 
   }
 
-  public ExternalDeclaration parseFunction(CDecl declarator, CType type) {
+  public ExternalDeclaration functionDef(CDecl declarator, CType type) {
     // K&R function style declaration-list
     //
     if (parser.isDeclSpecStart()) {
@@ -192,7 +188,7 @@ public class ParseToplevel {
     defineParameters(fd.getSignature().getType());
     define__func__(fd.getSymbol().getName());
 
-    CStatement cst = new ParseStatement(parser).parse_coumpound_stmt(true);
+    CStatement cst = new ParseStatement(parser).parseCompoundStatement(true);
     fd.setCompoundStatement(cst);
 
     parser.setCurrentFn(null);
@@ -222,39 +218,5 @@ public class ParseToplevel {
     }
   }
 
-  private void assertTrue(boolean what) {
-    if (!what) {
-      parser.perror("assertion fail.");
-    }
-  }
 
-  private void applyTypes(List<Declaration> decllist, CDecl decl) {
-    final List<CDeclEntry> typelist = decl.getTypelist();
-    assertTrue(typelist.size() == 1);
-    assertTrue(typelist.get(0).getBase() == TypeKind.TP_FUNCTION);
-    List<CFuncParam> parameters = typelist.get(0).getParameters();
-
-    Map<Ident, CType> vars = new HashMap<Ident, CType>(0);
-    for (Declaration declaration : decllist) {
-      if (!declaration.isVarlist()) {
-        parser.perror("expect variables declaration for old-style function-definition.");
-      }
-      for (CSymbol id : declaration.getVariables()) {
-        final Ident name = id.getName();
-        if (vars.containsKey(name)) {
-          parser.perror("declaration name duplicate: " + name.getName()); // TODO: not here.
-        }
-        vars.put(name, id.getType());
-      }
-    }
-
-    if (vars.size() != parameters.size()) {
-      parser.perror("different size between parameters and declarations.");
-    }
-
-    for (CFuncParam p : typelist.get(0).getParameters()) {
-      CType tp = vars.get(p.getName());
-      p.setType(tp);
-    }
-  }
 }
