@@ -295,6 +295,16 @@ public class Parse {
     return false;
   }
 
+  public void unexpectedEof() {
+    if (tok.ofType(TOKEN_EOF)) {
+      perror("EOF unexpected at this context");
+    }
+  }
+
+  public void unimplemented(String what) {
+    perror("unimplemented: " + what);
+  }
+
   public String ringBufferToStringLines() {
 
     List<List<Token>> lines = new ArrayList<List<Token>>(0);

@@ -177,26 +177,29 @@ public class ParseDeclarations {
 
   private void read_initializer_list(List<Initializer> inits, CType ty, int off) {
 
+    final int guard = 65536;
+
     // 1)
     if (ty.isArray()) {
 
-      boolean has_brace = parser.moveOptional(T.T_LEFT_BRACE);
-
-      boolean flexible = (ty.getTpArray().getArrayLen() <= 0);
+      boolean isHasBrace = parser.moveOptional(T.T_LEFT_BRACE);
       int elemsize = ty.getTpArray().getArrayOf().getSize();
 
-      final CType subtype = ty.getTpArray().getArrayOf();
-      int i = 0;
+      int arrayLen = (ty.getTpArray().getArrayLen() <= 0) ? guard : (ty.getTpArray().getArrayLen());
+      int initsCnt = 0;
 
-      for (i = 0; flexible || i < ty.getTpArray().getArrayLen(); i++) {
+      for (initsCnt = 0; initsCnt < arrayLen; initsCnt++) {
+
+        checkOverflow(guard, initsCnt);
 
         Token tok = parser.tok();
         if (tok.ofType(T.T_RIGHT_BRACE)) {
           break;
         }
 
-        int nextoffset = off + elemsize * i;
+        int nextoffset = off + elemsize * initsCnt;
 
+        CType subtype = ty.getTpArray().getArrayOf();
         if (subtype.isArray() || subtype.isStrUnion()) {
           read_initializer_list(inits, subtype, nextoffset);
         } else {
@@ -208,14 +211,14 @@ public class ParseDeclarations {
 
       }
 
-      if (has_brace) {
+      if (isHasBrace) {
         warningExcess();
         parser.checkedMove(T.T_RIGHT_BRACE);
       }
 
       if (ty.getTpArray().getArrayLen() <= 0) {
-        ty.getTpArray().setArrayLen(i);
-        ty.setSize(elemsize * i);
+        ty.getTpArray().setArrayLen(initsCnt);
+        ty.setSize(elemsize * initsCnt);
       }
 
     }
@@ -223,26 +226,27 @@ public class ParseDeclarations {
     // 2)
     else if (ty.isStrUnion()) {
 
-      boolean has_brace = parser.moveOptional(T.T_LEFT_BRACE);
-      int i = 0;
+      boolean isHasBrace = parser.moveOptional(T.T_LEFT_BRACE);
+      int initsCnt = 0;
 
       for (;;) {
-        Token tok = parser.tok();
 
+        checkOverflow(guard, initsCnt);
+
+        Token tok = parser.tok();
         if (tok.ofType(T.T_RIGHT_BRACE)) {
           parser.checkedMove(T.T_RIGHT_BRACE);
           return;
         }
 
-        if (i == ty.getTpStruct().getFields().size()) {
+        if (initsCnt == ty.getTpStruct().getFields().size()) {
           break;
         }
 
-        CStructField field = ty.getTpStruct().getFields().get(i++);
-        CType subtype = field.getType();
-
+        CStructField field = ty.getTpStruct().getFields().get(initsCnt++);
         int nextoffset = off + field.getOffset();
 
+        CType subtype = field.getType();
         if (subtype.isArray() || subtype.isStrUnion()) {
           read_initializer_list(inits, subtype, nextoffset);
         } else {
@@ -258,7 +262,7 @@ public class ParseDeclarations {
 
       }
 
-      if (has_brace) {
+      if (isHasBrace) {
         parser.checkedMove(T.T_RIGHT_BRACE);
       }
     }
@@ -267,6 +271,13 @@ public class ParseDeclarations {
     else {
       CType arraytype = new CType(new CArrayType(ty, 1));
       read_initializer_list(inits, arraytype, off);
+    }
+  }
+
+  private void checkOverflow(int guard, int initsCnt) {
+    parser.unexpectedEof();
+    if (initsCnt >= guard) {
+      parser.perror("struct/array initializer list too big...");
     }
   }
 
