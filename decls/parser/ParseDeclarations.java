@@ -30,6 +30,9 @@ public class ParseDeclarations {
   private CType basetype;
   private StorageKind storagespec;
 
+  private static final int NESTED_INITS_LIMIT = 256; // max recursion deep
+  private static final int DEFAULT_UNKNOWN_ARLEN = 65536; // int x[?][2][2]
+
   public ParseDeclarations(Parse parser) {
     this.parser = parser;
   }
@@ -138,7 +141,7 @@ public class ParseDeclarations {
     List<Initializer> inits = new ArrayList<Initializer>();
 
     if (parser.tok().ofType(T.T_LEFT_BRACE)) {
-      read_initializer_list(inits, type, 0);
+      read_initializer_list(inits, type, 0, NESTED_INITS_LIMIT);
       Collections.sort(inits);
     } else {
       CExpression expr = new ParseExpression(parser).e_assign();
@@ -150,14 +153,14 @@ public class ParseDeclarations {
 
   public List<Initializer> parse_initlist(CType type) {
     List<Initializer> inits = new ArrayList<Initializer>();
-    read_initializer_list(inits, type, 0);
+    read_initializer_list(inits, type, 0, NESTED_INITS_LIMIT);
 
     Collections.sort(inits);
     return inits;
   }
 
-  private void warningExcess() {
-    for (;;) {
+  private void excess(String where) {
+    while (!parser.isEof()) {
       Token tok = parser.tok();
       if (tok.ofType(T.T_RIGHT_BRACE)) {
         return;
@@ -171,54 +174,92 @@ public class ParseDeclarations {
       CExpression expr = new ParseExpression(parser).e_assign();
       parser.moveOptional(T.T_COMMA);
 
-      System.out.println("excess elements in initizlizer: " + expr);
+      System.out.println("excess elements in " + where + " initializer: " + expr);
     }
   }
 
-  private void read_initializer_list(List<Initializer> inits, CType ty, int off) {
+  private void expectOpen() {
+    @SuppressWarnings("unused")
+    Token jo = parser.checkedMove(T.T_LEFT_BRACE);
+  }
 
-    final int guard = 65536;
+  private void expectClose() {
+    @SuppressWarnings("unused")
+    Token jo = parser.checkedMove(T.T_RIGHT_BRACE);
+  }
+
+  private void addInit(List<Initializer> where, int withOffset) {
+    if (parser.tok().ofType(T.T_LEFT_BRACE)) {
+      parser.perror("braces around scalar initializer");
+    }
+    CExpression expr = new ParseExpression(parser).e_assign();
+    where.add(new Initializer(expr, withOffset));
+  }
+
+  private void read_initializer_list(List<Initializer> inits, CType ty, int off, int deep) {
+
+    // check recursion deep, to prevent stack overflow.
+
+    if (deep <= 0) {
+      parser.perror("nexted initializers too deep.");
+    }
+
+    // this condition used between array / struct
+    // if only array could be nested, condition would not be necessary
 
     // 1)
     if (ty.isArray()) {
 
       boolean isHasBrace = parser.moveOptional(T.T_LEFT_BRACE);
-      int elemsize = ty.getTpArray().getArrayOf().getSize();
+      int arlen = (ty.getTpArray().getArrayLen() <= 0) ? DEFAULT_UNKNOWN_ARLEN : (ty.getTpArray().getArrayLen());
 
-      int arrayLen = (ty.getTpArray().getArrayLen() <= 0) ? guard : (ty.getTpArray().getArrayLen());
-      int initsCnt = 0;
+      CType sub = ty.getTpArray().getArrayOf();
+      int elsize = sub.getSize();
 
-      for (initsCnt = 0; initsCnt < arrayLen; initsCnt++) {
+      // recursion implement nested loop
+      // for array: int x[3][2][2] this loop look like this:
+      //
+      // for (int i = 0; i < 3; i++) {
+      //   for (int j = 0; j < 2; j++) {
+      //     for (int k = 0; k < 2; k++) {
+      //         ...
+      //     }
+      //   }
+      // }
 
-        checkOverflow(guard, initsCnt);
+      int count = 0;
+      for (count = 0; count < arlen; count++) {
+
+        checkOverflow(DEFAULT_UNKNOWN_ARLEN, count);
 
         Token tok = parser.tok();
         if (tok.ofType(T.T_RIGHT_BRACE)) {
           break;
         }
 
-        int nextoffset = off + elemsize * initsCnt;
+        int offsetOf = off + elsize * count;
+        boolean nestedExpansion = sub.isArray() || sub.isStrUnion();
 
-        CType subtype = ty.getTpArray().getArrayOf();
-        if (subtype.isArray() || subtype.isStrUnion()) {
-          read_initializer_list(inits, subtype, nextoffset);
-        } else {
-          CExpression expr = new ParseExpression(parser).e_assign();
-          inits.add(new Initializer(expr, nextoffset));
+        if (!nestedExpansion) {
+          addInit(inits, offsetOf);
+          parser.moveOptional(T.T_COMMA);
+          continue;
         }
 
+        // I) recursive expansion of sub-initializer
+        read_initializer_list(inits, sub, offsetOf, deep - 1);
         parser.moveOptional(T.T_COMMA);
 
       }
 
       if (isHasBrace) {
-        warningExcess();
-        parser.checkedMove(T.T_RIGHT_BRACE);
+        excess("array");
+        expectClose();
       }
 
       if (ty.getTpArray().getArrayLen() <= 0) {
-        ty.getTpArray().setArrayLen(initsCnt);
-        ty.setSize(elemsize * initsCnt);
+        ty.getTpArray().setArrayLen(count);
+        ty.setSize(elsize * count);
       }
 
     }
@@ -226,51 +267,54 @@ public class ParseDeclarations {
     // 2)
     else if (ty.isStrUnion()) {
 
-      boolean isHasBrace = parser.moveOptional(T.T_LEFT_BRACE);
-      int initsCnt = 0;
+      expectOpen();
+      int fieldIdx = 0;
 
       for (;;) {
 
-        checkOverflow(guard, initsCnt);
+        checkOverflow(DEFAULT_UNKNOWN_ARLEN, fieldIdx);
 
         Token tok = parser.tok();
         if (tok.ofType(T.T_RIGHT_BRACE)) {
-          parser.checkedMove(T.T_RIGHT_BRACE);
-          return;
-        }
-
-        if (initsCnt == ty.getTpStruct().getFields().size()) {
           break;
         }
 
-        CStructField field = ty.getTpStruct().getFields().get(initsCnt++);
-        int nextoffset = off + field.getOffset();
-
-        CType subtype = field.getType();
-        if (subtype.isArray() || subtype.isStrUnion()) {
-          read_initializer_list(inits, subtype, nextoffset);
-        } else {
-          CExpression expr = new ParseExpression(parser).e_assign();
-          inits.add(new Initializer(expr, nextoffset));
+        List<CStructField> fields = ty.getTpStruct().getFields();
+        if (fieldIdx == fields.size()) {
+          break;
         }
 
+        CStructField field = fields.get(fieldIdx++);
+        int offsetOf = off + field.getOffset();
+
+        CType sub = field.getType();
+        boolean nestedExpansion = sub.isArray() || sub.isStrUnion();
+
+        if (!nestedExpansion) {
+          addInit(inits, offsetOf);
+          parser.moveOptional(T.T_COMMA);
+          continue;
+        }
+
+        // II) recursive expansion of sub-initializer
+        read_initializer_list(inits, sub, offsetOf, deep - 1);
         parser.moveOptional(T.T_COMMA);
 
-        if (!ty.isStrUnion()) {
-          break;
-        }
+        // if (!ty.isStrUnion()) {
+        //   break;
+        // }
 
       }
 
-      if (isHasBrace) {
-        parser.checkedMove(T.T_RIGHT_BRACE);
-      }
+      excess("struct");
+      expectClose();
     }
 
     // 3)
     else {
+      System.out.println("III");
       CType arraytype = new CType(new CArrayType(ty, 1));
-      read_initializer_list(inits, arraytype, off);
+      read_initializer_list(inits, arraytype, off, deep - 1);
     }
   }
 
