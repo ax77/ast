@@ -300,9 +300,10 @@ public class ParseDeclarations {
         read_initializer_list(inits, sub, offsetOf, deep - 1);
         parser.moveOptional(T.T_COMMA);
 
-        // if (!ty.isStrUnion()) {
-        //   break;
-        // }
+        if (!ty.isStrUnion()) {
+          System.out.println("parse initializer: not a struct: " + ty.toString());
+          break;
+        }
 
       }
 

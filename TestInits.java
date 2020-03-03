@@ -13,10 +13,10 @@ import ast.parse.Parse;
 import ast.symtab.elements.CSymbol;
 import ast.unit.TranslationUnit;
 
-public class TestTrace {
+public class TestInits {
 
   @Test
-  public void testInits8cc() throws IOException {
+  public void testInits1() throws IOException {
     //@formatter:off
     StringBuilder sb = new StringBuilder();
     sb.append(" /*001*/  int main() {              \n");
@@ -75,6 +75,70 @@ public class TestTrace {
     //
     sb.append(" /*011*/      return 0;             \n");
     sb.append(" /*012*/  }                         \n");
+    //@formatter:on
+
+    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Parse p = new Parse(it);
+    TranslationUnit unit = p.parse_unit();
+
+    boolean print = false;
+    if (!print) {
+      return;
+    }
+
+    for (CSymbol sym : unit.getExternalDeclarations().get(0).getFunctionDefinition().getLocals()) {
+      if (sym.getInitializer() != null) {
+        System.out.printf("name=%s, type=%s\n", sym.getName().getName(), sym.getType());
+        for (Initializer init : sym.getInitializer()) {
+          System.out.println(init);
+        }
+        System.out.println();
+      }
+    }
+  }
+
+  @Test
+  public void testInits2() throws IOException {
+    //@formatter:off
+    StringBuilder sb = new StringBuilder();
+    sb.append(" /*001*/  int main() {                               \n");
+    sb.append(" /*002*/      struct s {                             \n");
+    sb.append(" /*003*/          int a;                             \n");
+    sb.append(" /*004*/          int b[3];                          \n");
+    sb.append(" /*005*/          int c[2][3];                       \n");
+    sb.append(" /*006*/          int d;                             \n");
+    sb.append(" /*007*/          struct num {                       \n");
+    sb.append(" /*008*/              int i32;                       \n");
+    sb.append(" /*009*/              long long i64;                 \n");
+    sb.append(" /*010*/              int padding[2];                \n");
+    sb.append(" /*011*/          } num;                             \n");
+    sb.append(" /*012*/          int e;                             \n");
+    sb.append(" /*013*/      } varname[2] = {                       \n");
+    sb.append(" /*014*/          {                                  \n");
+    sb.append(" /*015*/              1,                             \n");
+    sb.append(" /*016*/              { 2,3,4 },                     \n");
+    sb.append(" /*017*/              { {5,6,7}, {8,9,10} },         \n");
+    sb.append(" /*018*/              11,                            \n");
+    sb.append(" /*019*/              {                              \n");
+    sb.append(" /*020*/                  12, 13, { 14,15 }          \n");
+    sb.append(" /*021*/              },                             \n");
+    sb.append(" /*022*/              16,                            \n");
+    sb.append(" /*023*/          },                                 \n");
+    sb.append(" /*024*/          {                                  \n");
+    sb.append(" /*025*/              17,                            \n");
+    sb.append(" /*026*/              { 18,19,20 },                  \n");
+    sb.append(" /*027*/              { {21,22,23}, {24,25,26} },    \n");
+    sb.append(" /*028*/              27,                            \n");
+    sb.append(" /*029*/              {                              \n");
+    sb.append(" /*030*/                  28, 28, { 30,31 }          \n");
+    sb.append(" /*031*/              },                             \n");
+    sb.append(" /*032*/              32,                            \n");
+    sb.append(" /*033*/          },                                 \n");
+    sb.append(" /*034*/      };                                     \n");
+    sb.append(" /*035*/      struct s first = varname[0];           \n");
+    sb.append(" /*036*/      struct s second = varname[1];          \n");
+    sb.append(" /*037*/      return first.e==16 && second.e==32;    \n");
+    sb.append(" /*038*/  }                                          \n");
     //@formatter:on
 
     Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
