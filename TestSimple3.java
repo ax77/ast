@@ -1450,7 +1450,7 @@ public class TestSimple3 {
     tests.add(new UtilTestDto(false, "072", sb_072));
     tests.add(new UtilTestDto(false, "073", sb_073));
     tests.add(new UtilTestDto(false, "074", sb_074));
-    tests.add(new UtilTestDto(true, "075", sb_075)); // array designation
+    tests.add(new UtilTestDto(false, "075", sb_075)); 
     tests.add(new UtilTestDto(false, "076", sb_076));
     tests.add(new UtilTestDto(true, "077", sb_077)); // TODO: type-compatible
     tests.add(new UtilTestDto(true, "078", sb_078)); // TODO: type-compatible

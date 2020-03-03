@@ -199,6 +199,19 @@ public class ParseDeclarations {
     where.add(new Initializer(expr, withOffset));
   }
 
+  // TODO: 
+  // .a[0] = ...
+  // [1][2].a = ...
+  // etc.
+  private void checkNestedDesignationsUnimpl() {
+    if (parser.tok().ofType(T.T_DOT)) {
+      parser.unimplemented("nested struct designators .a.b.c.d.e = ...");
+    }
+    if (parser.tok().ofType(T.T_LEFT_BRACKET)) {
+      parser.unimplemented("nested array designators [1][2] = ...");
+    }
+  }
+
   private void read_initializer_list(List<Initializer> inits, CType ty, int off, int deep) {
 
     // check recursion deep, to prevent stack overflow.
@@ -238,6 +251,24 @@ public class ParseDeclarations {
         Token tok = parser.tok();
         if (tok.ofType(T.T_RIGHT_BRACE)) {
           break;
+        }
+
+        if (tok.ofType(T.T_LEFT_BRACKET)) {
+          parser.lbracket();
+
+          CExpression expr = new ParseExpression(parser).e_const_expr();
+          int indexDes = (int) new ConstexprEval(parser).ce(expr);
+
+          parser.rbracket();
+
+          checkNestedDesignationsUnimpl();
+          parser.checkedMove(T.T_ASSIGN);
+
+          if (indexDes >= arlen) {
+            parser.perror("array designation index out of range");
+          }
+
+          count = indexDes;
         }
 
         int offsetOf = off + elsize * count;
@@ -304,6 +335,8 @@ public class ParseDeclarations {
           parser.move();
 
           Ident fieldname = parser.getIdent();
+
+          checkNestedDesignationsUnimpl();
           parser.checkedMove(T.T_ASSIGN);
 
           fieldIdx = fieldsIndexMap.get(fieldname);
@@ -311,10 +344,6 @@ public class ParseDeclarations {
 
           if (field == null) {
             parser.perror("struct has no field: " + fieldname.getName());
-          }
-
-          if (parser.tok().ofType(T.T_DOT)) {
-            parser.unimplemented("nested struct designators .a.b.c.d.e");
           }
         }
 
