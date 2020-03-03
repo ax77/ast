@@ -1,26 +1,29 @@
 package ast.stmt.sem;
 
+import jscan.hashed.Hash_ident;
+import jscan.tokenize.Token;
 import ast.parse.Parse;
 import ast.stmt.main.CStatement;
 import ast.stmt.main.CStatementBase;
-import jscan.hashed.Hash_ident;
-import jscan.tokenize.Token;
+import ast.stmt.parser.ParseStatement;
 
-public class BreakContinueStrayCheck {
+public class BreakContinue {
   private final Parse parser;
+  private final ParseStatement parseStatement;
 
-  public BreakContinueStrayCheck(Parse parser) {
+  public BreakContinue(Parse parser, ParseStatement parseStatement) {
     this.parser = parser;
+    this.parseStatement = parseStatement;
   }
 
   private boolean canBreak() {
-    boolean hasSWitch = !parser.getSwitches().isEmpty();
-    boolean hasLoop = !parser.getLoops().isEmpty();
+    boolean hasSWitch = !parseStatement.getSwitches().isEmpty();
+    boolean hasLoop = !parseStatement.getLoops().isEmpty();
     return hasSWitch || hasLoop;
   }
 
   private boolean canContinue() {
-    return !parser.getLoops().isEmpty();
+    return !parseStatement.getLoops().isEmpty();
   }
 
   private void checkBreak() {

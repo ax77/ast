@@ -6,7 +6,6 @@ import static jscan.tokenize.T.T_SEMI_COLON;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 import jscan.Tokenlist;
 import jscan.symtab.Ident;
@@ -14,7 +13,6 @@ import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import ast.errors.ParseErrors;
 import ast.errors.ParseException;
-import ast.stmt.Sswitch;
 import ast.symtab.Symtab;
 import ast.symtab.elements.CSymbol;
 import ast.symtab.elements.CSymbolBase;
@@ -30,16 +28,18 @@ import ast.unit.parser.ParseToplevel;
 
 public class Parse {
 
+  // main thing's
   private final Tokenlist tokenlist;
   private Token tok;
+
+  // need for labels, also for binding local variable's
   private FunctionDefinition currentFn;
 
+  // symbol-tables
   private Symtab<Ident, CSymbol> symbols;
   private Symtab<Ident, CSymbol> tags;
 
-  private Stack<Sswitch> switches;
-  private Stack<String> loops;
-
+  // location, error-handling
   private String lastloc;
   private List<Token> ringBuffer;
   private Token prevtok;
@@ -54,14 +54,6 @@ public class Parse {
 
   public void setTags(Symtab<Ident, CSymbol> tags) {
     this.tags = tags;
-  }
-
-  public void setSwitches(Stack<Sswitch> switches) {
-    this.switches = switches;
-  }
-
-  public void setLoops(Stack<String> loops) {
-    this.loops = loops;
   }
 
   public Symtab<Ident, CSymbol> getTags() {
@@ -128,34 +120,6 @@ public class Parse {
     symbols.popscope();
   }
 
-  public void pushSwitch(Sswitch s) {
-    switches.push(s);
-  }
-
-  public Sswitch peekSwitch() {
-    return switches.peek();
-  }
-
-  public void popSwitch() {
-    switches.pop();
-  }
-
-  public void pushLoop(String s) {
-    loops.push(s);
-  }
-
-  public void popLoop() {
-    loops.pop();
-  }
-
-  public Stack<Sswitch> getSwitches() {
-    return switches;
-  }
-
-  public Stack<String> getLoops() {
-    return loops;
-  }
-
   //
   // TODO:SEMANTIC
 
@@ -184,9 +148,6 @@ public class Parse {
   private void initScopes() {
     this.symbols = new Symtab<Ident, CSymbol>();
     this.tags = new Symtab<Ident, CSymbol>();
-
-    this.switches = new Stack<Sswitch>();
-    this.loops = new Stack<String>();
   }
 
   public String getLastLoc() {

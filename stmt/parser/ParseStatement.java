@@ -21,7 +21,11 @@ import static jscan.tokenize.T.T_SEMI_COLON;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
+import jscan.symtab.Ident;
+import jscan.tokenize.T;
+import jscan.tokenize.Token;
 import ast.decls.Declaration;
 import ast.decls.parser.ParseDeclarations;
 import ast.expr.CExpression;
@@ -32,18 +36,19 @@ import ast.stmt.Sdefault;
 import ast.stmt.Sswitch;
 import ast.stmt.main.CStatement;
 import ast.stmt.main.CStatementBase;
-import ast.stmt.sem.BreakContinueStrayCheck;
+import ast.stmt.sem.BreakContinue;
 import ast.unit.BlockItem;
 import ast.unit.FunctionDefinition;
-import jscan.symtab.Ident;
-import jscan.tokenize.T;
-import jscan.tokenize.Token;
 
 public class ParseStatement {
   private final Parse parser;
+  private final Stack<Sswitch> switches;
+  private final Stack<String> loops;
 
   public ParseStatement(Parse parser) {
     this.parser = parser;
+    this.switches = new Stack<Sswitch>();
+    this.loops = new Stack<String>();
   }
 
   private CExpression e_expression() {
@@ -105,12 +110,12 @@ public class ParseStatement {
         parser.perror("default label without statement");
       }
 
-      if (parser.getSwitches().isEmpty()) {
+      if (getSwitches().isEmpty()) {
         parser.perror("default label outside switch");
       }
 
       CStatement stmt = parseStatement();
-      Sswitch parent = parser.peekSwitch();
+      Sswitch parent = peekSwitch();
 
       parent.setDefault_stmt(new Sdefault(parent, stmt));
       return new CStatement(from, new Sdefault(parent, stmt));
@@ -163,7 +168,7 @@ public class ParseStatement {
       CExpression step = null;
       CStatement loop = null;
 
-      parser.pushLoop("for");
+      pushLoop("for");
       parser.pushscope(); // TODO:
 
       Token from = parser.checkedMove(for_ident);
@@ -197,7 +202,7 @@ public class ParseStatement {
 
       loop = parseStatement();
 
-      parser.popLoop();
+      popLoop();
       parser.popscope(); // TODO:
       return new CStatement(from, decl, init, test, step, loop);
     }
@@ -207,17 +212,17 @@ public class ParseStatement {
       CExpression expr = new ParseExpression(parser).getExprInParen();
 
       Sswitch nodeSwitch = new Sswitch(expr);
-      parser.pushSwitch(nodeSwitch);
+      pushSwitch(nodeSwitch);
 
       CStatement stmt = parseStatement();
       nodeSwitch.setStmt(stmt);
 
-      parser.popSwitch();
+      popSwitch();
       return new CStatement(from, nodeSwitch);
     }
 
     if (parser.tok().isIdent(case_ident)) {
-      if (parser.getSwitches().isEmpty()) {
+      if (getSwitches().isEmpty()) {
         parser.perror("case outside switch");
       }
 
@@ -225,7 +230,7 @@ public class ParseStatement {
       CExpression expr = new ParseExpression(parser).e_const_expr();
       parser.checkedMove(T_COLON);
 
-      Sswitch parent = parser.peekSwitch();
+      Sswitch parent = peekSwitch();
       Scase caselab = new Scase(parent, expr);
       parent.pushcase(caselab);
 
@@ -252,18 +257,18 @@ public class ParseStatement {
     }
 
     if (parser.tok().isIdent(while_ident)) {
-      parser.pushLoop("while");
+      pushLoop("while");
       Token from = parser.checkedMove(while_ident);
 
       CExpression test = new ParseExpression(parser).getExprInParen();
       CStatement loop = parseStatement();
 
-      parser.popLoop();
+      popLoop();
       return new CStatement(from, CStatementBase.SWHILE, test, loop);
     }
 
     if (parser.tok().isIdent(do_ident)) {
-      parser.pushLoop("do_while");
+      pushLoop("do_while");
       Token from = parser.checkedMove(do_ident);
 
       CStatement loop = parseStatement();
@@ -272,16 +277,16 @@ public class ParseStatement {
       CExpression test = new ParseExpression(parser).getExprInParen();
       parser.semicolon();
 
-      parser.popLoop();
+      popLoop();
       return new CStatement(from, CStatementBase.SDOWHILE, test, loop);
     }
 
     if (parser.tok().isIdent(break_ident)) {
-      return new BreakContinueStrayCheck(parser).breakStatement();
+      return new BreakContinue(parser, this).breakStatement();
     }
 
     if (parser.tok().isIdent(continue_ident)) {
-      return new BreakContinueStrayCheck(parser).continueStatement();
+      return new BreakContinue(parser, this).continueStatement();
     }
 
     if (parser.tok().ofType(T.T_LEFT_BRACE)) {
@@ -375,6 +380,34 @@ public class ParseStatement {
     CStatement labelstmt = parseStatement();
 
     return new CStatement(from, CStatementBase.SLABEL, function, label, labelstmt);
+  }
+
+  public void pushSwitch(Sswitch s) {
+    switches.push(s);
+  }
+
+  public Sswitch peekSwitch() {
+    return switches.peek();
+  }
+
+  public void popSwitch() {
+    switches.pop();
+  }
+
+  public void pushLoop(String s) {
+    loops.push(s);
+  }
+
+  public void popLoop() {
+    loops.pop();
+  }
+
+  public Stack<Sswitch> getSwitches() {
+    return switches;
+  }
+
+  public Stack<String> getLoops() {
+    return loops;
   }
 
 }

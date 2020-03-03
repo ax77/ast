@@ -6,6 +6,9 @@ import static jscan.tokenize.T.T_SEMI_COLON;
 import java.util.ArrayList;
 import java.util.List;
 
+import jscan.symtab.Ident;
+import jscan.tokenize.T;
+import jscan.tokenize.Token;
 import ast.decls.Declaration;
 import ast.decls.Initializer;
 import ast.decls.parser.ParseDeclarations;
@@ -23,9 +26,6 @@ import ast.types.parser.ParseDecl;
 import ast.types.util.TypeMerger;
 import ast.unit.ExternalDeclaration;
 import ast.unit.FunctionDefinition;
-import jscan.symtab.Ident;
-import jscan.tokenize.T;
-import jscan.tokenize.Token;
 
 public class ParseToplevel {
 
@@ -217,6 +217,5 @@ public class ParseToplevel {
       parser.defineSym(fparam.getName(), paramsym);
     }
   }
-
 
 }
