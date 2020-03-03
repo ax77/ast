@@ -161,4 +161,89 @@ public class TestInits {
     }
   }
 
+  @Test
+  public void testInits3() throws IOException {
+    //@formatter:off
+    StringBuilder sb = new StringBuilder();
+    sb.append(" /*001*/  int main() {                                  \n");
+    sb.append(" /*002*/      struct pad { int buffer[2]; };            \n");
+    sb.append(" /*003*/      struct s {                                \n");
+    sb.append(" /*004*/          int a;                                \n");
+    sb.append(" /*005*/          int b[3];                             \n");
+    sb.append(" /*006*/          int c[2][3];                          \n");
+    sb.append(" /*007*/          int d;                                \n");
+    sb.append(" /*008*/          struct num {                          \n");
+    sb.append(" /*009*/              int i32;                          \n");
+    sb.append(" /*010*/              long long i64;                    \n");
+    sb.append(" /*011*/              int padding[2];                   \n");
+    sb.append(" /*012*/          } num;                                \n");
+    sb.append(" /*013*/          int e;                                \n");
+    sb.append(" /*014*/          struct pad buffers[2];                \n");
+    sb.append(" /*015*/          void * ptr;                           \n");
+    sb.append(" /*016*/          char sym;                             \n");
+    sb.append(" /*017*/          long long flag;                       \n");
+    sb.append(" /*018*/      } varname[1][2] =                         \n");
+    sb.append(" /*019*/      {                                         \n");
+    sb.append(" /*020*/          {                                     \n");
+    sb.append(" /*021*/              {                                 \n");
+    sb.append(" /*022*/                  1,                            \n");
+    sb.append(" /*023*/                  { 2,3,4 },                    \n");
+    sb.append(" /*024*/                  { {5,6,7}, {8,9,10} },        \n");
+    sb.append(" /*025*/                  11,                           \n");
+    sb.append(" /*026*/                  {                             \n");
+    sb.append(" /*027*/                      12, 13, { 14,15 }         \n");
+    sb.append(" /*028*/                  },                            \n");
+    sb.append(" /*029*/                  16,                           \n");
+    sb.append(" /*030*/                  {                             \n");
+    sb.append(" /*031*/                      {{ 255,256 }},            \n");
+    sb.append(" /*032*/                      {{ 257,258 }}             \n");
+    sb.append(" /*033*/                  },                            \n");
+    sb.append(" /*034*/                  ((void*)0),                   \n");
+    sb.append(" /*035*/                  91,                           \n");
+    sb.append(" /*036*/                  1024,                         \n");
+    sb.append(" /*037*/              },                                \n");
+    sb.append(" /*038*/              //                                \n");
+    sb.append(" /*039*/              {                                 \n");
+    sb.append(" /*040*/                  17,                           \n");
+    sb.append(" /*041*/                  { 18,19,20 },                 \n");
+    sb.append(" /*042*/                  { {21,22,23}, {24,25,26} },   \n");
+    sb.append(" /*043*/                  27,                           \n");
+    sb.append(" /*044*/                  {                             \n");
+    sb.append(" /*045*/                      28, 28, { 30,31 }         \n");
+    sb.append(" /*046*/                  },                            \n");
+    sb.append(" /*047*/                  32,                           \n");
+    sb.append(" /*048*/                  {                             \n");
+    sb.append(" /*049*/                      {{ 259,260 }},            \n");
+    sb.append(" /*050*/                      {{ 261,262 }}             \n");
+    sb.append(" /*051*/                  },                            \n");
+    sb.append(" /*052*/                  ((void*)0),                   \n");
+    sb.append(" /*053*/                  92,                           \n");
+    sb.append(" /*054*/                  2048,                         \n");
+    sb.append(" /*055*/              },                                \n");
+    sb.append(" /*056*/          },                                    \n");
+    sb.append(" /*057*/      };                                        \n");
+    sb.append(" /*058*/      return sizeof(struct s);                  \n");
+    sb.append(" /*059*/  }                                             \n");
+    //@formatter:on
+
+    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Parse p = new Parse(it);
+    TranslationUnit unit = p.parse_unit();
+
+    boolean print = false;
+    if (!print) {
+      return;
+    }
+
+    for (CSymbol sym : unit.getExternalDeclarations().get(0).getFunctionDefinition().getLocals()) {
+      if (sym.getInitializer() != null) {
+        System.out.printf("name=%s, type=%s\n", sym.getName().getName(), sym.getType());
+        for (Initializer init : sym.getInitializer()) {
+          System.out.println(init);
+        }
+        System.out.println();
+      }
+    }
+  }
+
 }

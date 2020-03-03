@@ -2,9 +2,12 @@ package ast.decls.parser;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import jscan.hashed.Hash_ident;
+import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import ast.decls.Declaration;
@@ -270,6 +273,18 @@ public class ParseDeclarations {
       expectOpen();
       int fieldIdx = 0;
 
+      List<CStructField> fields = ty.getTpStruct().getFields();
+
+      // when designator change the index
+
+      Map<Ident, Integer> fieldsIndexMap = new HashMap<Ident, Integer>();
+      Map<Ident, CStructField> fieldsMap = new HashMap<Ident, CStructField>();
+      for (int i = 0; i < fields.size(); i++) {
+        CStructField f = fields.get(i);
+        fieldsIndexMap.put(f.getName(), i);
+        fieldsMap.put(f.getName(), f);
+      }
+
       for (;;) {
 
         checkOverflow(DEFAULT_UNKNOWN_ARLEN, fieldIdx);
@@ -279,12 +294,38 @@ public class ParseDeclarations {
           break;
         }
 
-        List<CStructField> fields = ty.getTpStruct().getFields();
         if (fieldIdx == fields.size()) {
           break;
         }
 
-        CStructField field = fields.get(fieldIdx++);
+        // .a = 3
+        CStructField field = null;
+        if (tok.ofType(T.T_DOT)) {
+          parser.move();
+
+          Ident fieldname = parser.getIdent();
+          parser.checkedMove(T.T_ASSIGN);
+
+          fieldIdx = fieldsIndexMap.get(fieldname);
+          field = fieldsMap.get(fieldname);
+
+          if (field == null) {
+            parser.perror("struct has no field: " + fieldname.getName());
+          }
+
+          if (parser.tok().ofType(T.T_DOT)) {
+            parser.unimplemented("nested struct designators .a.b.c.d.e");
+          }
+        }
+
+        else {
+          field = fields.get(fieldIdx++);
+        }
+
+        if (field == null) {
+          parser.perror("struct field initialization internal error");
+        }
+
         int offsetOf = off + field.getOffset();
 
         CType sub = field.getType();

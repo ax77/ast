@@ -17,7 +17,6 @@ import jscan.Tokenlist;
 
 public class TestSimple3 {
 
-  @Ignore
   @Test
   public void testJustParse() throws IOException {
     //@formatter:off
@@ -1427,7 +1426,7 @@ public class TestSimple3 {
     tests.add(new UtilTestDto(false, "047", sb_047));
     tests.add(new UtilTestDto(false, "048", sb_048));
     tests.add(new UtilTestDto(false, "049", sb_049));
-    tests.add(new UtilTestDto(false, "050", sb_050));
+    tests.add(new UtilTestDto(true, "050", sb_050)); // union initialization
     tests.add(new UtilTestDto(false, "051", sb_051));
     tests.add(new UtilTestDto(false, "052", sb_052));
     tests.add(new UtilTestDto(false, "053", sb_053));
@@ -1451,7 +1450,7 @@ public class TestSimple3 {
     tests.add(new UtilTestDto(false, "072", sb_072));
     tests.add(new UtilTestDto(false, "073", sb_073));
     tests.add(new UtilTestDto(false, "074", sb_074));
-    tests.add(new UtilTestDto(false, "075", sb_075));
+    tests.add(new UtilTestDto(true, "075", sb_075)); // array designation
     tests.add(new UtilTestDto(false, "076", sb_076));
     tests.add(new UtilTestDto(true, "077", sb_077)); // TODO: type-compatible
     tests.add(new UtilTestDto(true, "078", sb_078)); // TODO: type-compatible
