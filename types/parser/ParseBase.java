@@ -19,11 +19,11 @@ import jscan.hashed.Hash_ident;
 import jscan.tokenize.Token;
 
 public class ParseBase {
-  private final Parse p;
+  private final Parse parser;
   private StorageKind storageSpec;
 
   public ParseBase(Parse p) {
-    this.p = p;
+    this.parser = p;
     this.storageSpec = StorageKind.ST_NONE;
   }
 
@@ -58,19 +58,19 @@ public class ParseBase {
     if (!compoundKeywords.isEmpty()) {
       Token first = compoundKeywords.remove(0);
       if (first.isIdent(Hash_ident.enum_ident)) {
-        CType ty = new ParseEnum(p).parseEnum(storageSpec);
+        CType ty = new ParseEnum(parser).parseEnum(storageSpec);
         return ty;
       }
 
       else {
         boolean isUnion = (first.isIdent(Hash_ident.union_ident));
-        CType ty = new ParseStruct(p).parseStruct(isUnion, storageSpec);
+        CType ty = new ParseStruct(parser).parseStruct(isUnion, storageSpec);
         //        ty.setStorage(storagespec);
         return ty;
       }
     }
 
-    if (p.isTypeSpec()) {
+    if (parser.isTypeSpec()) {
       // int typedef i32;
       // int x;
       // int const static x;
@@ -96,17 +96,17 @@ public class ParseBase {
     // i32 int ... :: error
     //
 
-    if (p.tok().ofType(TOKEN_IDENT) && !p.tok().isBuiltinIdent()) {
-      CSymbol symbol = p.getSym(p.tok().getIdent());
+    if (parser.tok().ofType(TOKEN_IDENT) && !parser.tok().isBuiltinIdent()) {
+      CSymbol symbol = parser.getSym(parser.tok().getIdent());
       if (symbol != null) {
         CType typeFromStab = symbol.getType();
         if (symbol.getBase() == CSymbolBase.SYM_TYPEDEF) {
-          p.move();
+          parser.move();
 
           List<Token> ts = new ArrayList<Token>();
           cut2(storage, ts, qualifiers);
           if (!ts.isEmpty()) {
-            p.perror("error_1");
+            parser.perror("error_1");
           }
 
           storageSpec = TypeCombiner.combine_storage(storage);
@@ -116,7 +116,7 @@ public class ParseBase {
     }
 
     // 'int' by default
-    p.pwarning("default type-int... if type not specified.");
+    parser.pwarning("default type-int... if type not specified.");
     return CTypeImpl.TYPE_INT;
 
     //    p.perror("error_2");
@@ -125,27 +125,27 @@ public class ParseBase {
 
   private void cut2(List<Token> st, List<Token> ts, Set<Token> tq) {
     for (;;) {
-      if (p.isStorageClassSpec()) {
-        Token saved = p.tok();
-        p.move();
+      if (parser.isStorageClassSpec()) {
+        Token saved = parser.tok();
+        parser.move();
         st.add(saved);
       }
 
-      else if (p.isTypeSpec()) {
-        Token saved = p.tok();
-        p.move();
+      else if (parser.isTypeSpec()) {
+        Token saved = parser.tok();
+        parser.move();
         ts.add(saved);
       }
 
-      else if (p.isTypeQual()) {
-        Token saved = p.tok();
-        p.move();
+      else if (parser.isTypeQual()) {
+        Token saved = parser.tok();
+        parser.move();
         tq.add(saved);
       }
 
-      else if (p.isFuncSpec()) {
-        Token saved = p.tok();
-        p.move();
+      else if (parser.isFuncSpec()) {
+        Token saved = parser.tok();
+        parser.move();
         //              fs.add(saved);
       }
 
@@ -156,29 +156,29 @@ public class ParseBase {
   }
 
   private void cut(List<Token> storage, List<Token> compoundKeywords, Set<Token> qualifiers) {
-    while (!p.isEof()) {
+    while (!parser.isEof()) {
 
-      if (p.isStorageClassSpec()) {
-        Token saved = p.tok();
-        p.move();
+      if (parser.isStorageClassSpec()) {
+        Token saved = parser.tok();
+        parser.move();
         storage.add(saved);
       }
 
-      else if (p.isTypeQual()) {
-        Token saved = p.tok();
-        p.move();
+      else if (parser.isTypeQual()) {
+        Token saved = parser.tok();
+        parser.move();
         qualifiers.add(saved);
       }
 
-      else if (p.isFuncSpec()) {
-        Token saved = p.tok();
-        p.move();
+      else if (parser.isFuncSpec()) {
+        Token saved = parser.tok();
+        parser.move();
         //        fs.add(saved);
       }
 
-      else if (p.isStructOrUnionSpecStart() || p.isEnumSpecStart()) {
-        Token saved = p.tok();
-        p.move();
+      else if (parser.isStructOrUnionSpecStart() || parser.isEnumSpecStart()) {
+        Token saved = parser.tok();
+        parser.move();
         compoundKeywords.add(saved);
         break; // XXX: nothing else.
       }
