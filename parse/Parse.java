@@ -48,14 +48,6 @@ public class Parse {
     return symbols;
   }
 
-  public void setSymbols(Symtab<Ident, CSymbol> symbols) {
-    this.symbols = symbols;
-  }
-
-  public void setTags(Symtab<Ident, CSymbol> tags) {
-    this.tags = tags;
-  }
-
   public Symtab<Ident, CSymbol> getTags() {
     return tags;
   }
@@ -104,15 +96,11 @@ public class Parse {
     return tags.getsym(name);
   }
 
-  public boolean isFileScope() {
-    return symbols.isFileScope();
-  }
-
   //TODO:SEMANTIC
   //
   public void pushscope() {
-    tags.pushscope(".");
-    symbols.pushscope(".");
+    tags.pushscope();
+    symbols.pushscope();
   }
 
   public void popscope() {
@@ -397,7 +385,7 @@ public class Parse {
     return Pcheckers.isAsmStart(tok);
   }
 
-  public boolean isTypedefName(Token tok) {
+  private boolean isTypedefName(Token tok) {
     if (!tok.ofType(TOKEN_IDENT)) {
       return false;
     }
@@ -412,9 +400,8 @@ public class Parse {
     return tok.ofType(T.TOKEN_EOF);
   }
 
-  public CType parse_typename() {
+  public CType parseTypename() {
 
-    // TODO: simplify...
     CType base = new ParseBase(this).parseBase();
     CDecl decl = new ParseDecl(this).parseDecl();
     CType type = TypeMerger.build(base, decl);

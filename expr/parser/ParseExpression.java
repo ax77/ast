@@ -346,7 +346,7 @@ public class ParseExpression {
       if (parser.isDeclSpecStart(peek)) {
 
         Token lparen = parser.lparen();
-        CType typeName = parser.parse_typename();
+        CType typeName = parser.parseTypename();
         parser.rparen();
 
         // ambiguous
@@ -399,7 +399,7 @@ public class ParseExpression {
 
       if (parser.isDeclSpecStart()) {
 
-        CType typename = parser.parse_typename();
+        CType typename = parser.parseTypename();
         parser.rparen();
 
         return build_usize(typename.getSize(), id);
@@ -444,7 +444,7 @@ public class ParseExpression {
       ParseState state = new ParseState(parser);
 
       parser.lparen();
-      CType typename = parser.parse_typename();
+      CType typename = parser.parseTypename();
       parser.rparen();
 
       // if next is `{` return compound, restore state otherwise

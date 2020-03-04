@@ -6,11 +6,9 @@ import java.util.Map.Entry;
 /// Represent one scope
 /// file or block
 public class Scope<K, V> {
-  private final String scopeName;
   private final HashMap<K, V> scope;
 
-  public Scope(String scopeName) {
-    this.scopeName = scopeName;
+  public Scope() {
     this.scope = new HashMap<K, V>();
   }
 
@@ -22,10 +20,6 @@ public class Scope<K, V> {
     return scope.get(key);
   }
 
-  public String getScopeName() {
-    return scopeName;
-  }
-
   public HashMap<K, V> getScope() {
     return scope;
   }
@@ -35,7 +29,6 @@ public class Scope<K, V> {
   }
 
   public void dump() {
-    System.out.println("scope-name: " + scopeName);
     for (Entry<K, V> e : scope.entrySet()) {
       System.out.println(e.getKey().toString() + " " + e.getValue().toString());
       System.out.println();

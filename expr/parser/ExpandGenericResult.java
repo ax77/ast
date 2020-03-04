@@ -141,7 +141,7 @@ public class ExpandGenericResult {
       gs.setDefaultAssociation(e_assign());
       return;
     }
-    final CType typename = parser.parse_typename();
+    final CType typename = parser.parseTypename();
     parser.checkedMove(T_COLON);
     gs.push(new GenericAssociation(typename, e_assign()));
   }

@@ -157,22 +157,36 @@ public class CType implements CTypeApi {
 
   @Override
   public String toString() {
+
     if (isPrimitive()) {
       return TypePrinter.primitiveToString(kind);
     }
+
     if (isBitfield()) {
       return tpBitfield.toString();
-    } else if (kind == TypeKind.TP_POINTER_TO) {
+    }
+
+    else if (isPointer()) {
       return tpPointer.toString();
-    } else if (kind == TypeKind.TP_ARRAY_OF) {
+    }
+
+    else if (isArray()) {
       return tpArray.toString();
-    } else if (kind == TypeKind.TP_FUNCTION) {
+    }
+
+    else if (isFunction()) {
       return tpFunction.toString();
-    } else if (isStruct()) {
+    }
+
+    else if (isStrUnion()) {
       return tpStruct.toString();
-    } else if (isEnumeration()) {
+    }
+
+    else if (isEnumeration()) {
       return tpEnum.toString();
-    } else {
+    }
+
+    else {
       throw new ParseException("Unknown type: " + kind.toString());
     }
   }
@@ -311,43 +325,80 @@ public class CType implements CTypeApi {
 
   @Override
   public boolean isEqualTo(CType another) {
+
     if (kind != another.getKind()) {
       return false;
     }
+
     if (isPointer()) {
       return cmpPointers(another.getTpPointer());
     }
+
     if (isFunction()) {
-      return cmpFunctions(another);
+      return cmpFunctions(another.getTpFunction());
     }
+
+    if (isArray()) {
+      return cmpArrays(another.getTpArray());
+    }
+
     return true;
   }
 
   private boolean cmpPointers(CPointerType another) {
-    final CType rhs = another.getPointerTo();
-    if (!tpPointer.getPointerTo().isEqualTo(rhs)) {
-      return false;
-    }
-    return true;
-  }
 
-  private boolean cmpFunctions(CType another) {
-    final CFunctionType anotherFn = another.getTpFunction();
-    final CType lhsRtype = tpFunction.getReturnType();
-    final CType rhsRtype = anotherFn.getReturnType();
-    if (!lhsRtype.isEqualTo(rhsRtype)) {
+    if (!tpPointer.getPointerTo().isEqualTo(another.getPointerTo())) {
       return false;
     }
-    if (tpFunction.isVariadic()) {
-      if (!anotherFn.isVariadic()) {
+
+    if (tpPointer.isConst()) {
+      if (!another.isConst()) {
         return false;
       }
     }
+
+    return true;
+  }
+
+  private boolean cmpArrays(CArrayType another) {
+
+    if (!tpArray.getArrayOf().isEqualTo(another.getArrayOf())) {
+      return false;
+    }
+
+    if (tpArray.isIncomplete()) {
+      if (!another.isIncomplete()) {
+        return false;
+      }
+    }
+
+    if (tpArray.getArrayLen() != another.getArrayLen()) {
+      return false;
+    }
+
+    return true;
+  }
+
+  private boolean cmpFunctions(CFunctionType another) {
+
+    final CType lhsRtype = tpFunction.getReturnType();
+    final CType rhsRtype = another.getReturnType();
+    if (!lhsRtype.isEqualTo(rhsRtype)) {
+      return false;
+    }
+
+    if (tpFunction.isVariadic()) {
+      if (!another.isVariadic()) {
+        return false;
+      }
+    }
+
     final List<CFuncParam> lhsParams = tpFunction.getParameters();
-    final List<CFuncParam> rhsParams = anotherFn.getParameters();
+    final List<CFuncParam> rhsParams = another.getParameters();
     if (lhsParams.size() != rhsParams.size()) {
       return false;
     }
+
     for (int i = 0; i < lhsParams.size(); ++i) {
       CFuncParam lhsParam = lhsParams.get(i);
       CFuncParam rhsParam = rhsParams.get(i);
@@ -355,6 +406,7 @@ public class CType implements CTypeApi {
         return false;
       }
     }
+
     return true;
   }
 

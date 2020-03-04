@@ -9,7 +9,7 @@ import ast.symtab.elements.CSymbol;
 public class FunctionDefinition {
 
   private final CSymbol symbol;
-  private CStatement block; //TODO:final
+  private CStatement block;
   private List<CSymbol> locals;
   private int localsize;
 

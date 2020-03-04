@@ -12,32 +12,13 @@ public class Symtab<K, V> {
   // when add new symbol, get top table, and put symbol on it
 
   private List<Scope<K, V>> scopes;
-  private List<Integer> scopeNumerator;
 
   public Symtab() {
     this.scopes = new ArrayList<Scope<K, V>>();
-
-    this.scopeNumerator = new ArrayList<Integer>(0);
-
-    this.scopeNumerator.add(scopeNumerator.size());
   }
 
-  private String getNum() {
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < scopeNumerator.size(); i++) {
-      sb.append(String.format("%d", i));
-      if (i < scopeNumerator.size() - 1) {
-        sb.append(".");
-      }
-    }
-    return sb.toString();
-  }
-
-  public void pushscope(String currentFunctionName) {
-    String scopeName = currentFunctionName + "." + getNum();
-    this.scopes.add(0, new Scope<K, V>(scopeName));
-
-    this.scopeNumerator.add(scopeNumerator.size());
+  public void pushscope() {
+    this.scopes.add(0, new Scope<K, V>());
   }
 
   public void popscope() {
@@ -45,8 +26,6 @@ public class Symtab<K, V> {
       throw new ParseException("empty symbol table. no scopes are available");
     }
     this.scopes.remove(0);
-
-    this.scopeNumerator.remove(scopeNumerator.size() - 1);
   }
 
   public boolean isFileScope() {

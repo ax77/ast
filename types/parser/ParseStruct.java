@@ -143,11 +143,8 @@ public class ParseStruct {
         //
         CStructType incomplete = new CStructType(isUnion, tag.getIdent());
         final CType structIncompleteType = new CType(incomplete, -1, -1);
+
         final CSymbol structSymbol = new CSymbol(CSymbolBase.SYM_STRUCT, tag.getIdent(), structIncompleteType, tag);
-
-        if (parser.getTags().isEmpty()) {
-        }
-
         parser.defineTag(tag.getIdent(), structSymbol);
 
         if (parser.tp() == T.T_LEFT_BRACE) {
