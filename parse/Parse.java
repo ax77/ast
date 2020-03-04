@@ -24,7 +24,7 @@ import ast.types.util.TypeMerger;
 import ast.unit.ExternalDeclaration;
 import ast.unit.FunctionDefinition;
 import ast.unit.TranslationUnit;
-import ast.unit.parser.ParseToplevel;
+import ast.unit.parser.ParseExternal;
 
 public class Parse {
 
@@ -451,7 +451,7 @@ public class Parse {
       // before each function or global declaration
       moveStraySemicolon();
 
-      ExternalDeclaration ed = new ParseToplevel(this).parseExternalDeclaration();
+      ExternalDeclaration ed = new ParseExternal(this).parse();
       tu.push(ed);
     }
 

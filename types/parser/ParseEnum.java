@@ -5,6 +5,9 @@ import static jscan.tokenize.T.TOKEN_IDENT;
 import java.util.HashMap;
 import java.util.Map;
 
+import jscan.symtab.Ident;
+import jscan.tokenize.T;
+import jscan.tokenize.Token;
 import ast.expr.CExpression;
 import ast.expr.parser.ParseExpression;
 import ast.expr.sem.ConstexprEval;
@@ -14,10 +17,6 @@ import ast.symtab.elements.CSymbolBase;
 import ast.types.CEnumType;
 import ast.types.CType;
 import ast.types.CTypeImpl;
-import ast.types.main.StorageKind;
-import jscan.symtab.Ident;
-import jscan.tokenize.T;
-import jscan.tokenize.Token;
 
 class EnumDto {
   private final Parse parser;
@@ -60,7 +59,7 @@ public class ParseEnum {
     this.parser = parser;
   }
 
-  public CType parseEnum(StorageKind storagespec) {
+  public CType parse() {
 
     //enum ...
     //     ^

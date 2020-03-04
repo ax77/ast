@@ -31,8 +31,6 @@ public class ParseBase {
     return findTypeAgain();
   }
 
-  //////////////////////////////////////////////////////////////////////
-
   public CType findTypeAgain() {
 
     List<Token> storage = new ArrayList<Token>();
@@ -58,15 +56,12 @@ public class ParseBase {
     if (!compoundKeywords.isEmpty()) {
       Token first = compoundKeywords.remove(0);
       if (first.isIdent(Hash_ident.enum_ident)) {
-        CType ty = new ParseEnum(parser).parseEnum(storageSpec);
-        return ty;
+        return new ParseEnum(parser).parse();
       }
 
       else {
         boolean isUnion = (first.isIdent(Hash_ident.union_ident));
-        CType ty = new ParseStruct(parser).parseStruct(isUnion, storageSpec);
-        //        ty.setStorage(storagespec);
-        return ty;
+        return new ParseStruct(parser).parse(isUnion);
       }
     }
 
@@ -118,9 +113,6 @@ public class ParseBase {
     // 'int' by default
     parser.pwarning("default type-int... if type not specified.");
     return CTypeImpl.TYPE_INT;
-
-    //    p.perror("error_2");
-    //    return null;
   }
 
   private void cut2(List<Token> st, List<Token> ts, Set<Token> tq) {
@@ -144,9 +136,7 @@ public class ParseBase {
       }
 
       else if (parser.isFuncSpec()) {
-        Token saved = parser.tok();
-        parser.move();
-        //              fs.add(saved);
+        parser.move(); // TODO: inline, noreturn
       }
 
       else {
@@ -171,9 +161,7 @@ public class ParseBase {
       }
 
       else if (parser.isFuncSpec()) {
-        Token saved = parser.tok();
-        parser.move();
-        //        fs.add(saved);
+        parser.move(); // TODO: inline, noreturn
       }
 
       else if (parser.isStructOrUnionSpecStart() || parser.isEnumSpecStart()) {

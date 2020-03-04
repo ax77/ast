@@ -177,7 +177,7 @@ public class ParseStatement {
       if (parser.tp() != T_SEMI_COLON) {
 
         if (parser.isDeclSpecStart()) {
-          decl = new ParseDeclarations(parser).parseDeclaration(); // XXX: semicolon moved in parse_declaration()
+          decl = new ParseDeclarations(parser).parse(); // XXX: semicolon moved in parse_declaration()
         }
 
         else {
@@ -344,7 +344,7 @@ public class ParseStatement {
     }
 
     if (parser.isDeclSpecStart()) {
-      Declaration dec = new ParseDeclarations(parser).parseDeclaration();
+      Declaration dec = new ParseDeclarations(parser).parse();
 
       BlockItem block = new BlockItem();
       block.setDeclaration(dec);

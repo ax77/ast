@@ -7,6 +7,8 @@ import static jscan.tokenize.T.T_SEMI_COLON;
 import java.util.ArrayList;
 import java.util.List;
 
+import jscan.tokenize.T;
+import jscan.tokenize.Token;
 import ast.decls.parser.ParseDeclarations;
 import ast.errors.ParseErrors;
 import ast.expr.CExpression;
@@ -19,13 +21,10 @@ import ast.types.CStructField;
 import ast.types.CStructType;
 import ast.types.CType;
 import ast.types.decl.CDecl;
-import ast.types.main.StorageKind;
 import ast.types.sem.SemanticBitfield;
 import ast.types.sem.SemanticStruct;
 import ast.types.sem.StructAligner;
 import ast.types.util.TypeMerger;
-import jscan.tokenize.T;
-import jscan.tokenize.Token;
 
 public class ParseStruct {
   private final Parse parser;
@@ -36,7 +35,7 @@ public class ParseStruct {
 
   // TODO: incomplete fields
 
-  public CType parseStruct(boolean isUnion, StorageKind storagespec) {
+  public CType parse(boolean isUnion) {
     //struct ...
     //       ^
 

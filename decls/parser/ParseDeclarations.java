@@ -49,7 +49,7 @@ public class ParseDeclarations {
     this.storagespec = storagespec;
   }
 
-  public Declaration parseDeclaration() {
+  public Declaration parse() {
 
     Token startLocation = parser.tok();
 

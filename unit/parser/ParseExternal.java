@@ -27,15 +27,15 @@ import ast.types.util.TypeMerger;
 import ast.unit.ExternalDeclaration;
 import ast.unit.FunctionDefinition;
 
-public class ParseToplevel {
+public class ParseExternal {
 
   private final Parse parser;
 
-  public ParseToplevel(Parse parser) {
+  public ParseExternal(Parse parser) {
     this.parser = parser;
   }
 
-  public ExternalDeclaration parseExternalDeclaration() {
+  public ExternalDeclaration parse() {
 
     ParseBase pb = new ParseBase(parser);
     CType declspecs = pb.findTypeAgain();
