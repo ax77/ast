@@ -3,8 +3,8 @@ package ast.types;
 import java.util.HashMap;
 import java.util.Map;
 
-import ast.types.main.TypeKind;
 import jscan.cstrtox.NumType;
+import ast.types.main.TypeKind;
 
 public class CTypeImpl {
   public static final CType TYPE_VOID = new CType(TypeKind.TP_VOID);

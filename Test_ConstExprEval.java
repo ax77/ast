@@ -1,6 +1,6 @@
 package ast;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -18,7 +18,7 @@ import ast.expr.parser.ParseExpression;
 import ast.expr.sem.ConstexprEval;
 import ast.parse.Parse;
 
-public class _TestConstExprEval {
+public class Test_ConstExprEval {
 
   @Test
   public void ceEval() throws IOException {

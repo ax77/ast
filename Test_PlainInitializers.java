@@ -13,7 +13,7 @@ import ast.parse.Parse;
 import ast.symtab.elements.CSymbol;
 import ast.unit.TranslationUnit;
 
-public class TestInits {
+public class Test_PlainInitializers {
 
   @Test
   public void testInits1() throws IOException {

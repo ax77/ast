@@ -2,6 +2,9 @@ package ast.stmt.main;
 
 import java.util.List;
 
+import jscan.sourceloc.SourceLocation;
+import jscan.symtab.Ident;
+import jscan.tokenize.Token;
 import ast.decls.Declaration;
 import ast.expr.CExpression;
 import ast.parse.ILocation;
@@ -10,9 +13,6 @@ import ast.stmt.Sdefault;
 import ast.stmt.Sswitch;
 import ast.unit.BlockItem;
 import ast.unit.FunctionDefinition;
-import jscan.sourceloc.SourceLocation;
-import jscan.symtab.Ident;
-import jscan.tokenize.Token;
 
 public class CStatement implements ILocation {
 
@@ -50,8 +50,7 @@ public class CStatement implements ILocation {
   private Ident label;
   private CStatement labelstmt;
 
-  public CStatement(Token from, Declaration decl, CExpression init, CExpression test, CExpression step,
-      CStatement loop) {
+  public CStatement(Token from, Declaration decl, CExpression init, CExpression test, CExpression step, CStatement loop) {
     this.location = new SourceLocation(from);
     this.base = CStatementBase.SFOR;
 

@@ -2,8 +2,8 @@ package ast.types;
 
 import java.util.List;
 
-import ast.errors.ParseException;
 import jscan.symtab.Ident;
+import ast.errors.ParseException;
 
 public class CStructType {
   private boolean isUnion;

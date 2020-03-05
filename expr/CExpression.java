@@ -14,7 +14,6 @@ import static ast.expr.CExpressionBase.EUNARY;
 
 import java.util.List;
 
-import jscan.cconst.CStr;
 import jscan.cstrtox.C_strtox;
 import jscan.sourceloc.SourceLocation;
 import jscan.tokenize.Token;

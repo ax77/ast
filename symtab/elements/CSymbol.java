@@ -2,14 +2,14 @@ package ast.symtab.elements;
 
 import java.util.List;
 
-import ast.decls.Initializer;
-import ast.parse.ILocation;
-import ast.types.CType;
-import ast.types.CTypeApi;
 import jscan.cstrtox.NumType;
 import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
 import jscan.tokenize.Token;
+import ast.decls.Initializer;
+import ast.parse.ILocation;
+import ast.types.CType;
+import ast.types.CTypeApi;
 
 public class CSymbol implements CTypeApi, ILocation {
   private final SourceLocation location;

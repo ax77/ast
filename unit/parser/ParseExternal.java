@@ -38,7 +38,7 @@ public class ParseExternal {
   public ExternalDeclaration parse() {
 
     ParseBase pb = new ParseBase(parser);
-    CType declspecs = pb.findTypeAgain();
+    CType declspecs = pb.parseBase();
     StorageKind storageSpec = pb.getStorageSpec();
 
     if (parser.tp() == T_SEMI_COLON) {

@@ -9,8 +9,8 @@ import jscan.hashed.Hash_ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import ast.expr.CExpression;
-import ast.expr.sem.TypeApplierStage;
 import ast.expr.sem.TypeApplier;
+import ast.expr.sem.TypeApplierStage;
 import ast.parse.Parse;
 import ast.types.CType;
 

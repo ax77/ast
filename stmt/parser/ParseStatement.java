@@ -74,7 +74,7 @@ public class ParseStatement {
       return new CStatement(lbrace, rbrace, blocks);
     }
 
-    BlockItem block = parse_one_block();
+    BlockItem block = parseOneBlock();
     for (;;) {
       blocks.add(block);
       if (parser.tp() == T.T_RIGHT_BRACE) {
@@ -83,7 +83,7 @@ public class ParseStatement {
       if (block == null) {
         break;
       }
-      block = parse_one_block();
+      block = parseOneBlock();
     }
 
     Token rbrace = parser.checkedMove(T.T_RIGHT_BRACE);
@@ -124,12 +124,12 @@ public class ParseStatement {
     if (parser.tp() == TOKEN_IDENT) {
       Token peek = parser.getTokenlist().peek();
       if (peek.ofType(T_COLON)) {
-        return parse_label();
+        return parseLabel();
       }
     }
 
     if (parser.isAsmStart()) {
-      return parse_asm();
+      return parseAsm();
     }
 
     if (parser.tok().isIdent(goto_ident)) {
@@ -300,7 +300,7 @@ public class ParseStatement {
     return ret;
   }
 
-  private CStatement parse_asm() {
+  private CStatement parseAsm() {
 
     List<Token> asmlist = new ArrayList<Token>();
     int nest = 0;
@@ -329,7 +329,7 @@ public class ParseStatement {
     return new CStatement(startLoc, asmlist);
   }
 
-  private BlockItem parse_one_block() {
+  private BlockItem parseOneBlock() {
 
     // TODO: doe's it correct, or maybe clean way exists?
     // different scope between names of labels and all other names.
@@ -338,7 +338,7 @@ public class ParseStatement {
       Token peek = parser.getTokenlist().peek();
       if (peek.ofType(T_COLON)) {
         BlockItem block = new BlockItem();
-        block.setStatement(parse_label());
+        block.setStatement(parseLabel());
         return block;
       }
     }
@@ -365,7 +365,7 @@ public class ParseStatement {
     return parser.tok().ofType(TOKEN_IDENT) && !parser.tok().isBuiltinIdent();
   }
 
-  private CStatement parse_label() {
+  private CStatement parseLabel() {
 
     FunctionDefinition function = parser.getCurrentFn();
 
@@ -382,23 +382,23 @@ public class ParseStatement {
     return new CStatement(from, CStatementBase.SLABEL, function, label, labelstmt);
   }
 
-  public void pushSwitch(Sswitch s) {
+  private void pushSwitch(Sswitch s) {
     switches.push(s);
   }
 
-  public Sswitch peekSwitch() {
+  private Sswitch peekSwitch() {
     return switches.peek();
   }
 
-  public void popSwitch() {
+  private void popSwitch() {
     switches.pop();
   }
 
-  public void pushLoop(String s) {
+  private void pushLoop(String s) {
     loops.push(s);
   }
 
-  public void popLoop() {
+  private void popLoop() {
     loops.pop();
   }
 

@@ -6,7 +6,6 @@ import static jscan.tokenize.T.T_MINUS;
 import static jscan.tokenize.T.T_PLUS;
 import static jscan.tokenize.T.T_TILDE;
 import static jscan.tokenize.T.T_TIMES;
-
 import jscan.hashed.Hash_ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;

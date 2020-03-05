@@ -6,12 +6,13 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.List;
 
+import jscan.Tokenlist;
+
 import org.junit.Test;
 
 import ast._entry.PreprocessSourceForParser;
 import ast._entry.PreprocessSourceForParserVariant;
 import ast.expr.sem.TypeApplier;
-import ast.expr.util.ExprUtil;
 import ast.parse.Parse;
 import ast.types.CArrayType;
 import ast.types.CEnumType;
@@ -24,9 +25,8 @@ import ast.types.decl.CDecl;
 import ast.types.parser.ParseBase;
 import ast.types.parser.ParseDecl;
 import ast.types.util.TypeMerger;
-import jscan.Tokenlist;
 
-public class _TestTypeCompat {
+public class TestTypeCompat {
 
   //  Both types are the same.
   //  

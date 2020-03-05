@@ -8,6 +8,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import jscan.hashed.Hash_ident;
+import jscan.symtab.Ident;
+import jscan.tokenize.T;
+import jscan.tokenize.Token;
 import ast.expr.CExpression;
 import ast.expr.parser.ParseExpression;
 import ast.expr.sem.ConstexprEval;
@@ -19,10 +23,6 @@ import ast.types.decl.CDecl;
 import ast.types.decl.CDeclEntry;
 import ast.types.main.TypeKind;
 import ast.types.util.TypeMerger;
-import jscan.hashed.Hash_ident;
-import jscan.symtab.Ident;
-import jscan.tokenize.T;
-import jscan.tokenize.Token;
 
 public class ParseDecl {
   private final Parse parser;

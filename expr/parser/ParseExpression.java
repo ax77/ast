@@ -36,7 +36,6 @@ import java.util.List;
 import jscan.cstrtox.C_strtox;
 import jscan.cstrtox.NumType;
 import jscan.hashed.Hash_ident;
-import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
@@ -44,8 +43,8 @@ import ast.decls.Initializer;
 import ast.decls.parser.ParseDeclarations;
 import ast.expr.CExpression;
 import ast.expr.CExpressionBase;
-import ast.expr.sem.TypeApplierStage;
 import ast.expr.sem.TypeApplier;
+import ast.expr.sem.TypeApplierStage;
 import ast.expr.util.ExprUtil;
 import ast.parse.Parse;
 import ast.parse.ParseState;
@@ -452,7 +451,7 @@ public class ParseExpression {
       if (parser.tp() == T.T_LEFT_BRACE) {
         Token saved = parser.tok();
 
-        List<Initializer> initializerList = new ParseDeclarations(parser).parse_initlist(typename);
+        List<Initializer> initializerList = new ParseDeclarations(parser).parseInitializerList(typename);
         return build_compliteral(typename, initializerList, saved);
       }
 
@@ -500,7 +499,7 @@ public class ParseExpression {
 
           final Token operatorDeref = ExprUtil.derefOperator(operator);
           final Token operatorDot = ExprUtil.dotOperator(operator);
-          final CStructField field = get_field_arrow(lhs, fieldName);
+          final CStructField field = getFieldArrow(lhs, fieldName);
 
           CExpression inBrace = build_unary(operatorDeref, lhs);
           lhs = build_compsel(inBrace, operatorDot, field);
@@ -508,7 +507,7 @@ public class ParseExpression {
 
         else {
 
-          final CStructField field = get_field_dot(lhs, fieldName);
+          final CStructField field = getFieldDot(lhs, fieldName);
           lhs = build_compsel(lhs, operator, field);
         }
 
@@ -547,7 +546,7 @@ public class ParseExpression {
     return lhs;
   }
 
-  private CStructField get_field_arrow(CExpression postfix, Ident fieldName) {
+  private CStructField getFieldArrow(CExpression postfix, Ident fieldName) {
 
     final CType tp = postfix.getResultType();
     if (!tp.isPointerToStructUnion()) {
@@ -563,7 +562,7 @@ public class ParseExpression {
     return field;
   }
 
-  private CStructField get_field_dot(CExpression postfix, Ident fieldName) {
+  private CStructField getFieldDot(CExpression postfix, Ident fieldName) {
 
     final CType tp = postfix.getResultType();
     if (!tp.isStrUnion()) {
@@ -571,7 +570,7 @@ public class ParseExpression {
     }
 
     if (tp.getTpStruct() == null || tp.getTpStruct().isIncomplete()) {
-      System.out.printf("");
+      parser.perror("field selection from incomplete struct/union");
     }
 
     CStructField field = tp.getTpStruct().findFiled(fieldName);
@@ -582,15 +581,15 @@ public class ParseExpression {
     return field;
   }
 
-  //  primary_expression
-  //      : IDENTIFIER
-  //      | constant
-  //      | string
-  //      | '(' expression ')'
-  //      | generic_selection
-  //      ;
-
   private CExpression e_prim() {
+
+    //  primary_expression
+    //      : IDENTIFIER
+    //      | constant
+    //      | string
+    //      | '(' expression ')'
+    //      | generic_selection
+    //      ;
 
     if (parser.tok().isIdent(Hash_ident._Generic_ident)) {
       Token saved = parser.tok();

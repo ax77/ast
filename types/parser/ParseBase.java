@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import jscan.hashed.Hash_ident;
+import jscan.tokenize.Token;
 import ast.parse.Parse;
 import ast.symtab.elements.CSymbol;
 import ast.symtab.elements.CSymbolBase;
@@ -15,8 +17,6 @@ import ast.types.CTypeImpl;
 import ast.types.main.StorageKind;
 import ast.types.main.TypeKind;
 import ast.types.util.TypeCombiner;
-import jscan.hashed.Hash_ident;
-import jscan.tokenize.Token;
 
 public class ParseBase {
   private final Parse parser;
@@ -31,7 +31,7 @@ public class ParseBase {
     return findTypeAgain();
   }
 
-  public CType findTypeAgain() {
+  private CType findTypeAgain() {
 
     List<Token> storage = new ArrayList<Token>();
     List<Token> compoundKeywords = new ArrayList<Token>();

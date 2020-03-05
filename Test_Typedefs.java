@@ -3,15 +3,16 @@ package ast;
 import java.io.IOException;
 import java.util.List;
 
+import jscan.tokenize.Stream;
+import jscan.tokenize.Token;
+
 import org.junit.Test;
 
 import ast.errors.ParseException;
 import ast.parse.Parse;
 import ast.unit.TranslationUnit;
-import jscan.tokenize.Stream;
-import jscan.tokenize.Token;
 
-public class TestTypedefs {
+public class Test_Typedefs {
 
   private static Stream getHashedStream(String source) throws IOException {
     return new Stream("", source);

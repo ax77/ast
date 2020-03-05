@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import jscan.Tokenlist;
+import jscan.hashed.Hash_ident;
+
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -29,10 +32,8 @@ import ast.types.parser.ParseDecl;
 import ast.types.util.TypeMerger;
 import ast.types.util.TypeSizes;
 import ast.unit.TranslationUnit;
-import jscan.Tokenlist;
-import jscan.hashed.Hash_ident;
 
-public class _TestCTypeNew {
+public class TestCTypeNew {
 
   private CType parseType(Parse p) {
     return new ParseBase(p).parseBase();
@@ -310,8 +311,8 @@ public class _TestCTypeNew {
     assertEquals(TypeKind.TP_ARRAY_OF, type.getKind());
     assertEquals(TypeKind.TP_ARRAY_OF, type.getTpArray().getArrayOf().getKind());
     assertEquals(TypeKind.TP_ARRAY_OF, type.getTpArray().getArrayOf().getTpArray().getArrayOf().getKind());
-    assertEquals(TypeKind.TP_INT,
-        type.getTpArray().getArrayOf().getTpArray().getArrayOf().getTpArray().getArrayOf().getKind());
+    assertEquals(TypeKind.TP_INT, type.getTpArray().getArrayOf().getTpArray().getArrayOf().getTpArray().getArrayOf()
+        .getKind());
   }
 
   @Test

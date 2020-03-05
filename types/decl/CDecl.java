@@ -3,9 +3,9 @@ package ast.types.decl;
 import java.util.ArrayList;
 import java.util.List;
 
+import jscan.symtab.Ident;
 import ast.errors.ParseException;
 import ast.parse.NullChecker;
-import jscan.symtab.Ident;
 
 public class CDecl {
   private Ident name;

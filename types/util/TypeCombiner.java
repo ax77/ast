@@ -20,12 +20,12 @@ import static jscan.hashed.Hash_ident.void_ident;
 
 import java.util.List;
 
-import ast.errors.ParseException;
-import ast.types.main.StorageKind;
-import ast.types.main.TypeKind;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import ast.errors.ParseException;
+import ast.types.main.StorageKind;
+import ast.types.main.TypeKind;
 
 public class TypeCombiner {
 

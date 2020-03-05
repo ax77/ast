@@ -19,7 +19,7 @@ import ast.expr.sem.ConstexprEval;
 import ast.parse.Parse;
 import ast.unit.TranslationUnit;
 
-public class _TestInternalConversions {
+public class Test_Iconv {
 
   @Test
   public void testConv1() throws IOException {

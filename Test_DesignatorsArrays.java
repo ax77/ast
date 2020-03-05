@@ -13,7 +13,7 @@ import ast.parse.Parse;
 import ast.symtab.elements.CSymbol;
 import ast.unit.TranslationUnit;
 
-public class TestInitsDesignatorsArrays {
+public class Test_DesignatorsArrays {
 
   @Test
   public void testArrayDesignators0() throws IOException {
