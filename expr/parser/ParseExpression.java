@@ -40,7 +40,7 @@ import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import ast.decls.Initializer;
-import ast.decls.parser.ParseDeclarations;
+import ast.decls.parser.ParseInitializerList;
 import ast.expr.CExpression;
 import ast.expr.CExpressionBase;
 import ast.expr.sem.TypeApplier;
@@ -451,7 +451,7 @@ public class ParseExpression {
       if (parser.tp() == T.T_LEFT_BRACE) {
         Token saved = parser.tok();
 
-        List<Initializer> initializerList = new ParseDeclarations(parser).parseInitializerList(typename);
+        List<Initializer> initializerList = new ParseInitializerList(parser, typename).parse();
         return build_compliteral(typename, initializerList, saved);
       }
 

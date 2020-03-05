@@ -3,14 +3,12 @@ package ast.decls.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-import jscan.hashed.Hash_ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import ast.decls.Declaration;
 import ast.decls.Initializer;
 import ast.expr.CExpression;
 import ast.expr.parser.ParseExpression;
-import ast.expr.sem.ConstexprEval;
 import ast.parse.NullChecker;
 import ast.parse.Parse;
 import ast.symtab.elements.CSymbol;
@@ -31,26 +29,18 @@ public class ParseDeclarations {
     this.parser = parser;
   }
 
-  // constructor need for entry point.
-  // when we parse basetype, and don't know yet, function is, or declaration
-  // and build first
-  public ParseDeclarations(Parse parser, CType basetype, StorageKind storagespec) {
-    this.parser = parser;
-    this.basetype = basetype;
-    this.storagespec = storagespec;
-  }
-
   public Declaration parse() {
 
     Token startLocation = parser.tok();
 
-    // TODO: more clean.
-    if (isStaticAssertAndItsOk()) {
+    boolean skip = new ParseStaticAssert(parser).isStaticAssertAndItsOk();
+    if (skip) {
       return new Declaration();
     }
 
     ParseBase pb = new ParseBase(parser);
     basetype = pb.parseBase();
+
     storagespec = pb.getStorageSpec();
     NullChecker.check(basetype, storagespec); // paranoia
 
@@ -94,7 +84,7 @@ public class ParseDeclarations {
     return initDeclaratorList;
   }
 
-  public CSymbol parseInitDeclarator() {
+  private CSymbol parseInitDeclarator() {
     //  init_declarator
     //    : declarator '=' initializer
     //    | declarator
@@ -106,16 +96,16 @@ public class ParseDeclarations {
     CType type = TypeMerger.build(basetype, decl);
 
     if (parser.tp() != T.T_ASSIGN) {
-      CSymbolBase base = CSymbolBase.SYM_LVAR;
+      CSymbolBase symBase = CSymbolBase.SYM_LVAR;
 
       if (storagespec == StorageKind.ST_TYPEDEF) {
-        base = CSymbolBase.SYM_TYPEDEF;
+        symBase = CSymbolBase.SYM_TYPEDEF;
       }
 
-      CSymbol sym1 = new CSymbol(base, decl.getName(), type, saved);
-      parser.defineSym(decl.getName(), sym1);
+      CSymbol tentative = new CSymbol(symBase, decl.getName(), type, saved);
+      parser.defineSym(decl.getName(), tentative);
 
-      return sym1;
+      return tentative;
     }
 
     parser.checkedMove(T.T_ASSIGN);
@@ -131,7 +121,7 @@ public class ParseDeclarations {
     return sym;
   }
 
-  public List<Initializer> parseInitializer(CType type) {
+  private List<Initializer> parseInitializer(CType type) {
 
     // nested list
 
@@ -147,38 +137,6 @@ public class ParseDeclarations {
     inits.add(new Initializer(expr, 0));
     return inits;
 
-  }
-
-  public List<Initializer> parseInitializerList(CType type) {
-    return new ParseInitializerList(parser, type).parse();
-  }
-
-  public boolean isStaticAssertAndItsOk() {
-
-    //  static_assert_declaration
-    //    : STATIC_ASSERT '(' constant_expression ',' STRING_LITERAL ')' ';'
-    //    ;
-
-    if (!parser.tok().isIdent(Hash_ident._Static_assert_ident)) {
-      return false;
-    }
-
-    parser.checkedMove(Hash_ident._Static_assert_ident);
-    parser.lparen();
-
-    CExpression ce = new ParseExpression(parser).e_const_expr();
-    parser.checkedMove(T.T_COMMA);
-
-    Token message = parser.checkedMove(T.TOKEN_STRING);
-    parser.rparen();
-    parser.semicolon();
-
-    long sares = new ConstexprEval(parser).ce(ce);
-    if (sares == 0) {
-      parser.perror("static-assert fail with message: " + message.getValue());
-    }
-
-    return true;
   }
 
 }

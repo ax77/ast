@@ -32,26 +32,45 @@ public class ParseExternal {
     this.parser = parser;
   }
 
-  //
-  //  1) declaration's
-  //
-  //  int a               ;
-  //  int a, b, c         ;
-  //  int a = 1           ;
-  //  int a()             ;
-  //  struct s { int x; } ;
-  //  int a, b(), c[1]    ;
-  //
-  //  2) function's
-  //
-  //  int f(a,b,c) int a,b,c; {  }
-  //  int f(void) {  }
-  //  int f() {  }
-  //
+  public ExternalDeclaration parse() {
 
-  // try to do it lexically, instead of mess guess.
+    if (!isFunc()) {
+      final Declaration declaration = new ParseDeclarations(parser).parse();
+      return new ExternalDeclaration(declaration);
+    }
+
+    return functionDefinition();
+  }
+
+  public boolean isFunc() {
+
+    ParseState state = new ParseState(parser);
+    boolean result = isFuncInternal();
+
+    parser.restoreState(state);
+    return result;
+  }
 
   private boolean isFuncInternal() {
+
+    //
+    //  1) declaration's
+    //
+    //  int a               ;
+    //  int a, b, c         ;
+    //  int a = 1           ;
+    //  int a()             ;
+    //  struct s { int x; } ;
+    //  int a, b(), c[1]    ;
+    //
+    //  2) function's
+    //
+    //  int f(a,b,c) int a,b,c; {  }
+    //  int f(void) {  }
+    //  int f() {  }
+    //
+
+    // try to do it lexically, instead of mess guess.
 
     while (parser.tp() == T.T_SEMI_COLON) {
       parser.move();
@@ -90,31 +109,7 @@ public class ParseExternal {
     return false;
   }
 
-  public boolean isFunc() {
-
-    //int beginOffset = parser.getTokenlist().getOffset();
-
-    ParseState state = new ParseState(parser);
-    boolean result = isFuncInternal();
-
-    //int endOffset = parser.getTokenlist().getOffset();
-    //System.out.printf("steps between = %3d, full-size = %d\n", endOffset - beginOffset, parser.getTokenlist().getSize());
-
-    parser.restoreState(state);
-    return result;
-  }
-
-  public ExternalDeclaration parse() {
-
-    if (!isFunc()) {
-      final Declaration declaration = new ParseDeclarations(parser).parse();
-      return new ExternalDeclaration(declaration);
-    }
-
-    return functionDefinition();
-  }
-
-  public ExternalDeclaration functionDefinition() {
+  private ExternalDeclaration functionDefinition() {
 
     ParseBase pb = new ParseBase(parser);
     CType base = pb.parseBase();
@@ -153,7 +148,6 @@ public class ParseExternal {
     return new ExternalDeclaration(fd);
   }
 
-  // TODO:
   private void define__func__(Ident funcName) {
   }
 

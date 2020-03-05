@@ -9,7 +9,7 @@ import java.util.List;
 
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import ast.decls.parser.ParseDeclarations;
+import ast.decls.parser.ParseStaticAssert;
 import ast.errors.ParseErrors;
 import ast.expr.CExpression;
 import ast.expr.parser.ParseExpression;
@@ -269,7 +269,7 @@ public class ParseStruct {
 
     // static_assert
     //
-    boolean skip = new ParseDeclarations(parser).isStaticAssertAndItsOk();
+    boolean skip = new ParseStaticAssert(parser).isStaticAssertAndItsOk();
     if (skip) {
       return r;
     }
