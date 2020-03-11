@@ -276,6 +276,9 @@ public class Parse {
     List<Token> line = new ArrayList<Token>(0);
 
     for (Token t : ringBuffer) {
+      if (t.getLocation() != null && t.getLocation().getLine() == 0) {
+        continue; // built-in
+      }
       line.add(t);
       if (t.isNewLine()) {
         lines.add(line);

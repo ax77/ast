@@ -13,12 +13,12 @@ import ast._entry.PreprocessSourceForParserVariant;
 import ast.parse.Parse;
 import ast.unit.TranslationUnit;
 
-public class Test_files {
+public class Test_FromFiles {
 
   private static final String MAIN_TEST_DIR = "cc_tests";
 
   @Test
-  public void test() throws IOException {
+  public void testSimpleFile() throws IOException {
     final String dir = System.getProperty("user.dir");
     final String fname = dir + "\\" + MAIN_TEST_DIR + "\\f01_main.c";
 

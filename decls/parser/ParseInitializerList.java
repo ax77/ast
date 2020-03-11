@@ -128,7 +128,7 @@ public class ParseInitializerList {
     // 2)
     else if (ty.isStrUnion()) {
 
-      expectOpen();
+      boolean isHasBrace = parser.moveOptional(T.T_LEFT_BRACE);
       int fieldIdx = 0;
 
       List<CStructField> fields = ty.getTpStruct().getFields();
@@ -204,8 +204,10 @@ public class ParseInitializerList {
 
       }
 
-      warningExcessElements("struct");
-      expectClose();
+      if (isHasBrace) {
+        warningExcessElements("struct");
+        expectClose();
+      }
     }
 
     // 3)
