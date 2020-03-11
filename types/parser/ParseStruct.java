@@ -7,6 +7,7 @@ import static jscan.tokenize.T.T_SEMI_COLON;
 import java.util.ArrayList;
 import java.util.List;
 
+import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import ast.decls.parser.ParseStaticAssert;
@@ -28,14 +29,16 @@ import ast.types.util.TypeMerger;
 
 public class ParseStruct {
   private final Parse parser;
+  private final boolean isUnion;
 
-  public ParseStruct(Parse parser) {
+  public ParseStruct(Parse parser, boolean isUnion) {
     this.parser = parser;
+    this.isUnion = isUnion;
   }
 
   // TODO: incomplete fields
 
-  public CType parse(boolean isUnion) {
+  public CType parse() {
     //struct ...
     //       ^
 
@@ -50,164 +53,11 @@ public class ParseStruct {
       parser.move();
     }
 
-    // 1: struct S
-    // 2: struct {
-    // 3: struct S {
-    // 4: struct S *sP;
-
-    // linearize it as well
-
-    //    if (tag != null) {
-    //      if (parser.isHasTag(tag.getIdent())) {
-    //        if (parser.tp() == T.T_LEFT_BRACE) {
-    //        } else {
-    //        }
-    //      } else {
-    //        if (parser.tp() == T.T_LEFT_BRACE) {
-    //        } else {
-    //        }
-    //      }
-    //    } else {
-    //      if (parser.tp() == T.T_LEFT_BRACE) {
-    //      } else {
-    //      }
-    //    }
-
-    boolean paranoia = false;
-
     if (tag != null) {
-
-      if (parser.isHasTag(tag.getIdent())) {
-
-        // tag was in symtab
-        //
-        if (parser.tp() == T.T_LEFT_BRACE) {
-          CType type = parser.getTag(tag.getIdent()).getType();
-
-          // TODO:
-          // 1) this is warning: declaration was not declare anything???
-          // 2) complete previous incompleted
-          // 3) ... ??? 
-
-          List<CStructField> fields = parseFields(parser);
-
-          if (paranoia) {
-            System.out.println("1");
-          }
-
-          if (type.isIncomplete()) {
-            type.getTpStruct().setFields(fields);
-            StructAligner sizeAlignDto = new SemanticStruct(parser).finalizeStructType(type.getTpStruct());
-
-            type.setSize(sizeAlignDto.getSize());
-            type.setAlign(sizeAlignDto.getAlign());
-          }
-
-          // is complete.
-          // TODO:XXX:?
-          else {
-            if (paranoia) {
-              System.out.println("1.1");
-            }
-
-            CStructType newstruct = new CStructType(isUnion, tag.getIdent());
-            newstruct.setFields(fields);
-
-            StructAligner sizeAlignDto = new SemanticStruct(parser).finalizeStructType(newstruct);
-            CType newtype = new CType(newstruct, sizeAlignDto.getSize(), sizeAlignDto.getAlign());
-
-            parser.defineTag(tag.getIdent(), new CSymbol(CSymbolBase.SYM_STRUCT, tag.getIdent(), newtype, tag));
-            return newtype;
-          }
-
-          return type;
-        }
-
-        // not a brace '{'
-        //
-        else {
-          CType type = parser.getTag(tag.getIdent()).getType();
-
-          if (paranoia) {
-            System.out.println("2");
-          }
-
-          return type;
-        }
-      }
-
-      else {
-        // tag present, but not found.
-        // register incomplete forward.
-        //
-        CStructType incomplete = new CStructType(isUnion, tag.getIdent());
-        final CType structIncompleteType = new CType(incomplete, -1, -1);
-
-        final CSymbol structSymbol = new CSymbol(CSymbolBase.SYM_STRUCT, tag.getIdent(), structIncompleteType, tag);
-        parser.defineTag(tag.getIdent(), structSymbol);
-
-        if (parser.tp() == T.T_LEFT_BRACE) {
-
-          // TODO:XXX:?
-          // rewrite...???
-          CType type = parser.getTag(tag.getIdent()).getType();
-
-          type.getTpStruct().setFields(parseFields(parser));
-          StructAligner sizeAlignDto = new SemanticStruct(parser).finalizeStructType(type.getTpStruct());
-
-          type.setSize(sizeAlignDto.getSize());
-          type.setAlign(sizeAlignDto.getAlign());
-
-          if (paranoia) {
-            System.out.println("3");
-          }
-
-          return type;
-
-        }
-
-        else {
-          if (paranoia) {
-            System.out.println("4");
-          }
-
-          return structIncompleteType;
-
-        }
-      }
-
+      return parseStructWithPresentedTag(tag);
     }
 
-    else {
-
-      // all cases if (tag == null)
-
-      if (parser.tp() == T.T_LEFT_BRACE) {
-
-        CStructType newstruct = new CStructType(isUnion, null);
-        newstruct.setFields(parseFields(parser));
-
-        StructAligner sizeAlignDto = new SemanticStruct(parser).finalizeStructType(newstruct);
-        CType type = new CType(newstruct, sizeAlignDto.getSize(), sizeAlignDto.getAlign());
-
-        if (paranoia) {
-          System.out.println("5");
-        }
-
-        return type;
-
-      }
-
-      else {
-
-        if (paranoia) {
-          System.out.println("6");
-        }
-      }
-    }
-
-    parser.perror("paranoia");
-    return null;
+    return parseStructWithNoTag();
 
   }
 
@@ -222,6 +72,65 @@ public class ParseStruct {
   //  | specifier_qualifier_list struct_declarator_list ';'
   //  | static_assert_declaration
   //  ;
+
+  private CType parseStructWithPresentedTag(Token from) {
+    Ident name = from.getIdent();
+
+    CType type = null;
+
+    CSymbol sym = parser.getTagFromCurrentScope(name);
+    if (sym == null && (parser.tp() != T.T_LEFT_BRACE) && parser.getTags().isBlockScope()) {
+      sym = parser.getTag(name);
+    }
+    if (sym != null) {
+      type = sym.getType();
+    }
+
+    if (type == null) {
+      type = incompleteType(from, name);
+    }
+
+    if (parser.tp() == T.T_LEFT_BRACE) {
+
+      List<CStructField> fields = parseFields(parser);
+      type.getTpStruct().setFields(fields);
+
+      StructAligner sizeAlignDto = new SemanticStruct(parser).finalizeStructType(type.getTpStruct());
+
+      type.setSize(sizeAlignDto.getSize());
+      type.setAlign(sizeAlignDto.getAlign());
+
+    }
+
+    return type;
+  }
+
+  private CType incompleteType(Token from, Ident tagId) {
+
+    CStructType incomplete = new CStructType(isUnion, tagId);
+    CType type = new CType(incomplete, -1, -1);
+
+    CSymbol structSymbol = new CSymbol(CSymbolBase.SYM_STRUCT, tagId, type, from);
+    parser.defineTag(tagId, structSymbol);
+
+    return type;
+  }
+
+  private CType parseStructWithNoTag() {
+    if (parser.tp() != T.T_LEFT_BRACE) {
+      parser.perror("expect '{' for struct with no tag");
+    }
+
+    CStructType newstruct = new CStructType(isUnion, null);
+
+    List<CStructField> fields = parseFields(parser);
+    newstruct.setFields(fields);
+
+    StructAligner sizeAlignDto = new SemanticStruct(parser).finalizeStructType(newstruct);
+    CType type = new CType(newstruct, sizeAlignDto.getSize(), sizeAlignDto.getAlign());
+
+    return type;
+  }
 
   private List<CStructField> parseFields(Parse parser) {
     parser.checkedMove(T.T_LEFT_BRACE);

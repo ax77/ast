@@ -88,6 +88,14 @@ public class Parse {
     return getTag(name) != null;
   }
 
+  public boolean isHasTagInCurrentScope(Ident name) {
+    return tags.getsymFromCurrentScope(name) != null;
+  }
+
+  public CSymbol getTagFromCurrentScope(Ident name) {
+    return tags.getsymFromCurrentScope(name);
+  }
+
   public CSymbol getSym(Ident name) {
     return symbols.getsym(name);
   }

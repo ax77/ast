@@ -61,7 +61,7 @@ public class ParseBase {
 
       else {
         boolean isUnion = (first.isIdent(Hash_ident.union_ident));
-        return new ParseStruct(parser).parse(isUnion);
+        return new ParseStruct(parser, isUnion).parse();
       }
     }
 
