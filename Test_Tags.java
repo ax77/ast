@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import jscan.Tokenlist;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ast._entry.PreprocessSourceForParser;
@@ -117,6 +118,41 @@ public class Test_Tags {
     //@formatter:on
 
     Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb_044.toString(), false)).pp();
+    Parse p = new Parse(it);
+    TranslationUnit unit = p.parse_unit();
+
+  }
+
+  @Test
+  public void testTags5() throws IOException {
+
+    //@formatter:off
+    StringBuilder sb = new StringBuilder();
+    sb.append(" /*001*/  // tag naming an unknown struct declares it                     \n");
+    sb.append(" /*002*/  struct s* p = 0;                                                \n");
+    sb.append(" /*003*/  // definition for the struct pointed to by p                    \n");
+    sb.append(" /*004*/  struct s { int a; long long b; };                               \n");
+    sb.append(" /*005*/  int main()                                                      \n");
+    sb.append(" /*006*/  {                                                               \n");
+    sb.append(" /*007*/      // forward declaration of a new, local struct s             \n");
+    sb.append(" /*008*/      // this hides global struct s until the end of this block   \n");
+    sb.append(" /*009*/      struct s;                                                   \n");
+    sb.append(" /*010*/      // error: struct s incomplete here...                       \n");
+    sb.append(" /*011*/      // unsigned long x = sizeof(struct s);                      \n");
+    sb.append(" /*012*/      // pointer to local struct s,                               \n");
+    sb.append(" /*013*/      // without the forward declaration above,                   \n");
+    sb.append(" /*014*/      // this would point at the file-scope s                     \n");
+    sb.append(" /*015*/      struct s *p;                                                \n");
+    sb.append(" /*016*/      // definitions of the local struct s                        \n");
+    sb.append(" /*017*/      struct s { int flag; } varname;                             \n");
+    sb.append(" /*018*/      varname.flag = 32;                                          \n");
+    sb.append(" /*019*/      p = &varname;                                               \n");
+    sb.append(" /*020*/      p->flag = 33;                                               \n");
+    sb.append(" /*021*/      return sizeof(struct s);                                    \n");
+    sb.append(" /*022*/  }                                                               \n");
+    //@formatter:on
+
+    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
     Parse p = new Parse(it);
     TranslationUnit unit = p.parse_unit();
 

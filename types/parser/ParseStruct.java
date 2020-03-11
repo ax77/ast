@@ -76,6 +76,10 @@ public class ParseStruct {
   private CType parseStructWithPresentedTag(Token from) {
     Ident name = from.getIdent();
 
+    if (parser.tp() == T.T_SEMI_COLON) {
+      return incompleteType(from, name);
+    }
+
     CType type = null;
 
     CSymbol sym = parser.getTagFromCurrentScope(name);
