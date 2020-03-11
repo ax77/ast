@@ -6,45 +6,28 @@ import java.util.Set;
 
 import jscan.symtab.Ident;
 import ast.errors.ParseException;
-import ast.parse.NullChecker;
 import ast.types.CStructField;
 import ast.types.util.TypeUtil;
 
-public class StructAligner {
+public class InfoStruct {
 
-  private final boolean isUnion;
-  private final boolean isReference;
   private final List<CStructField> fields;
-
   private int size;
   private int align;
 
-  public StructAligner(boolean isUnion, boolean isReference, List<CStructField> fields) {
-    this.isUnion = isUnion;
-    this.isReference = isReference;
-
-    if (!isReference) {
-      NullChecker.check(fields);
-    }
+  public InfoStruct(boolean isUnion, List<CStructField> fields) {
 
     this.fields = fields;
     this.size = 0;
     this.align = 1;
 
-    if (isReference) {
-      // TODO:
-      //System.out.println("struct ref...TODO...");
-    }
+    checkFieldsUnique();
+    applyAlignment();
 
-    else {
-
-      checkFieldsUnique();
-      applyAlignment();
-      if (isUnion) {
-        calcUnionFieldsOffsets();
-      } else {
-        calcStructFieldsOffsets();
-      }
+    if (isUnion) {
+      calcUnionFieldsOffsets();
+    } else {
+      calcStructFieldsOffsets();
     }
   }
 

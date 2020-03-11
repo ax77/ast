@@ -1,10 +1,6 @@
 package ast.types.parser;
 
 import static jscan.tokenize.T.TOKEN_IDENT;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
@@ -17,40 +13,7 @@ import ast.symtab.elements.CSymbolBase;
 import ast.types.CEnumType;
 import ast.types.CType;
 import ast.types.CTypeImpl;
-
-class EnumDto {
-  private final Parse parser;
-  private int minvalue;
-  private int maxvalue;
-  private Map<Ident, Integer> enumerators;
-  private int curvalue;
-
-  public EnumDto(Parse parser) {
-    this.parser = parser;
-    this.enumerators = new HashMap<Ident, Integer>();
-  }
-
-  public void addEnumerator(Ident id, int curvalue) {
-    if (enumerators.containsKey(id)) {
-      parser.perror("duplicate enum value: " + id.getName()); // TODO: ambiguous with symDef()
-    }
-    this.enumerators.put(id, curvalue);
-    this.curvalue = curvalue;
-
-    this.minvalue = Math.min(this.minvalue, this.curvalue);
-    this.maxvalue = Math.max(this.maxvalue, this.curvalue);
-    this.curvalue += 1;
-  }
-
-  public int getCurvalue() {
-    return curvalue;
-  }
-
-  public Map<Ident, Integer> getEnumerators() {
-    return enumerators;
-  }
-
-}
+import ast.types.sem.InfoEnum;
 
 public class ParseEnum {
   private final Parse parser;
@@ -129,7 +92,7 @@ public class ParseEnum {
           // 2) complete previous incompleted
           // 3) ... ??? 
 
-          EnumDto dto = parseEnumeratorList();
+          InfoEnum dto = parseEnumeratorList();
 
           if (paranoia) {
             System.out.println("1");
@@ -187,7 +150,7 @@ public class ParseEnum {
           // TODO:XXX:?
           // rewrite...???
 
-          EnumDto dto = parseEnumeratorList();
+          InfoEnum dto = parseEnumeratorList();
           CType type = parser.getTag(tag.getIdent()).getType();
           type.getTpEnum().setEnumerators(dto.getEnumerators());
 
@@ -217,7 +180,7 @@ public class ParseEnum {
 
       if (parser.tp() == T.T_LEFT_BRACE) {
 
-        EnumDto dto = parseEnumeratorList();
+        InfoEnum dto = parseEnumeratorList();
         CEnumType newenum = new CEnumType(null);
 
         newenum.setEnumerators(dto.getEnumerators());
@@ -244,11 +207,11 @@ public class ParseEnum {
 
   }
 
-  private EnumDto parseEnumeratorList() {
+  private InfoEnum parseEnumeratorList() {
 
     parser.checkedMove(T.T_LEFT_BRACE);
 
-    EnumDto enumdto = new EnumDto(parser);
+    InfoEnum enumdto = new InfoEnum(parser);
     parseEnumerator(enumdto);
 
     while (parser.tp() == T.T_COMMA) {
@@ -270,7 +233,7 @@ public class ParseEnum {
     return enumdto;
   }
 
-  private void parseEnumerator(EnumDto enumdto) {
+  private void parseEnumerator(InfoEnum enumdto) {
     Token saved = parser.tok();
     Ident identifier = parser.getIdent();
 

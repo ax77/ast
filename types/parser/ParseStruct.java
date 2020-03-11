@@ -23,8 +23,7 @@ import ast.types.CStructType;
 import ast.types.CType;
 import ast.types.decl.CDecl;
 import ast.types.sem.SemanticBitfield;
-import ast.types.sem.SemanticStruct;
-import ast.types.sem.StructAligner;
+import ast.types.sem.InfoStruct;
 import ast.types.util.TypeMerger;
 
 public class ParseStruct {
@@ -34,6 +33,13 @@ public class ParseStruct {
   public ParseStruct(Parse parser, boolean isUnion) {
     this.parser = parser;
     this.isUnion = isUnion;
+  }
+
+  private InfoStruct finalizeStructType(CStructType tpStruct) {
+    if (tpStruct.isIncomplete()) {
+      parser.unimplemented("incomplete struct finalization");
+    }
+    return new InfoStruct(tpStruct.isUnion(), tpStruct.getFields());
   }
 
   // TODO: incomplete fields
@@ -99,7 +105,7 @@ public class ParseStruct {
       List<CStructField> fields = parseFields(parser);
       type.getTpStruct().setFields(fields);
 
-      StructAligner sizeAlignDto = new SemanticStruct(parser).finalizeStructType(type.getTpStruct());
+      InfoStruct sizeAlignDto = finalizeStructType(type.getTpStruct());
 
       type.setSize(sizeAlignDto.getSize());
       type.setAlign(sizeAlignDto.getAlign());
@@ -130,7 +136,7 @@ public class ParseStruct {
     List<CStructField> fields = parseFields(parser);
     newstruct.setFields(fields);
 
-    StructAligner sizeAlignDto = new SemanticStruct(parser).finalizeStructType(newstruct);
+    InfoStruct sizeAlignDto = finalizeStructType(newstruct);
     CType type = new CType(newstruct, sizeAlignDto.getSize(), sizeAlignDto.getAlign());
 
     return type;

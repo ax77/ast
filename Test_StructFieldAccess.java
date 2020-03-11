@@ -285,7 +285,7 @@ public class Test_StructFieldAccess {
     sb15.append(" /*018*/      typedef struct foo foo; // OK: uses foo from tag name space/block scope          \n");
     sb15.append(" /*019*/                              // defines block-scope ordinary foo (hides file scope)   \n");
     sb15.append(" /*020*/      (foo){.x=RED}; // uses ordinary/block-scope foo and ordinary/file-scope RED      \n");
-    sb15.append(" /*021*/  //foo:; // label name space, function scope                                            \n");
+    sb15.append(" /*021*/  foo:; // label name space, function scope                                            \n");
     sb15.append(" /*022*/  }                                                                                    \n");
     //@formatter:on
 
