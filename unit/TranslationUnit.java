@@ -18,7 +18,7 @@ public class TranslationUnit {
     externalDeclarations.add(ed);
   }
 
-  public int countOfDeclarations(TranslationUnit unit) {
+  public int countOfDeclarations() {
     int n = 0;
     for (ExternalDeclaration ed : externalDeclarations) {
       if (ed.isDeclaration()) {
@@ -28,7 +28,7 @@ public class TranslationUnit {
     return n;
   }
 
-  public int countOfFunctionDefinitions(TranslationUnit unit) {
+  public int countOfFunctionDefinitions() {
     int n = 0;
     for (ExternalDeclaration ed : externalDeclarations) {
       if (ed.isFunctionDefinition()) {

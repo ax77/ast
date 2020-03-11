@@ -94,8 +94,8 @@ public class TestSimple1 {
     TranslationUnit unit = p.parse_unit();
     
     assertEquals(10-1, unit.getExternalDeclarations().size()); // comment NULL for now...
-    assertEquals(5, unit.countOfFunctionDefinitions(unit));
-    assertEquals(5-1, unit.countOfDeclarations(unit));
+    assertEquals(5, unit.countOfFunctionDefinitions());
+    assertEquals(5-1, unit.countOfDeclarations());
   }
   
   @Test
@@ -288,8 +288,8 @@ public class TestSimple1 {
     TranslationUnit unit = p.parse_unit();
 
     assertEquals(1, unit.getExternalDeclarations().size());
-    assertEquals(1, unit.countOfFunctionDefinitions(unit));
-    assertEquals(0, unit.countOfDeclarations(unit));
+    assertEquals(1, unit.countOfFunctionDefinitions());
+    assertEquals(0, unit.countOfDeclarations());
   }
 
 

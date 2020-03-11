@@ -30,8 +30,7 @@ public class PreprocessSourceForParser {
     List<Token> input = null;
 
     if (variant.isFromFile()) {
-      input = Hash_stream.getHashedStream(variant.getFilenameOrText(), HashStreamBufferVariant.WITH_PREDEFINED)
-          .getTokenlist();
+      input = Hash_stream.getTokenlist(variant.getFilenameOrText(), HashStreamBufferVariant.WITH_PREDEFINED);
     } else {
       input = getHashedStream(variant.getFilenameOrText());
     }
