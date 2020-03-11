@@ -341,7 +341,7 @@ public class ParseExpression {
     if (parser.tp() == T_LEFT_PAREN) {
       ParseState state = new ParseState(parser);
 
-      Token peek = parser.getTokenlist().peek();
+      Token peek = parser.peek();
       if (parser.isDeclSpecStart(peek)) {
 
         Token lparen = parser.lparen();
@@ -439,7 +439,7 @@ public class ParseExpression {
     // "(" type-name ")" "{" initializer-list "}"
     // "(" type-name ")" "{" initializer-list "," "}"
 
-    if (parser.tp() == T_LEFT_PAREN && parser.isDeclSpecStart(parser.getTokenlist().peek())) {
+    if (parser.tp() == T_LEFT_PAREN && parser.isDeclSpecStart(parser.peek())) {
       ParseState state = new ParseState(parser);
 
       parser.lparen();

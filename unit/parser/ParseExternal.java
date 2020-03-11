@@ -3,6 +3,7 @@ package ast.unit.parser;
 import static jscan.tokenize.T.T_LEFT_BRACE;
 
 import java.util.List;
+import java.util.Set;
 
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
@@ -145,7 +146,19 @@ public class ParseExternal {
     parser.setCurrentFn(null);
     parser.popscope();
 
+    checkLabels(fd);
     return new ExternalDeclaration(fd);
+  }
+
+  private void checkLabels(FunctionDefinition fd) {
+    Set<Ident> gotos = fd.getGotos();
+    Set<Ident> labels = fd.getLabels();
+
+    for (Ident id : gotos) {
+      if (!labels.contains(id)) {
+        parser.perror("goto " + id.getName() + " has no target label");
+      }
+    }
   }
 
   private void define__func__(Ident funcName) {

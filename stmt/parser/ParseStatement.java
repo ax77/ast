@@ -97,10 +97,14 @@ public class ParseStatement {
 
   private CStatement parseStatement() {
 
+    // null-statement
+
     if (parser.tok().ofType(T_SEMI_COLON)) {
       Token from = parser.semicolon();
       return new CStatement(from, CStatementBase.SSEMICOLON);
     }
+
+    // default:
 
     if (parser.tok().isIdent(default_ident)) {
       Token from = parser.checkedMove(default_ident);
@@ -121,16 +125,19 @@ public class ParseStatement {
       return new CStatement(from, new Sdefault(parent, stmt));
     }
 
-    if (parser.tp() == TOKEN_IDENT) {
-      Token peek = parser.getTokenlist().peek();
-      if (peek.ofType(T_COLON)) {
-        return parseLabel();
-      }
+    // label:
+
+    if (isLabel()) {
+      return parseLabel();
     }
+
+    // _asm ...
 
     if (parser.isAsmStart()) {
       return parseAsm();
     }
+
+    // goto label;
 
     if (parser.tok().isIdent(goto_ident)) {
       FunctionDefinition function = parser.getCurrentFn();
@@ -142,10 +149,15 @@ public class ParseStatement {
 
       Token from = parser.checkedMove(goto_ident);
       Ident label = parser.getIdent();
+      
+      function.addGotos(label);
 
       parser.semicolon();
       return new CStatement(from, CStatementBase.SGOTO, function, label, labelstmt);
     }
+
+    // return ... ;
+    // return ;
 
     if (parser.tok().isIdent(return_ident)) {
       Token from = parser.checkedMove(return_ident);
@@ -160,6 +172,8 @@ public class ParseStatement {
       parser.checkedMove(T_SEMI_COLON);
       return new CStatement(from, CStatementBase.SRETURN, expr);
     }
+
+    // for( ;; )
 
     if (parser.tok().isIdent(for_ident)) {
       Declaration decl = null;
@@ -207,6 +221,8 @@ public class ParseStatement {
       return new CStatement(from, decl, init, test, step, loop);
     }
 
+    // switch
+
     if (parser.tok().isIdent(switch_ident)) {
       Token from = parser.checkedMove(switch_ident);
       CExpression expr = new ParseExpression(parser).getExprInParen();
@@ -220,6 +236,8 @@ public class ParseStatement {
       popSwitch();
       return new CStatement(from, nodeSwitch);
     }
+
+    // case :
 
     if (parser.tok().isIdent(case_ident)) {
       if (getSwitches().isEmpty()) {
@@ -240,6 +258,8 @@ public class ParseStatement {
       return new CStatement(from, caselab);
     }
 
+    // if ( expr ) stmt else stmt
+
     if (parser.tok().isIdent(if_ident)) {
       Token from = parser.checkedMove(if_ident);
 
@@ -256,6 +276,8 @@ public class ParseStatement {
       return new CStatement(from, ifexpr, ifstmt, ifelse);
     }
 
+    // while ( expr ) stmt
+
     if (parser.tok().isIdent(while_ident)) {
       pushLoop("while");
       Token from = parser.checkedMove(while_ident);
@@ -266,6 +288,8 @@ public class ParseStatement {
       popLoop();
       return new CStatement(from, CStatementBase.SWHILE, test, loop);
     }
+
+    // do stmt while expr
 
     if (parser.tok().isIdent(do_ident)) {
       pushLoop("do_while");
@@ -281,13 +305,19 @@ public class ParseStatement {
       return new CStatement(from, CStatementBase.SDOWHILE, test, loop);
     }
 
+    // break ;
+
     if (parser.tok().isIdent(break_ident)) {
       return new BreakContinue(parser, this).breakStatement();
     }
 
+    // continue ;
+
     if (parser.tok().isIdent(continue_ident)) {
       return new BreakContinue(parser, this).continueStatement();
     }
+
+    // {  }
 
     if (parser.tok().ofType(T.T_LEFT_BRACE)) {
       return parseCompoundStatement(false);
@@ -334,13 +364,10 @@ public class ParseStatement {
     // TODO: doe's it correct, or maybe clean way exists?
     // different scope between names of labels and all other names.
     // why ??? 
-    if (isUserDefinedId()) {
-      Token peek = parser.getTokenlist().peek();
-      if (peek.ofType(T_COLON)) {
-        BlockItem block = new BlockItem();
-        block.setStatement(parseLabel());
-        return block;
-      }
+    if (isLabel()) {
+      BlockItem block = new BlockItem();
+      block.setStatement(parseLabel());
+      return block;
     }
 
     if (parser.isDeclSpecStart()) {
@@ -365,6 +392,16 @@ public class ParseStatement {
     return parser.tok().ofType(TOKEN_IDENT) && !parser.tok().isBuiltinIdent();
   }
 
+  private boolean isLabel() {
+    if (isUserDefinedId()) {
+      Token peek = parser.peek();
+      if (peek.ofType(T_COLON)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   private CStatement parseLabel() {
 
     FunctionDefinition function = parser.getCurrentFn();
@@ -375,6 +412,8 @@ public class ParseStatement {
 
     Token from = parser.tok();
     Ident label = parser.getIdent();
+    
+    function.addLabel(label);
 
     parser.checkedMove(T_COLON);
     CStatement labelstmt = parseStatement();

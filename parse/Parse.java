@@ -262,6 +262,14 @@ public class Parse {
     perror("unimplemented: " + what);
   }
 
+  public void unreachable(String what) {
+    perror("unreachable: " + what);
+  }
+
+  public Token peek() {
+    return tokenlist.peek();
+  }
+
   public String ringBufferToStringLines() {
 
     List<List<Token>> lines = new ArrayList<List<Token>>(0);
