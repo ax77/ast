@@ -49,11 +49,14 @@ public class Test_DiscoverTheFunction {
   @Test
   public void testIsFunction() throws IOException {
 
+    //@formatter:off
     List<String> tests = new ArrayList<String>();
     tests.add("   struct s f() {}                  ; \n");
     tests.add(" ; int f() {}                       ; \n");
     tests.add("   int KnR(a,b,c) int a,b,c; {}       \n");
     tests.add("   int main(int argc, char **argv) {} \n");
+    tests.add("  __attribute__((always_inline)) inline int prefix()  { return 1; } \n");
+    //@formatter:on
 
     for (String s : tests) {
 

@@ -69,7 +69,13 @@ public class Parse {
           perror("redefinition, previous defined here: " + prevsym.getLocationToString());
         }
       } else {
-        perror("redefinition, previous defined here: " + prevsym.getLocationToString());
+
+        if (sym.isFunction() && prevsym.getType().isEqualTo(sym.getType())) {
+          // TODO: normal prototype logic.
+        } else {
+          perror("redefinition, previous defined here: " + prevsym.getLocationToString());
+        }
+
       }
     }
 

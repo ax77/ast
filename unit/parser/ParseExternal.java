@@ -8,6 +8,8 @@ import java.util.Set;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import ast.attributes.main.AttributesAsmsLists;
+import ast.attributes.main.ParseAttributesAsms;
 import ast.decls.Declaration;
 import ast.decls.parser.ParseDeclarations;
 import ast.parse.Parse;
@@ -76,6 +78,8 @@ public class ParseExternal {
     while (parser.tp() == T.T_SEMI_COLON) {
       parser.move();
     }
+
+    AttributesAsmsLists attrs = new ParseAttributesAsms(parser).parse();
 
     boolean hasOpen = false;
     boolean hasClose = false;

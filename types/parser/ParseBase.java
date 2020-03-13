@@ -9,6 +9,9 @@ import java.util.Set;
 
 import jscan.hashed.Hash_ident;
 import jscan.tokenize.Token;
+import ast.attributes.AttributeList;
+import ast.attributes.main.AttributesAsmsLists;
+import ast.attributes.main.ParseAttributesAsms;
 import ast.parse.Parse;
 import ast.symtab.elements.CSymbol;
 import ast.symtab.elements.CSymbolBase;
@@ -21,6 +24,7 @@ import ast.types.util.TypeCombiner;
 public class ParseBase {
   private final Parse parser;
   private StorageKind storageSpec;
+  private AttributesAsmsLists attributes;
 
   public ParseBase(Parse p) {
     this.parser = p;
@@ -32,6 +36,8 @@ public class ParseBase {
   }
 
   private CType findTypeAgain() {
+
+    attributes = new ParseAttributesAsms(parser).parse();
 
     List<Token> storage = new ArrayList<Token>();
     List<Token> compoundKeywords = new ArrayList<Token>();
@@ -117,6 +123,9 @@ public class ParseBase {
 
   private void cut2(List<Token> st, List<Token> ts, Set<Token> tq) {
     for (;;) {
+
+      attributes = new ParseAttributesAsms(parser).parse();
+
       if (parser.isStorageClassSpec()) {
         Token saved = parser.tok();
         parser.move();
@@ -147,6 +156,8 @@ public class ParseBase {
 
   private void cut(List<Token> storage, List<Token> compoundKeywords, Set<Token> qualifiers) {
     while (!parser.isEof()) {
+
+      attributes = new ParseAttributesAsms(parser).parse();
 
       if (parser.isStorageClassSpec()) {
         Token saved = parser.tok();
