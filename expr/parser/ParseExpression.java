@@ -554,7 +554,12 @@ public class ParseExpression {
     }
 
     final CStructType tpStruct = tp.getTpPointer().getPointerTo().getTpStruct();
-    CStructField field = tpStruct.findFiled(fieldName);
+
+    if (tpStruct.isIncomplete()) {
+      parser.perror("field selection [a->b] from incomplete struct/union");
+    }
+
+    CStructField field = tpStruct.findField(fieldName);
     if (field == null) {
       parser.perror("error: struct has no field: " + fieldName.getName());
     }
@@ -570,10 +575,10 @@ public class ParseExpression {
     }
 
     if (tp.getTpStruct() == null || tp.getTpStruct().isIncomplete()) {
-      parser.perror("field selection from incomplete struct/union");
+      parser.perror("field selection [a.b] from incomplete struct/union");
     }
 
-    CStructField field = tp.getTpStruct().findFiled(fieldName);
+    CStructField field = tp.getTpStruct().findField(fieldName);
     if (field == null) {
       parser.perror("error: struct has no field: " + fieldName.getName());
     }

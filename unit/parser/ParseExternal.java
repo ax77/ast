@@ -85,6 +85,9 @@ public class ParseExternal {
     boolean hasClose = false;
 
     while (!parser.isEof()) {
+      
+      attrs = new ParseAttributesAsms(parser).parse();
+      
       Token t = parser.tok();
       parser.move();
 
@@ -131,7 +134,7 @@ public class ParseExternal {
     // and corner case: ANSI function-definition
     //
     if (parser.tp() != T_LEFT_BRACE || !type.isFunction()) {
-      parser.perror("expect function definition...");
+      parser.perror("expect function definition");
     }
 
     CSymbol funcSymbol = new CSymbol(CSymbolBase.SYM_FUNC, decl.getName(), type, parser.tok());

@@ -3,6 +3,7 @@ package ast;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,17 +79,20 @@ public class UtilSrcToStringGenerator {
       e.printStackTrace();
     }
 
-    System.out.println("    //@formatter:off");
-    System.out.println("    StringBuilder sb = new StringBuilder();");
+    FileWriter fw = new FileWriter(fnameout);
+
+    fw.write("    //@formatter:off\n");
+    fw.write("    StringBuilder sb = new StringBuilder();\n");
     int cnt = 1;
     for (String line : lines) {
       String tmp = line.trim();
       if (tmp.isEmpty()) {
         continue;
       }
-      System.out.printf("    %s", "sb.append(" + q + lineno(cnt++) + line + pad(line, mlen + 3) + n + q + ");\n");
+      fw.write("    sb.append(" + q + lineno(cnt++) + line + pad(line, mlen + 3) + n + q + ");\n");
     }
-    System.out.println("    //@formatter:on");
+    fw.write("    //@formatter:on\n");
+    fw.close();
   }
 
 }

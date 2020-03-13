@@ -91,7 +91,7 @@ public class CStructType {
     return false;
   }
 
-  public CStructField findFiled(Ident fieldName) {
+  public CStructField findField(Ident fieldName) {
     checkHasFields();
     for (CStructField f : fields) {
       if (!f.isHasName()) {

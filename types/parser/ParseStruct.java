@@ -10,6 +10,8 @@ import java.util.List;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import ast.attributes.main.AttributesAsmsLists;
+import ast.attributes.main.ParseAttributesAsms;
 import ast.decls.parser.ParseStaticAssert;
 import ast.errors.ParseErrors;
 import ast.expr.CExpression;
@@ -52,6 +54,8 @@ public class ParseStruct {
     if (!iscorrect) {
       parser.perror("expect identifier or { for enum type-specifier");
     }
+
+    AttributesAsmsLists attributesAsmsLists = new ParseAttributesAsms(parser).parse();
 
     Token tag = null;
     if (parser.tok().ofType(TOKEN_IDENT)) {
