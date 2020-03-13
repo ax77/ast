@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jscan.Tokenlist;
-import jscan.hashed.HashStreamBufferVariant;
 import jscan.hashed.Hash_all;
 import jscan.hashed.Hash_stream;
 import jscan.preprocess.Scan;
+import jscan.sourceloc.SourceLocation;
 import jscan.tokenize.Stream;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
@@ -24,13 +24,41 @@ public class PreprocessSourceForParser {
     this.variant = variant;
   }
 
+  public List<Token> getTokenlist(String filename) throws IOException {
+
+    List<Token> result = new ArrayList<Token>();
+    List<Token> source = Hash_stream.getHashedStream(filename).getTokenlist();
+
+    if (true) {
+      final String builtinFname = "<built-in>";
+      final SourceLocation location = new SourceLocation(builtinFname, 0, 0);
+
+      List<Token> predefined = new Stream(builtinFname, ParseSettings.getPredefinedBuffer()).getTokenlist();
+      List<Token> clean = new ArrayList<Token>();
+
+      for (Token t : predefined) {
+        if (t.typeIsSpecialStreamMarks()) {
+          continue;
+        }
+        t.setLocation(location);
+        clean.add(t);
+      }
+
+      result.addAll(clean);
+    }
+
+    result.addAll(source);
+    return result;
+
+  }
+
   public Tokenlist pp() throws IOException {
 
     Hash_all.clearAll(); // XXX: it's important to clear all hashed entries before preprocess each translation-unit.
     List<Token> input = null;
 
     if (variant.isFromFile()) {
-      input = Hash_stream.getTokenlist(variant.getFilenameOrText(), HashStreamBufferVariant.WITH_PREDEFINED);
+      input = getTokenlist(variant.getFilenameOrText());
     } else {
       input = getHashedStream(variant.getFilenameOrText());
     }

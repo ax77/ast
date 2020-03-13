@@ -39,6 +39,7 @@ import jscan.hashed.Hash_ident;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import ast._entry.IdentMap;
 import ast.decls.Initializer;
 import ast.decls.parser.ParseInitializerList;
 import ast.expr.CExpression;
@@ -381,7 +382,7 @@ public class ParseExpression {
     }
 
     // TODO: merge with _Alignof()
-    if (parser.tok().isIdent(Hash_ident.sizeof_ident)) {
+    if (parser.tok().isIdent(IdentMap.sizeof_ident)) {
       return e_sizeof();
     }
 
@@ -389,7 +390,7 @@ public class ParseExpression {
   }
 
   private CExpression e_sizeof() {
-    Token id = parser.checkedMove(Hash_ident.sizeof_ident);
+    Token id = parser.checkedMove(IdentMap.sizeof_ident);
 
     if (parser.tp() == T_LEFT_PAREN) {
       parser.lparen();
@@ -596,7 +597,7 @@ public class ParseExpression {
     //      | generic_selection
     //      ;
 
-    if (parser.tok().isIdent(Hash_ident._Generic_ident)) {
+    if (parser.tok().isIdent(IdentMap._Generic_ident)) {
       Token saved = parser.tok();
       return new ExpandGenericResult(parser).getGenericResult(saved);
     }

@@ -1,17 +1,6 @@
 package ast.stmt.parser;
 
-import static jscan.hashed.Hash_ident.break_ident;
-import static jscan.hashed.Hash_ident.case_ident;
-import static jscan.hashed.Hash_ident.continue_ident;
-import static jscan.hashed.Hash_ident.default_ident;
-import static jscan.hashed.Hash_ident.do_ident;
-import static jscan.hashed.Hash_ident.else_ident;
-import static jscan.hashed.Hash_ident.for_ident;
-import static jscan.hashed.Hash_ident.goto_ident;
-import static jscan.hashed.Hash_ident.if_ident;
-import static jscan.hashed.Hash_ident.return_ident;
-import static jscan.hashed.Hash_ident.switch_ident;
-import static jscan.hashed.Hash_ident.while_ident;
+import static ast._entry.IdentMap.*;
 import static jscan.tokenize.T.TOKEN_EOF;
 import static jscan.tokenize.T.TOKEN_IDENT;
 import static jscan.tokenize.T.T_COLON;

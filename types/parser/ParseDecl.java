@@ -8,10 +8,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import jscan.hashed.Hash_ident;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import ast._entry.IdentMap;
 import ast.attributes.main.AttributesAsmsLists;
 import ast.attributes.main.ParseAttributesAsms;
 import ast.expr.CExpression;
@@ -51,7 +51,7 @@ public class ParseDecl {
         ptrTypeQuals.add(saved.getIdent());
       }
 
-      if (!ptrTypeQuals.isEmpty() && ptrTypeQuals.contains(Hash_ident.const_ident)) {
+      if (!ptrTypeQuals.isEmpty() && ptrTypeQuals.contains(IdentMap.const_ident)) {
         pointers.add(2);
       } else {
         pointers.add(0);

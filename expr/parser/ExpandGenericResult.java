@@ -5,9 +5,9 @@ import static jscan.tokenize.T.T_COLON;
 import java.util.ArrayList;
 import java.util.List;
 
-import jscan.hashed.Hash_ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import ast._entry.IdentMap;
 import ast.expr.CExpression;
 import ast.expr.sem.TypeApplier;
 import ast.expr.sem.TypeApplierStage;
@@ -105,7 +105,7 @@ public class ExpandGenericResult {
   //  ;
 
   private CExpression parseGenericSelection(Token from) {
-    Token id = parser.checkedMove(Hash_ident._Generic_ident);
+    Token id = parser.checkedMove(IdentMap._Generic_ident);
     parser.lparen();
 
     CExpression assignment = e_assign();
@@ -130,13 +130,13 @@ public class ExpandGenericResult {
   }
 
   private void parseGenericAssociation(GenericSelection gs) {
-    if (parser.tok().isIdent(Hash_ident.default_ident)) {
+    if (parser.tok().isIdent(IdentMap.default_ident)) {
 
       if (gs.getDefaultAssociation() != null) {
         parser.perror("duplicate default in generic selection.");
       }
 
-      parser.checkedMove(Hash_ident.default_ident);
+      parser.checkedMove(IdentMap.default_ident);
       parser.checkedMove(T_COLON);
       gs.setDefaultAssociation(e_assign());
       return;

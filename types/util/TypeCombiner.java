@@ -1,22 +1,6 @@
 package ast.types.util;
 
-import static jscan.hashed.Hash_ident._Bool_ident;
-import static jscan.hashed.Hash_ident._Complex_ident;
-import static jscan.hashed.Hash_ident._Imaginary_ident;
-import static jscan.hashed.Hash_ident.auto_ident;
-import static jscan.hashed.Hash_ident.char_ident;
-import static jscan.hashed.Hash_ident.double_ident;
-import static jscan.hashed.Hash_ident.extern_ident;
-import static jscan.hashed.Hash_ident.float_ident;
-import static jscan.hashed.Hash_ident.int_ident;
-import static jscan.hashed.Hash_ident.long_ident;
-import static jscan.hashed.Hash_ident.register_ident;
-import static jscan.hashed.Hash_ident.short_ident;
-import static jscan.hashed.Hash_ident.signed_ident;
-import static jscan.hashed.Hash_ident.static_ident;
-import static jscan.hashed.Hash_ident.typedef_ident;
-import static jscan.hashed.Hash_ident.unsigned_ident;
-import static jscan.hashed.Hash_ident.void_ident;
+import static ast._entry.IdentMap.*;
 
 import java.util.List;
 
@@ -155,51 +139,51 @@ public class TypeCombiner {
       lastLoc = tok.loc();
       ts.append(id.getName() + " ");
 
-      if (id == void_ident) {
+      if (tok.isIdent(void_ident)) {
         checkdup(void_cnt, 1, lastLoc, "void");
         void_cnt += 1;
         flag |= f_void;
       }
 
-      else if (id == _Bool_ident) {
+      else if (tok.isIdent(_Bool_ident)) {
         checkdup(bool_cnt, 1, lastLoc, "bool");
         bool_cnt += 1;
         flag |= f_bool;
       }
 
-      else if (id == char_ident) {
+      else if (tok.isIdent(char_ident)) {
         checkdup(char_cnt, 1, lastLoc, "char");
         char_cnt += 1;
         flag |= f_char;
       }
 
-      else if (id == signed_ident) {
+      else if (tok.isIdent(signed_ident)) {
         checkzero(unsigned_cnt, lastLoc, "signed with unsigned is mistake");
         checkdup(signed_cnt, 1, lastLoc, "signed");
         signed_cnt += 1;
         flag |= f_signed;
       }
 
-      else if (id == unsigned_ident) {
+      else if (tok.isIdent(unsigned_ident)) {
         checkzero(signed_cnt, lastLoc, "signed with unsigned is mistake");
         checkdup(unsigned_cnt, 1, lastLoc, "unsigned");
         unsigned_cnt += 1;
         flag |= f_unsigned;
       }
 
-      else if (id == short_ident) {
+      else if (tok.isIdent(short_ident)) {
         checkdup(short_cnt, 1, lastLoc, "short");
         short_cnt += 1;
         flag |= f_short;
       }
 
-      else if (id == int_ident) {
+      else if (tok.isIdent(int_ident)) {
         checkdup(int_cnt, 1, lastLoc, "int");
         int_cnt += 1;
         flag |= f_int;
       }
 
-      else if (id == long_ident) {
+      else if (tok.isIdent(long_ident)) {
         checkdup(long_cnt, 2, lastLoc, "long");
 
         if (long_cnt == 1) { // is long long
@@ -211,25 +195,25 @@ public class TypeCombiner {
         long_cnt += 1;
       }
 
-      else if (id == float_ident) {
+      else if (tok.isIdent(float_ident)) {
         checkdup(float_cnt, 1, lastLoc, "float");
         float_cnt += 1;
         flag |= f_float;
       }
 
-      else if (id == double_ident) {
+      else if (tok.isIdent(double_ident)) {
         checkdup(double_cnt, 1, lastLoc, "double");
         double_cnt += 1;
         flag |= f_double;
       }
 
-      else if (id == _Complex_ident) {
+      else if (tok.isIdent(_Complex_ident)) {
         checkdup(complex_cnt, 1, lastLoc, "complex");
         complex_cnt += 1;
         flag |= f_complex;
       }
 
-      else if (id == _Imaginary_ident) {
+      else if (tok.isIdent(_Imaginary_ident)) {
         checkdup(imaginary_cnt, 1, lastLoc, "imaginary");
         imaginary_cnt += 1;
         flag |= f_imaginary;

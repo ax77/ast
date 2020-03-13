@@ -1,8 +1,8 @@
 package ast.decls.parser;
 
-import jscan.hashed.Hash_ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import ast._entry.IdentMap;
 import ast.expr.CExpression;
 import ast.expr.parser.ParseExpression;
 import ast.expr.sem.ConstexprEval;
@@ -21,11 +21,11 @@ public class ParseStaticAssert {
     //    : STATIC_ASSERT '(' constant_expression ',' STRING_LITERAL ')' ';'
     //    ;
 
-    if (!parser.tok().isIdent(Hash_ident._Static_assert_ident)) {
+    if (!parser.tok().isIdent(IdentMap._Static_assert_ident)) {
       return false;
     }
 
-    parser.checkedMove(Hash_ident._Static_assert_ident);
+    parser.checkedMove(IdentMap._Static_assert_ident);
     parser.lparen();
 
     CExpression ce = new ParseExpression(parser).e_const_expr();

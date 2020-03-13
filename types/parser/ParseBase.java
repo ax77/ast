@@ -7,9 +7,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import jscan.hashed.Hash_ident;
 import jscan.tokenize.Token;
-import ast.attributes.AttributeList;
+import ast._entry.IdentMap;
 import ast.attributes.main.AttributesAsmsLists;
 import ast.attributes.main.ParseAttributesAsms;
 import ast.parse.Parse;
@@ -61,12 +60,12 @@ public class ParseBase {
     // 1) compound
     if (!compoundKeywords.isEmpty()) {
       Token first = compoundKeywords.remove(0);
-      if (first.isIdent(Hash_ident.enum_ident)) {
+      if (first.isIdent(IdentMap.enum_ident)) {
         return new ParseEnum(parser).parse();
       }
 
       else {
-        boolean isUnion = (first.isIdent(Hash_ident.union_ident));
+        boolean isUnion = (first.isIdent(IdentMap.union_ident));
         return new ParseStruct(parser, isUnion).parse();
       }
     }

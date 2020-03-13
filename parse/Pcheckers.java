@@ -6,9 +6,9 @@ import static jscan.tokenize.T.T_MINUS;
 import static jscan.tokenize.T.T_PLUS;
 import static jscan.tokenize.T.T_TILDE;
 import static jscan.tokenize.T.T_TIMES;
-import jscan.hashed.Hash_ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import ast._entry.IdentMap;
 
 public abstract class Pcheckers {
 
@@ -42,45 +42,45 @@ public abstract class Pcheckers {
   }
   
   public static boolean isStorageClassSpec(Token what) {
-    return what.isIdent(Hash_ident.static_ident) 
-        || what.isIdent(Hash_ident.extern_ident)
-        || what.isIdent(Hash_ident.auto_ident)
-        || what.isIdent(Hash_ident.register_ident)
-        || what.isIdent(Hash_ident.typedef_ident)
+    return what.isIdent(IdentMap.static_ident) 
+        || what.isIdent(IdentMap.extern_ident)
+        || what.isIdent(IdentMap.auto_ident)
+        || what.isIdent(IdentMap.register_ident)
+        || what.isIdent(IdentMap.typedef_ident)
         ;
   }
   
   public static boolean isTypeSpec(Token what) {
-    return what.isIdent(Hash_ident.void_ident)
-        || what.isIdent(Hash_ident.char_ident)
-        || what.isIdent(Hash_ident.short_ident)
-        || what.isIdent(Hash_ident.int_ident)
-        || what.isIdent(Hash_ident.long_ident)
-        || what.isIdent(Hash_ident.float_ident)
-        || what.isIdent(Hash_ident.double_ident)
-        || what.isIdent(Hash_ident.signed_ident)
-        || what.isIdent(Hash_ident.unsigned_ident)
-        || what.isIdent(Hash_ident._Bool_ident)
-        || what.isIdent(Hash_ident._Complex_ident)
+    return what.isIdent(IdentMap.void_ident)
+        || what.isIdent(IdentMap.char_ident)
+        || what.isIdent(IdentMap.short_ident)
+        || what.isIdent(IdentMap.int_ident)
+        || what.isIdent(IdentMap.long_ident)
+        || what.isIdent(IdentMap.float_ident)
+        || what.isIdent(IdentMap.double_ident)
+        || what.isIdent(IdentMap.signed_ident)
+        || what.isIdent(IdentMap.unsigned_ident)
+        || what.isIdent(IdentMap._Bool_ident)
+        || what.isIdent(IdentMap._Complex_ident)
         ;
   }
   
   public static boolean isConstIdent(Token what) {
-    return what.isIdent(Hash_ident.const_ident)
-        || what.isIdent(Hash_ident.__const___ident)
-        || what.isIdent(Hash_ident.__const_ident);
+    return what.isIdent(IdentMap.const_ident)
+        || what.isIdent(IdentMap.__const___ident)
+        || what.isIdent(IdentMap.__const_ident);
   }
   
   public static boolean isVolatileIdent(Token what) {
-    return what.isIdent(Hash_ident.volatile_ident)
-        || what.isIdent(Hash_ident.__volatile___ident)
-        || what.isIdent(Hash_ident.__volatile_ident);
+    return what.isIdent(IdentMap.volatile_ident)
+        || what.isIdent(IdentMap.__volatile___ident)
+        || what.isIdent(IdentMap.__volatile_ident);
   }
   
   private static boolean isRestrictIdent(Token what) {
-    return what.isIdent(Hash_ident.restrict_ident)
-        || what.isIdent(Hash_ident.__restrict___ident)
-        || what.isIdent(Hash_ident.__restrict_ident);
+    return what.isIdent(IdentMap.restrict_ident)
+        || what.isIdent(IdentMap.__restrict___ident)
+        || what.isIdent(IdentMap.__restrict_ident);
   }
   
   public static boolean isTypeQual(Token what) {
@@ -90,9 +90,9 @@ public abstract class Pcheckers {
   }
   
   public static boolean isInlineIdent(Token what) {
-    return what.isIdent(Hash_ident.inline_ident) 
-        || what.isIdent(Hash_ident.__inline_ident) 
-        || what.isIdent(Hash_ident.__inline___ident);
+    return what.isIdent(IdentMap.inline_ident) 
+        || what.isIdent(IdentMap.__inline_ident) 
+        || what.isIdent(IdentMap.__inline___ident);
   }
   
   public static boolean isFuncSpec(Token what) {
@@ -101,30 +101,30 @@ public abstract class Pcheckers {
   }
 
   public static boolean isNoreturnIdent(Token what) {
-    return what.isIdent(Hash_ident._Noreturn_ident);
+    return what.isIdent(IdentMap._Noreturn_ident);
   }
   
   public static boolean isEnumSpecStart(Token what) {
-    return what.isIdent(Hash_ident.enum_ident);
+    return what.isIdent(IdentMap.enum_ident);
   }
   
   public static boolean isStructOrUnionSpecStart(Token what) {
-    return what.isIdent(Hash_ident.struct_ident) 
-        || what.isIdent(Hash_ident.union_ident);
+    return what.isIdent(IdentMap.struct_ident) 
+        || what.isIdent(IdentMap.union_ident);
   }
   
   public static boolean isAttributeStartGnuc(Token what) {
-    return what.isIdent(Hash_ident.__attribute___ident)
-        || what.isIdent(Hash_ident.__attribute_ident);
+    return what.isIdent(IdentMap.__attribute___ident)
+        || what.isIdent(IdentMap.__attribute_ident);
   }
   
   public static boolean isAsmStart(Token what) {
-    return what.isIdent(Hash_ident.asm_ident)
-        || what.isIdent(Hash_ident.__asm___ident)
-        || what.isIdent(Hash_ident.__asm_ident);
+    return what.isIdent(IdentMap.asm_ident)
+        || what.isIdent(IdentMap.__asm___ident)
+        || what.isIdent(IdentMap.__asm_ident);
   }
   
   public static boolean isStaticAssert(Token what) {
-    return what.isIdent(Hash_ident._Static_assert_ident);
+    return what.isIdent(IdentMap._Static_assert_ident);
   }
 }
