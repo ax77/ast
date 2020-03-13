@@ -176,6 +176,12 @@ public class Parse {
     addLoc();
   }
 
+  public Token moveget() {
+    Token tok = tok();
+    move();
+    return tok;
+  }
+
   private void addLoc() {
 
     if (ringBuffer.size() >= 230) {
@@ -398,6 +404,13 @@ public class Parse {
 
   public boolean isAttributeStart() {
     return Pcheckers.isAttributeStart(tok);
+  }
+
+  public boolean isAttributeStartC2X() {
+    Token currtok = tok();
+    Token nexttok = peek();
+    // [[  ...  ]]
+    return currtok.ofType(T.T_LEFT_BRACKET) && nexttok.ofType(T.T_LEFT_BRACKET);
   }
 
   public boolean isAsmStart() {
