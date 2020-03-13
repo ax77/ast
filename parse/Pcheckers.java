@@ -113,7 +113,7 @@ public abstract class Pcheckers {
         || what.isIdent(Hash_ident.union_ident);
   }
   
-  public static boolean isAttributeStart(Token what) {
+  public static boolean isAttributeStartGnuc(Token what) {
     return what.isIdent(Hash_ident.__attribute___ident)
         || what.isIdent(Hash_ident.__attribute_ident);
   }

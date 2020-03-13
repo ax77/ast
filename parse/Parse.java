@@ -402,8 +402,8 @@ public class Parse {
   }
   //@formatter:on
 
-  public boolean isAttributeStart() {
-    return Pcheckers.isAttributeStart(tok);
+  public boolean isAttributeStartGnuc() {
+    return Pcheckers.isAttributeStartGnuc(tok);
   }
 
   public boolean isAttributeStartC2X() {

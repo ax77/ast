@@ -237,11 +237,6 @@ public class ParseInitializerList {
     }
   }
 
-  private void expectOpen() {
-    @SuppressWarnings("unused")
-    Token jo = parser.checkedMove(T.T_LEFT_BRACE);
-  }
-
   private void expectClose() {
     @SuppressWarnings("unused")
     Token jo = parser.checkedMove(T.T_RIGHT_BRACE);

@@ -17,7 +17,7 @@ public class ParseAttributesAsms {
   public AttributesAsmsLists parse() {
     AttributesAsmsLists retval = new AttributesAsmsLists();
 
-    if (parser.isAttributeStart()) {
+    if (parser.isAttributeStartGnuc()) {
       AttributeList attributeList = new ParseAttributesGcc(parser).parse();
       retval.setAttributeList(attributeList);
     }

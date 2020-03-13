@@ -11,7 +11,7 @@ import org.junit.Test;
 import ast.parse.Parse;
 import ast.unit.TranslationUnit;
 
-public class Test_StaticAssert {
+public class Test_StaticAssert1 {
 
   private static Stream getHashedStream(String source) throws IOException {
     return new Stream("", source);

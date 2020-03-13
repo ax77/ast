@@ -19,7 +19,7 @@ public class ParseAttributesGcc {
   public AttributeList parse() {
     AttributeList result = new AttributeList();
 
-    while (parser.isAttributeStart()) {
+    while (parser.isAttributeStartGnuc()) {
       Attribute attr = parseOneAttribute();
       result.push(attr);
     }

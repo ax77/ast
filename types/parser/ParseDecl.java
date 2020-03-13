@@ -12,11 +12,12 @@ import jscan.hashed.Hash_ident;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import ast.attributes.main.AttributesAsmsLists;
+import ast.attributes.main.ParseAttributesAsms;
 import ast.expr.CExpression;
 import ast.expr.parser.ParseExpression;
 import ast.expr.sem.ConstexprEval;
 import ast.parse.Parse;
-import ast.parse.Pskipper;
 import ast.types.CFuncParam;
 import ast.types.CType;
 import ast.types.decl.CDecl;
@@ -69,7 +70,9 @@ public class ParseDecl {
       out.add(e);
     }
 
-    new Pskipper(parser).skipAttributesAndAsm();
+    // TODO:attributes
+    @SuppressWarnings("unused")
+    AttributesAsmsLists attributesAsmsLists = new ParseAttributesAsms(parser).parse();
 
   }
 

@@ -1,8 +1,6 @@
 package ast;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,84 +14,12 @@ import jscan.tokenize.Token;
 import org.junit.Test;
 
 import ast.parse.Parse;
-import ast.parse.Pskipper;
 import ast.unit.TranslationUnit;
 
 public class TestSkipper {
 
   private static Stream getHashedStream(String source) throws IOException {
     return new Stream(TestSkipper.class.getSimpleName(), source);
-  }
-
-  @Test
-  public void testSkipAttrs() throws IOException {
-    StringBuilder sb = new StringBuilder();
-    sb.append("__attribute__((__format__ (__scanf__, 2, 0)))\n");
-    sb.append("__attribute__((__format__ (__printf__, 2, 3)))\n");
-    sb.append("__attribute__((availability(macosx,introduced=10.7)))\n");
-    sb.append("__attribute__((__availability__(swift, unavailable, message=\"Use vsnprintf instead.\")))\n");
-    sb.append("1 2");
-
-    List<Token> tokenlist = getHashedStream(sb.toString()).getTokenlist();
-    Parse p = new Parse(tokenlist);
-    assertTrue(new Pskipper(p).skipAttributes());
-
-    assertEquals("1", p.tok().getValue());
-
-    p.move();
-    assertEquals("2", p.tok().getValue());
-  }
-
-  @Test
-  public void testSkipAsm() throws IOException {
-    StringBuilder sb = new StringBuilder();
-    sb.append("__asm __volatile__ (\"_\" \"fdopen\" )\n");
-    sb.append("1 2");
-
-    List<Token> tokenlist = getHashedStream(sb.toString()).getTokenlist();
-    Parse p = new Parse(tokenlist);
-    assertTrue(new Pskipper(p).skipAsm());
-
-    assertEquals("1", p.tok().getValue());
-
-    p.move();
-    assertEquals("2", p.tok().getValue());
-
-  }
-
-  @Test
-  public void testSkipAttrsAndAsm() throws IOException {
-    StringBuilder sb = new StringBuilder();
-    sb.append("__attribute__((__format__ (__scanf__, 2, 0)))\n");
-    sb.append("__attribute__((__format__ (__printf__, 2, 3)))\n");
-    sb.append("__attribute__((availability(macosx,introduced=10.7)))\n");
-    sb.append("__attribute__((__availability__(swift, unavailable, message=\"Use vsnprintf instead.\")))\n");
-    sb.append("__asm __volatile__ (\"_\" \"fdopen\" )\n");
-    sb.append("1 2");
-
-    List<Token> tokenlist = getHashedStream(sb.toString()).getTokenlist();
-    Parse p = new Parse(tokenlist);
-    assertTrue(new Pskipper(p).skipAttributesAndAsm());
-
-    assertEquals("1", p.tok().getValue());
-
-    p.move();
-    assertEquals("2", p.tok().getValue());
-  }
-
-  @Test
-  public void testSkipAttrsAndAsmNo() throws IOException {
-    StringBuilder sb = new StringBuilder();
-    sb.append("int main() { return 0; }");
-
-    List<Token> tokenlist = getHashedStream(sb.toString()).getTokenlist();
-    Parse p = new Parse(tokenlist);
-    assertFalse(new Pskipper(p).skipAttributesAndAsm());
-
-    assertEquals("int", p.tok().getValue());
-
-    p.move();
-    assertEquals("main", p.tok().getValue());
   }
 
   @Test

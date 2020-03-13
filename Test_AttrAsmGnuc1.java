@@ -1,4 +1,4 @@
-package ast.attributes;
+package ast;
 
 import static org.junit.Assert.assertEquals;
 
@@ -10,12 +10,13 @@ import org.junit.Test;
 
 import ast._entry.PreprocessSourceForParser;
 import ast._entry.PreprocessSourceForParserVariant;
+import ast.attributes.AttributeList;
 import ast.attributes.asm.AsmList;
 import ast.attributes.asm.ParseAsm;
 import ast.attributes.gnuc.ParseAttributesGcc;
 import ast.parse.Parse;
 
-public class Test_GccAttrAsm1 {
+public class Test_AttrAsmGnuc1 {
 
   @Test
   public void testSkipAttrsAndAsm() throws IOException {

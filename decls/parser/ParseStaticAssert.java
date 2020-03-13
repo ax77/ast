@@ -29,17 +29,29 @@ public class ParseStaticAssert {
     parser.lparen();
 
     CExpression ce = new ParseExpression(parser).e_const_expr();
-    parser.checkedMove(T.T_COMMA);
+    long result = new ConstexprEval(parser).ce(ce);
 
-    Token message = parser.checkedMove(T.TOKEN_STRING);
-    parser.rparen();
-    parser.semicolon();
+    if (parser.tok().ofType(T.T_RIGHT_PAREN)) {
 
-    long sares = new ConstexprEval(parser).ce(ce);
-    if (sares == 0) {
-      parser.perror("static-assert fail with message: " + message.getValue());
+      // c2x
+      if (result == 0) {
+        parser.perror("static-assert fail: " + ce);
+      }
+
+    } else {
+
+      // c99 
+      parser.checkedMove(T.T_COMMA);
+      Token message = parser.checkedMove(T.TOKEN_STRING);
+
+      if (result == 0) {
+        parser.perror("static-assert fail: " + message.getValue());
+      }
+
     }
 
+    parser.rparen();
+    parser.semicolon();
     return true;
   }
 

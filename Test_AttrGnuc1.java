@@ -1,4 +1,4 @@
-package ast.attributes;
+package ast;
 
 import static org.junit.Assert.*;
 
@@ -15,11 +15,13 @@ import org.junit.Test;
 
 import ast._entry.PreprocessSourceForParser;
 import ast._entry.PreprocessSourceForParserVariant;
+import ast.attributes.Attribute;
+import ast.attributes.AttributeList;
 import ast.attributes.gnuc.ParseAttributesGcc;
 import ast.attributes.util.BalancedTokenlistParser;
 import ast.parse.Parse;
 
-public class Test_GccAttr1 {
+public class Test_AttrGnuc1 {
 
   @Ignore
   @Test

@@ -1,4 +1,4 @@
-package ast.attributes;
+package ast;
 
 import static org.junit.Assert.assertEquals;
 
@@ -11,11 +11,12 @@ import org.junit.Test;
 
 import ast._entry.PreprocessSourceForParser;
 import ast._entry.PreprocessSourceForParserVariant;
+import ast.attributes.Attribute;
 import ast.attributes.main.AttributesAsmsLists;
 import ast.attributes.main.ParseAttributesAsms;
 import ast.parse.Parse;
 
-public class Test_c2x {
+public class Test_AttrC2x {
 
   @Test
   public void testSimpleAttributes_C2X() throws IOException {
