@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ast.errors.ParseException;
+import ast.parse.NullChecker;
 import jscan.Tokenlist;
 import jscan.fio.FileWrapper;
 import jscan.hashed.Hash_all;
@@ -23,17 +24,39 @@ public class ParseConf {
   public static final int PREPEND_PREDEFINED_BUFFER    = 1<<3;
   //@formatter:on
 
-  public static final String UNIT_TEST_FILENAME = "<unit-test>";
-
   private final int flag;
   private final String filename;
-  private final String source;
+  private final StringBuilder source;
 
-  public ParseConf(int flag, String filename, String source) {
+  public ParseConf(int flag, String filename) {
+    NullChecker.check(filename);
+
     this.flag = flag;
     this.filename = filename;
+    this.source = new StringBuilder();
+
+    checkFlag(PREPROCESS_FILE_INPUT);
+    postInit();
+  }
+
+  public ParseConf(int flag, StringBuilder source) {
+    NullChecker.check(source);
+
+    this.flag = flag;
+    this.filename = "<unit-test>";
     this.source = source;
 
+    checkFlag(PREPROCESS_STRING_INPUT);
+    postInit();
+  }
+
+  private void checkFlag(int f) {
+    if (!isFlag(f)) {
+      throw new ParseException("internal error. conf-flag incorrect.");
+    }
+  }
+
+  private void postInit() {
     // XXX: file or string
     checkFlags();
 
@@ -114,7 +137,7 @@ public class ParseConf {
       result.addAll(tokenizePredefined());
     }
     if (isFlag(PREPROCESS_STRING_INPUT)) {
-      List<Token> stringInputList = new Stream(filename, source).getTokenlist();
+      List<Token> stringInputList = new Stream(filename, source.toString()).getTokenlist();
       result.addAll(stringInputList);
     }
     if (isFlag(PREPROCESS_FILE_INPUT)) {

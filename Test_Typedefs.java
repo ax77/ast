@@ -2,7 +2,6 @@ package ast;
 
 import static ast._entry.ParseConf.APPLY_STR_CONCAT;
 import static ast._entry.ParseConf.PREPROCESS_STRING_INPUT;
-import static ast._entry.ParseConf.UNIT_TEST_FILENAME;
 
 import java.io.IOException;
 
@@ -18,9 +17,8 @@ import ast.unit.TranslationUnit;
 public class Test_Typedefs {
 
   private Tokenlist getTokenlist(StringBuilder sb) throws IOException {
-    ParseConf conf = new ParseConf(PREPROCESS_STRING_INPUT | APPLY_STR_CONCAT, UNIT_TEST_FILENAME, sb.toString());
-    Tokenlist tokenlist = conf.preprocess();
-    return tokenlist;
+    ParseConf conf = new ParseConf(PREPROCESS_STRING_INPUT | APPLY_STR_CONCAT, sb);
+    return conf.preprocess();
   }
 
   @Test
@@ -34,8 +32,7 @@ public class Test_Typedefs {
     String methodName = new Object() {
     }.getClass().getEnclosingMethod().getName();
 
-    ParseConf conf = new ParseConf(PREPROCESS_STRING_INPUT | APPLY_STR_CONCAT, methodName, sb.toString());
-    Tokenlist tokenlist = conf.preprocess();
+    Tokenlist tokenlist = getTokenlist(sb);
 
     Parse p = new Parse(tokenlist);
     TranslationUnit unit = p.parse_unit();
