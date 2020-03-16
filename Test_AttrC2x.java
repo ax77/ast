@@ -9,8 +9,6 @@ import jscan.tokenize.Token;
 
 import org.junit.Test;
 
-import ast._entry.PreprocessSourceForParser;
-import ast._entry.PreprocessSourceForParserVariant;
 import ast.attributes.Attribute;
 import ast.attributes.main.AttributesAsmsLists;
 import ast.attributes.main.ParseAttributesAsms;

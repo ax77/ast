@@ -1,4 +1,4 @@
-package ast._entry;
+package ast;
 
 public class PreprocessSourceForParserVariant {
   private final String filenameOrText;

@@ -11,8 +11,6 @@ import jscan.Tokenlist;
 
 import org.junit.Test;
 
-import ast._entry.PreprocessSourceForParser;
-import ast._entry.PreprocessSourceForParserVariant;
 import ast.expr.CExpression;
 import ast.expr.parser.ParseExpression;
 import ast.expr.sem.ConstexprEval;

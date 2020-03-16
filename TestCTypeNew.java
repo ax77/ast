@@ -15,8 +15,6 @@ import jscan.hashed.Hash_ident;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import ast._entry.PreprocessSourceForParser;
-import ast._entry.PreprocessSourceForParserVariant;
 import ast.decls.Declaration;
 import ast.errors.ParseException;
 import ast.parse.Parse;

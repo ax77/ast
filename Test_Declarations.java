@@ -7,8 +7,6 @@ import jscan.Tokenlist;
 
 import org.junit.Test;
 
-import ast._entry.PreprocessSourceForParser;
-import ast._entry.PreprocessSourceForParserVariant;
 import ast.decls.Initializer;
 import ast.parse.Parse;
 import ast.symtab.elements.CSymbol;

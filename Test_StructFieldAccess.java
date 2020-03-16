@@ -8,8 +8,6 @@ import jscan.Tokenlist;
 
 import org.junit.Test;
 
-import ast._entry.PreprocessSourceForParser;
-import ast._entry.PreprocessSourceForParserVariant;
 import ast.errors.ParseException;
 import ast.parse.Parse;
 import ast.unit.TranslationUnit;

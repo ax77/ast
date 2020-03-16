@@ -7,8 +7,6 @@ import jscan.Tokenlist;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import ast._entry.PreprocessSourceForParser;
-import ast._entry.PreprocessSourceForParserVariant;
 import ast.decls.Initializer;
 import ast.errors.ParseException;
 import ast.parse.Parse;

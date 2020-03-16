@@ -1,24 +1,26 @@
 package ast;
 
+import static ast._entry.ParseConf.APPLY_STR_CONCAT;
+import static ast._entry.ParseConf.PREPROCESS_STRING_INPUT;
+import static ast._entry.ParseConf.UNIT_TEST_FILENAME;
+
 import java.io.IOException;
-import java.util.List;
 
 import jscan.Tokenlist;
-import jscan.tokenize.Stream;
-import jscan.tokenize.Token;
 
 import org.junit.Test;
 
-import ast._entry.PreprocessSourceForParser;
-import ast._entry.PreprocessSourceForParserVariant;
+import ast._entry.ParseConf;
 import ast.errors.ParseException;
 import ast.parse.Parse;
 import ast.unit.TranslationUnit;
 
 public class Test_Typedefs {
 
-  private static Stream getHashedStream(String source) throws IOException {
-    return new Stream("", source);
+  private Tokenlist getTokenlist(StringBuilder sb) throws IOException {
+    ParseConf conf = new ParseConf(PREPROCESS_STRING_INPUT | APPLY_STR_CONCAT, UNIT_TEST_FILENAME, sb.toString());
+    Tokenlist tokenlist = conf.preprocess();
+    return tokenlist;
   }
 
   @Test
@@ -29,7 +31,12 @@ public class Test_Typedefs {
     sb.append("pi32 y = &x;\n");
     sb.append("static int z = -1;\n");
 
-    List<Token> tokenlist = getHashedStream(sb.toString()).getTokenlist();
+    String methodName = new Object() {
+    }.getClass().getEnclosingMethod().getName();
+
+    ParseConf conf = new ParseConf(PREPROCESS_STRING_INPUT | APPLY_STR_CONCAT, methodName, sb.toString());
+    Tokenlist tokenlist = conf.preprocess();
+
     Parse p = new Parse(tokenlist);
     TranslationUnit unit = p.parse_unit();
 
@@ -53,7 +60,8 @@ public class Test_Typedefs {
     sb.append(" /*018*/  signed short int typedef i16, *pi16, HWORD;      \n");
     sb.append(" /*019*/  unsigned typedef char i8, *pi8, BYTE, *PBYTE;    \n");
 
-    List<Token> tokenlist = getHashedStream(sb.toString()).getTokenlist();
+    Tokenlist tokenlist = getTokenlist(sb);
+
     Parse p = new Parse(tokenlist);
     TranslationUnit unit = p.parse_unit();
   }
@@ -99,7 +107,8 @@ public class Test_Typedefs {
     sb.append(" /*035*/  }                                                     \n");
     //@formatter:on
 
-    List<Token> tokenlist = getHashedStream(sb.toString()).getTokenlist();
+    Tokenlist tokenlist = getTokenlist(sb);
+
     Parse p = new Parse(tokenlist);
     TranslationUnit unit = p.parse_unit();
   }
@@ -159,7 +168,8 @@ public class Test_Typedefs {
     sb.append(" /*049*/  }                                                            \n");
     //@formatter:on
 
-    List<Token> tokenlist = getHashedStream(sb.toString()).getTokenlist();
+    Tokenlist tokenlist = getTokenlist(sb);
+
     Parse p = new Parse(tokenlist);
     TranslationUnit unit = p.parse_unit();
   }
@@ -180,7 +190,8 @@ public class Test_Typedefs {
     sb.append(" /*011*/  ptoken_t ptok;                                        \n");
     sb.append(" /*012*/  i32 typedef i32, int32_ht, *pi32;                     \n");
 
-    List<Token> tokenlist = getHashedStream(sb.toString()).getTokenlist();
+    Tokenlist tokenlist = getTokenlist(sb);
+
     Parse p = new Parse(tokenlist);
     TranslationUnit unit = p.parse_unit();
   }
@@ -196,7 +207,8 @@ public class Test_Typedefs {
     sb.append(" /*006*/  typedef int test_t;           \n");
     sb.append(" /*007*/  test_t x;                     \n");
 
-    List<Token> tokenlist = getHashedStream(sb.toString()).getTokenlist();
+    Tokenlist tokenlist = getTokenlist(sb);
+
     Parse p = new Parse(tokenlist);
     TranslationUnit unit = p.parse_unit();
   }
@@ -257,7 +269,8 @@ public class Test_Typedefs {
     sb.append(" /*048*/  }                                                                                    \n");
     //@formatter:on
 
-    List<Token> tokenlist = getHashedStream(sb.toString()).getTokenlist();
+    Tokenlist tokenlist = getTokenlist(sb);
+
     Parse p = new Parse(tokenlist);
     TranslationUnit unit = p.parse_unit();
   }
@@ -294,8 +307,9 @@ public class Test_Typedefs {
     sb.append(" /*026*/  }                                                                       \n");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
-    Parse p = new Parse(it);
+    Tokenlist tokenlist = getTokenlist(sb);
+
+    Parse p = new Parse(tokenlist);
     TranslationUnit unit = p.parse_unit();
   }
 

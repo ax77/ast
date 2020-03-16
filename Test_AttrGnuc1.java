@@ -13,8 +13,6 @@ import jscan.tokenize.Token;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import ast._entry.PreprocessSourceForParser;
-import ast._entry.PreprocessSourceForParserVariant;
 import ast.attributes.Attribute;
 import ast.attributes.AttributeList;
 import ast.attributes.gnuc.ParseAttributesGcc;

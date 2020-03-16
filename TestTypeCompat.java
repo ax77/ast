@@ -10,8 +10,6 @@ import jscan.Tokenlist;
 
 import org.junit.Test;
 
-import ast._entry.PreprocessSourceForParser;
-import ast._entry.PreprocessSourceForParserVariant;
 import ast.expr.sem.TypeApplier;
 import ast.parse.Parse;
 import ast.types.CArrayType;
