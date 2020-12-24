@@ -2,16 +2,14 @@ package ast;
 
 import java.io.IOException;
 
-import jscan.Tokenlist;
-
-import org.junit.Ignore;
 import org.junit.Test;
 
-import ast.decls.Initializer;
 import ast.errors.ParseException;
+import ast.main.ParserMain;
 import ast.parse.Parse;
 import ast.symtab.elements.CSymbol;
 import ast.unit.TranslationUnit;
+import jscan.Tokenlist;
 
 public class Test_Statements {
 
@@ -31,7 +29,7 @@ public class Test_Statements {
     sb.append(" /*009*/  }                           \n");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
     TranslationUnit unit = p.parse_unit();
 
@@ -61,7 +59,7 @@ public class Test_Statements {
     sb.append(" /*009*/  }                           \n");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
     TranslationUnit unit = p.parse_unit();
 

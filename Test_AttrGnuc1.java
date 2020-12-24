@@ -1,14 +1,10 @@
 package ast;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import jscan.Tokenlist;
-import jscan.tokenize.T;
-import jscan.tokenize.Token;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -17,7 +13,11 @@ import ast.attributes.Attribute;
 import ast.attributes.AttributeList;
 import ast.attributes.gnuc.ParseAttributesGcc;
 import ast.attributes.util.BalancedTokenlistParser;
+import ast.main.ParserMain;
 import ast.parse.Parse;
+import jscan.Tokenlist;
+import jscan.tokenize.T;
+import jscan.tokenize.Token;
 
 public class Test_AttrGnuc1 {
 
@@ -35,7 +35,7 @@ public class Test_AttrGnuc1 {
     balanced.add("  (([]))             g ");
 
     for (String s : balanced) {
-      Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(s, false)).pp();
+      Tokenlist it = new ParserMain(new StringBuilder(s)).preprocess();
       Parse p = new Parse(it);
 
       System.out.println(s + ":");
@@ -58,7 +58,7 @@ public class Test_AttrGnuc1 {
     balanced.add("  { { int a; int b; if(1) {} } }    b ");
 
     for (String s : balanced) {
-      Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(s, false)).pp();
+      Tokenlist it = new ParserMain(new StringBuilder(s)).preprocess();
       Parse p = new Parse(it);
 
       System.out.println(s + ":");
@@ -85,7 +85,7 @@ public class Test_AttrGnuc1 {
     sb.append(" inline int multiple() { return 2; }                   \n");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
 
     AttributeList list = new ParseAttributesGcc(p).parse();

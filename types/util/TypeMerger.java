@@ -12,7 +12,7 @@ import ast.types.CPointerType;
 import ast.types.CType;
 import ast.types.decl.CDecl;
 import ast.types.decl.CDeclEntry;
-import ast.types.main.TypeKind;
+import ast.types.main.CTypeKind;
 
 public abstract class TypeMerger {
 
@@ -40,16 +40,16 @@ public abstract class TypeMerger {
   }
 
   private static CType buildFromDeclaratorEntry(CDeclEntry e, CType type) {
-    TypeKind base = e.getBase();
-    if (base == TypeKind.TP_ARRAY_OF) {
+    CTypeKind base = e.getBase();
+    if (base == CTypeKind.TP_ARRAY_OF) {
       CArrayType arr = new CArrayType(type, e.getArrlen());
       return new CType(arr);
     }
-    if (base == TypeKind.TP_POINTER_TO) {
+    if (base == CTypeKind.TP_POINTER_TO) {
       final CPointerType ptrTo = new CPointerType(type, e.isConstPointer());
       return new CType(ptrTo);
     }
-    if (base == TypeKind.TP_FUNCTION) {
+    if (base == CTypeKind.TP_FUNCTION) {
       CFunctionType fn = new CFunctionType(type, e.getParameters(), e.isVariadicFunction());
       return new CType(fn);
     }

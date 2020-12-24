@@ -7,11 +7,11 @@ import java.util.List;
 
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import ast._entry.IdentMap;
 import ast.expr.CExpression;
 import ast.expr.sem.TypeApplier;
 import ast.expr.sem.TypeApplierStage;
 import ast.parse.Parse;
+import ast.symtab.IdentMap;
 import ast.types.CType;
 
 class GenericAssociation {

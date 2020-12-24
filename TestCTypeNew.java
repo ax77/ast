@@ -9,14 +9,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import jscan.Tokenlist;
-import jscan.hashed.Hash_ident;
-
 import org.junit.Ignore;
 import org.junit.Test;
 
 import ast.decls.Declaration;
 import ast.errors.ParseException;
+import ast.main.ParserMain;
 import ast.parse.Parse;
 import ast.symtab.elements.CSymbol;
 import ast.types.CFuncParam;
@@ -24,12 +22,14 @@ import ast.types.CStructField;
 import ast.types.CStructType;
 import ast.types.CType;
 import ast.types.decl.CDecl;
-import ast.types.main.TypeKind;
+import ast.types.main.CTypeKind;
 import ast.types.parser.ParseBase;
 import ast.types.parser.ParseDecl;
 import ast.types.util.TypeMerger;
 import ast.types.util.TypeSizes;
 import ast.unit.TranslationUnit;
+import jscan.Tokenlist;
+import jscan.hashed.Hash_ident;
 
 public class TestCTypeNew {
 
@@ -50,7 +50,7 @@ public class TestCTypeNew {
   @Test
   public void test0() throws IOException {
     final String source = "int *a";
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
+    Tokenlist it = new ParserMain(new StringBuilder(source)).preprocess();
     Parse p = new Parse(it);
 
     CType type = parseType(p);
@@ -58,14 +58,14 @@ public class TestCTypeNew {
     type = build(type, decl);
 
     assertEquals("a", decl.getName().getName());
-    assertEquals(TypeKind.TP_POINTER_TO, type.getKind());
+    assertEquals(CTypeKind.TP_POINTER_TO, type.getKind());
     assertEquals(2, type.chainLength());
   }
 
   @Test
   public void test1() throws IOException {
     final String source = "int **a";
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
+    Tokenlist it = new ParserMain(new StringBuilder(source)).preprocess();
     Parse p = new Parse(it);
 
     CType type = parseType(p);
@@ -73,16 +73,16 @@ public class TestCTypeNew {
     type = build(type, decl);
 
     assertEquals("a", decl.getName().getName());
-    assertEquals(TypeKind.TP_POINTER_TO, type.getKind());
-    assertEquals(TypeKind.TP_POINTER_TO, type.getTpPointer().getPointerTo().getKind());
-    assertEquals(TypeKind.TP_INT, type.getTpPointer().getPointerTo().getTpPointer().getPointerTo().getKind());
+    assertEquals(CTypeKind.TP_POINTER_TO, type.getKind());
+    assertEquals(CTypeKind.TP_POINTER_TO, type.getTpPointer().getPointerTo().getKind());
+    assertEquals(CTypeKind.TP_INT, type.getTpPointer().getPointerTo().getTpPointer().getPointerTo().getKind());
     assertEquals(3, type.chainLength());
   }
 
   @Test
   public void test2() throws IOException {
     final String source = "int (*a)";
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
+    Tokenlist it = new ParserMain(new StringBuilder(source)).preprocess();
     Parse p = new Parse(it);
 
     CType type = parseType(p);
@@ -90,15 +90,15 @@ public class TestCTypeNew {
     type = build(type, decl);
 
     assertEquals("a", decl.getName().getName());
-    assertEquals(TypeKind.TP_POINTER_TO, type.getKind());
-    assertEquals(TypeKind.TP_INT, type.getTpPointer().getPointerTo().getKind());
+    assertEquals(CTypeKind.TP_POINTER_TO, type.getKind());
+    assertEquals(CTypeKind.TP_INT, type.getTpPointer().getPointerTo().getKind());
     assertEquals(2, type.chainLength());
   }
 
   @Test
   public void testArray() throws IOException {
     final String source = "int a[]";
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
+    Tokenlist it = new ParserMain(new StringBuilder(source)).preprocess();
     Parse p = new Parse(it);
 
     CType type = parseType(p);
@@ -106,15 +106,15 @@ public class TestCTypeNew {
     type = build(type, decl);
 
     assertEquals("a", decl.getName().getName());
-    assertEquals(TypeKind.TP_ARRAY_OF, type.getKind());
-    assertEquals(TypeKind.TP_INT, type.getTpArray().getArrayOf().getKind());
+    assertEquals(CTypeKind.TP_ARRAY_OF, type.getKind());
+    assertEquals(CTypeKind.TP_INT, type.getTpArray().getArrayOf().getKind());
     assertEquals(2, type.chainLength());
   }
 
   @Test
   public void testFunc() throws IOException {
     final String source = "int a()";
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
+    Tokenlist it = new ParserMain(new StringBuilder(source)).preprocess();
     Parse p = new Parse(it);
 
     CType type = parseType(p);
@@ -122,15 +122,15 @@ public class TestCTypeNew {
     type = build(type, decl);
 
     assertEquals("a", decl.getName().getName());
-    assertEquals(TypeKind.TP_FUNCTION, type.getKind());
-    assertEquals(TypeKind.TP_INT, type.getTpFunction().getReturnType().getKind());
+    assertEquals(CTypeKind.TP_FUNCTION, type.getKind());
+    assertEquals(CTypeKind.TP_INT, type.getTpFunction().getReturnType().getKind());
     assertEquals(2, type.chainLength());
   }
 
   @Test
   public void testFuncWithParams() throws IOException {
     final String source = "int a(int x, int y, int z)";
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
+    Tokenlist it = new ParserMain(new StringBuilder(source)).preprocess();
     Parse p = new Parse(it);
 
     CType type = parseType(p);
@@ -138,27 +138,27 @@ public class TestCTypeNew {
     type = build(type, decl);
 
     assertEquals("a", decl.getName().getName());
-    assertEquals(TypeKind.TP_FUNCTION, type.getKind());
-    assertEquals(TypeKind.TP_INT, type.getTpFunction().getReturnType().getKind());
+    assertEquals(CTypeKind.TP_FUNCTION, type.getKind());
+    assertEquals(CTypeKind.TP_INT, type.getTpFunction().getReturnType().getKind());
     assertEquals(2, type.chainLength());
 
     final List<CFuncParam> parameters = type.getTpFunction().getParameters();
     assertEquals(3, parameters.size());
 
-    assertEquals(TypeKind.TP_INT, parameters.get(0).getType().getKind());
+    assertEquals(CTypeKind.TP_INT, parameters.get(0).getType().getKind());
     assertEquals("x", parameters.get(0).getName().getName());
 
-    assertEquals(TypeKind.TP_INT, parameters.get(1).getType().getKind());
+    assertEquals(CTypeKind.TP_INT, parameters.get(1).getType().getKind());
     assertEquals("y", parameters.get(1).getName().getName());
 
-    assertEquals(TypeKind.TP_INT, parameters.get(2).getType().getKind());
+    assertEquals(CTypeKind.TP_INT, parameters.get(2).getType().getKind());
     assertEquals("z", parameters.get(2).getName().getName());
   }
 
   @Test
   public void testFuncWithParamsVariadic() throws IOException {
     final String source = "int a(int x, int y, int z, ...)";
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
+    Tokenlist it = new ParserMain(new StringBuilder(source)).preprocess();
     Parse p = new Parse(it);
 
     CType type = parseType(p);
@@ -166,28 +166,28 @@ public class TestCTypeNew {
     type = build(type, decl);
 
     assertEquals("a", decl.getName().getName());
-    assertEquals(TypeKind.TP_FUNCTION, type.getKind());
-    assertEquals(TypeKind.TP_INT, type.getTpFunction().getReturnType().getKind());
+    assertEquals(CTypeKind.TP_FUNCTION, type.getKind());
+    assertEquals(CTypeKind.TP_INT, type.getTpFunction().getReturnType().getKind());
     assertEquals(2, type.chainLength());
     assertTrue(type.getTpFunction().isVariadic());
 
     final List<CFuncParam> parameters = type.getTpFunction().getParameters();
     assertEquals(3, parameters.size());
 
-    assertEquals(TypeKind.TP_INT, parameters.get(0).getType().getKind());
+    assertEquals(CTypeKind.TP_INT, parameters.get(0).getType().getKind());
     assertEquals("x", parameters.get(0).getName().getName());
 
-    assertEquals(TypeKind.TP_INT, parameters.get(1).getType().getKind());
+    assertEquals(CTypeKind.TP_INT, parameters.get(1).getType().getKind());
     assertEquals("y", parameters.get(1).getName().getName());
 
-    assertEquals(TypeKind.TP_INT, parameters.get(2).getType().getKind());
+    assertEquals(CTypeKind.TP_INT, parameters.get(2).getType().getKind());
     assertEquals("z", parameters.get(2).getName().getName());
   }
 
   @Test
   public void testAbstractDecl() throws IOException {
     final String source = "int **";
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
+    Tokenlist it = new ParserMain(new StringBuilder(source)).preprocess();
     Parse p = new Parse(it);
 
     CType type = parseType(p);
@@ -204,7 +204,7 @@ public class TestCTypeNew {
   @Test
   public void testPtr() throws IOException {
     final String source = "int *const *const *a";
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
+    Tokenlist it = new ParserMain(new StringBuilder(source)).preprocess();
     Parse p = new Parse(it);
 
     CType type = parseType(p);
@@ -214,18 +214,18 @@ public class TestCTypeNew {
     assertFalse(decl.isAstract());
     assertEquals(4, type.chainLength());
 
-    assertEquals(TypeKind.TP_POINTER_TO, type.getKind());
+    assertEquals(CTypeKind.TP_POINTER_TO, type.getKind());
     final CType pointerToPointer = type.getTpPointer().getPointerTo();
-    assertEquals(TypeKind.TP_POINTER_TO, pointerToPointer.getKind());
+    assertEquals(CTypeKind.TP_POINTER_TO, pointerToPointer.getKind());
 
     final CType pointerToPointerToPointer = type.getTpPointer().getPointerTo().getTpPointer().getPointerTo();
-    assertEquals(TypeKind.TP_POINTER_TO, pointerToPointerToPointer.getKind());
+    assertEquals(CTypeKind.TP_POINTER_TO, pointerToPointerToPointer.getKind());
   }
 
   @Test
   public void testPtrToArr() throws IOException {
     final String source = "int (*a)[]";
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
+    Tokenlist it = new ParserMain(new StringBuilder(source)).preprocess();
     Parse p = new Parse(it);
 
     CType type = parseType(p);
@@ -235,16 +235,16 @@ public class TestCTypeNew {
     assertFalse(decl.isAstract());
     assertEquals(3, type.chainLength());
 
-    assertEquals(TypeKind.TP_POINTER_TO, type.getKind());
-    assertEquals(TypeKind.TP_ARRAY_OF, type.getTpPointer().getPointerTo().getKind());
-    assertEquals(TypeKind.TP_INT, type.getTpPointer().getPointerTo().getTpArray().getArrayOf().getKind());
+    assertEquals(CTypeKind.TP_POINTER_TO, type.getKind());
+    assertEquals(CTypeKind.TP_ARRAY_OF, type.getTpPointer().getPointerTo().getKind());
+    assertEquals(CTypeKind.TP_INT, type.getTpPointer().getPointerTo().getTpArray().getArrayOf().getKind());
 
   }
 
   @Test
   public void testPtrToFn() throws IOException {
     final String source = "int (*a)()";
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
+    Tokenlist it = new ParserMain(new StringBuilder(source)).preprocess();
     Parse p = new Parse(it);
 
     CType type = parseType(p);
@@ -254,9 +254,9 @@ public class TestCTypeNew {
     assertFalse(decl.isAstract());
     assertEquals(3, type.chainLength());
 
-    assertEquals(TypeKind.TP_POINTER_TO, type.getKind());
-    assertEquals(TypeKind.TP_FUNCTION, type.getTpPointer().getPointerTo().getKind());
-    assertEquals(TypeKind.TP_INT, type.getTpPointer().getPointerTo().getTpFunction().getReturnType().getKind());
+    assertEquals(CTypeKind.TP_POINTER_TO, type.getKind());
+    assertEquals(CTypeKind.TP_FUNCTION, type.getTpPointer().getPointerTo().getKind());
+    assertEquals(CTypeKind.TP_INT, type.getTpPointer().getPointerTo().getTpFunction().getReturnType().getKind());
 
   }
 
@@ -280,7 +280,7 @@ public class TestCTypeNew {
 
     for (String e : tests) {
 
-      Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(e, false)).pp();
+      Tokenlist it = new ParserMain(new StringBuilder(e)).preprocess();
       Parse p = new Parse(it);
 
       CType type = parseType(p);
@@ -294,7 +294,7 @@ public class TestCTypeNew {
   @Test
   public void testMultidimArr() throws IOException {
     final String source = "int a[1][2][3]";
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
+    Tokenlist it = new ParserMain(new StringBuilder(source)).preprocess();
     Parse p = new Parse(it);
 
     CType base = parseType(p);
@@ -306,17 +306,17 @@ public class TestCTypeNew {
 
     assertEquals("a", decl.getName().getName());
 
-    assertEquals(TypeKind.TP_ARRAY_OF, type.getKind());
-    assertEquals(TypeKind.TP_ARRAY_OF, type.getTpArray().getArrayOf().getKind());
-    assertEquals(TypeKind.TP_ARRAY_OF, type.getTpArray().getArrayOf().getTpArray().getArrayOf().getKind());
-    assertEquals(TypeKind.TP_INT, type.getTpArray().getArrayOf().getTpArray().getArrayOf().getTpArray().getArrayOf()
-        .getKind());
+    assertEquals(CTypeKind.TP_ARRAY_OF, type.getKind());
+    assertEquals(CTypeKind.TP_ARRAY_OF, type.getTpArray().getArrayOf().getKind());
+    assertEquals(CTypeKind.TP_ARRAY_OF, type.getTpArray().getArrayOf().getTpArray().getArrayOf().getKind());
+    assertEquals(CTypeKind.TP_INT,
+        type.getTpArray().getArrayOf().getTpArray().getArrayOf().getTpArray().getArrayOf().getKind());
   }
 
   @Test
   public void testStruct_0() throws IOException {
     final String source = "struct x { int a,b,c; };";
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
+    Tokenlist it = new ParserMain(new StringBuilder(source)).preprocess();
     Parse p = new Parse(it);
     p.pushscope();
 
@@ -324,7 +324,7 @@ public class TestCTypeNew {
     CDecl decl = parseDecl(p);
     CType type = build(base, decl);
 
-    assertEquals(TypeKind.TP_STRUCT, type.getKind());
+    assertEquals(CTypeKind.TP_STRUCT, type.getKind());
     assertEquals(3, type.getTpStruct().getFields().size());
 
   }
@@ -332,7 +332,7 @@ public class TestCTypeNew {
   @Test
   public void testStructInsideAnotherStruct() throws IOException {
     final String source = "struct x { int a; struct xx { int aa; } fname; };";
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
+    Tokenlist it = new ParserMain(new StringBuilder(source)).preprocess();
     Parse p = new Parse(it);
     p.pushscope();
 
@@ -340,7 +340,7 @@ public class TestCTypeNew {
     CDecl decl = parseDecl(p);
     CType type = build(base, decl);
 
-    assertEquals(TypeKind.TP_STRUCT, type.getKind());
+    assertEquals(CTypeKind.TP_STRUCT, type.getKind());
     assertEquals(2, type.getTpStruct().getFields().size());
 
   }
@@ -348,7 +348,7 @@ public class TestCTypeNew {
   @Test
   public void testStructInsideAnotherStructAnonymous() throws IOException {
     final String source = "struct x { int a; struct { int aa; }; };";
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
+    Tokenlist it = new ParserMain(new StringBuilder(source)).preprocess();
     Parse p = new Parse(it);
     p.pushscope();
 
@@ -356,7 +356,7 @@ public class TestCTypeNew {
     CDecl decl = parseDecl(p);
     CType type = build(base, decl);
 
-    assertEquals(TypeKind.TP_STRUCT, type.getKind());
+    assertEquals(CTypeKind.TP_STRUCT, type.getKind());
 
     final List<CStructField> fields = type.getTpStruct().getFields();
     assertEquals(2, fields.size());
@@ -369,7 +369,7 @@ public class TestCTypeNew {
   @Test
   public void testStructInsideAnotherStructAnonymousAndOther() throws IOException {
     final String source = "struct x { int a; struct { int aa; }; struct ntag { int aaa; } field_name; };";
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
+    Tokenlist it = new ParserMain(new StringBuilder(source)).preprocess();
     Parse p = new Parse(it);
     p.pushscope();
 
@@ -377,7 +377,7 @@ public class TestCTypeNew {
     CDecl decl = parseDecl(p);
     CType type = build(base, decl);
 
-    assertEquals(TypeKind.TP_STRUCT, type.getKind());
+    assertEquals(CTypeKind.TP_STRUCT, type.getKind());
 
     final List<CStructField> fields = type.getTpStruct().getFields();
     assertEquals(3, fields.size());
@@ -390,14 +390,14 @@ public class TestCTypeNew {
   @Test
   public void testFuncParamsPtr() throws IOException {
     final String source = "int f(int *pi, int **ppi, int ***pppi)";
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
+    Tokenlist it = new ParserMain(new StringBuilder(source)).preprocess();
     Parse p = new Parse(it);
 
     CType base = parseType(p);
     CDecl decl = parseDecl(p);
     CType type = build(base, decl);
 
-    assertEquals(TypeKind.TP_FUNCTION, type.getKind());
+    assertEquals(CTypeKind.TP_FUNCTION, type.getKind());
 
     List<CFuncParam> params = type.getTpFunction().getParameters();
     assertEquals("pi", params.get(0).getName().getName());
@@ -420,7 +420,7 @@ public class TestCTypeNew {
     sb.append(" /*005*/    int e;               \n");
     sb.append(" /*006*/  };                     \n");
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
     p.pushscope();
 
@@ -428,7 +428,7 @@ public class TestCTypeNew {
     CDecl decl = parseDecl(p);
     CType type = build(base, decl);
 
-    assertEquals(TypeKind.TP_STRUCT, type.getKind());
+    assertEquals(CTypeKind.TP_STRUCT, type.getKind());
 
     final List<CStructField> fields = type.getTpStruct().getFields();
     assertEquals(6, fields.size());
@@ -452,7 +452,7 @@ public class TestCTypeNew {
     sb.append(" /*006*/    int g:4, h, :5;      \n");
     sb.append(" /*007*/  };                     \n");
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
     p.pushscope();
 
@@ -460,7 +460,7 @@ public class TestCTypeNew {
     CDecl decl = parseDecl(p);
     CType type = build(base, decl);
 
-    assertEquals(TypeKind.TP_STRUCT, type.getKind());
+    assertEquals(CTypeKind.TP_STRUCT, type.getKind());
 
     final List<CStructField> fields = type.getTpStruct().getFields();
     assertEquals(11, fields.size());
@@ -496,7 +496,7 @@ public class TestCTypeNew {
     sb.append("/*024*/  };  \n");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
     p.pushscope();
 
@@ -504,7 +504,7 @@ public class TestCTypeNew {
     CDecl decl = parseDecl(p);
     CType type = build(base, decl);
 
-    assertEquals(TypeKind.TP_STRUCT, type.getKind());
+    assertEquals(CTypeKind.TP_STRUCT, type.getKind());
 
     final List<CStructField> fields = type.getTpStruct().getFields();
     assertEquals(8, fields.size()); // a,b,c,d,e,h,k,l => yes, 8
@@ -559,7 +559,7 @@ public class TestCTypeNew {
     sb.append(" /*040*/      } h;                                           \n");
     sb.append(" /*041*/  };                                                 \n");
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
     p.pushscope();
 
@@ -567,7 +567,7 @@ public class TestCTypeNew {
     CDecl decl = parseDecl(p);
     CType type = build(base, decl);
 
-    assertEquals(TypeKind.TP_STRUCT, type.getKind());
+    assertEquals(CTypeKind.TP_STRUCT, type.getKind());
 
     final List<CStructField> fields = type.getTpStruct().getFields();
     assertEquals(8, fields.size()); // a,b,c,d,e,f,g,h => yes, 8
@@ -586,7 +586,7 @@ public class TestCTypeNew {
   @Test
   public void testAbstractParamList() throws IOException {
     final String source = "int f(int*, int*);";
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
+    Tokenlist it = new ParserMain(new StringBuilder(source)).preprocess();
     Parse p = new Parse(it);
 
     CType type = parseType(p);
@@ -603,7 +603,7 @@ public class TestCTypeNew {
   @Test
   public void testKnRParamList() throws IOException {
     final String source = "int f(a,b,c) int a,b,c; {}";
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
+    Tokenlist it = new ParserMain(new StringBuilder(source)).preprocess();
     Parse p = new Parse(it);
 
     CType type = parseType(p);
@@ -620,7 +620,7 @@ public class TestCTypeNew {
   @Test
   public void testBuildEnumSymbols() throws IOException {
     final String source = "enum { eax = 1, ecx = eax << 1, edx = eax << 2 };";
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
+    Tokenlist it = new ParserMain(new StringBuilder(source)).preprocess();
     Parse p = new Parse(it);
     p.pushscope();
 
@@ -628,7 +628,7 @@ public class TestCTypeNew {
     CDecl decl = parseDecl(p);
     CType type = build(base, decl);
 
-    assertEquals(TypeKind.TP_ENUM, type.getKind());
+    assertEquals(CTypeKind.TP_ENUM, type.getKind());
 
     assertNotNull(p.getSym(Hash_ident.getHashedIdent("eax")));
     assertEquals(1, p.getSym(Hash_ident.getHashedIdent("eax")).getEnumvalue());
@@ -644,7 +644,7 @@ public class TestCTypeNew {
   @Test
   public void testBuildEnumNoExpr() throws IOException {
     final String source = "enum { eax, ecx, edx, };";
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
+    Tokenlist it = new ParserMain(new StringBuilder(source)).preprocess();
     Parse p = new Parse(it);
     p.pushscope();
 
@@ -652,7 +652,7 @@ public class TestCTypeNew {
     CDecl decl = parseDecl(p);
     CType type = build(base, decl);
 
-    assertEquals(TypeKind.TP_ENUM, type.getKind());
+    assertEquals(CTypeKind.TP_ENUM, type.getKind());
 
     assertNotNull(p.getSym(Hash_ident.getHashedIdent("eax")));
     assertEquals(0, p.getSym(Hash_ident.getHashedIdent("eax")).getEnumvalue());
@@ -667,7 +667,7 @@ public class TestCTypeNew {
   @Test
   public void testBuildArrLen() throws IOException {
     final String source = "int a[1][2][3];";
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
+    Tokenlist it = new ParserMain(new StringBuilder(source)).preprocess();
     Parse p = new Parse(it);
     p.pushscope();
 
@@ -675,18 +675,18 @@ public class TestCTypeNew {
     CDecl decl = parseDecl(p);
     CType type = build(base, decl);
 
-    assertEquals(TypeKind.TP_ARRAY_OF, type.getKind());
+    assertEquals(CTypeKind.TP_ARRAY_OF, type.getKind());
     assertEquals(1, type.getTpArray().getArrayLen());
     assertEquals(2, type.getTpArray().getArrayOf().getTpArray().getArrayLen());
     assertEquals(3, type.getTpArray().getArrayOf().getTpArray().getArrayOf().getTpArray().getArrayLen());
 
-    assertEquals(1 * 2 * 3 * TypeSizes.get(TypeKind.TP_INT), type.getSize());
+    assertEquals(1 * 2 * 3 * TypeSizes.get(CTypeKind.TP_INT), type.getSize());
   }
 
   @Test
   public void testBuildArrLen2() throws IOException {
     final String source = "int a[1][2][3][4];";
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
+    Tokenlist it = new ParserMain(new StringBuilder(source)).preprocess();
     Parse p = new Parse(it);
     p.pushscope();
 
@@ -694,12 +694,12 @@ public class TestCTypeNew {
     CDecl decl = parseDecl(p);
     CType type = build(base, decl);
 
-    assertEquals(TypeKind.TP_ARRAY_OF, type.getKind());
+    assertEquals(CTypeKind.TP_ARRAY_OF, type.getKind());
     assertEquals(1, type.getTpArray().getArrayLen());
     assertEquals(2, type.getTpArray().getArrayOf().getTpArray().getArrayLen());
     assertEquals(3, type.getTpArray().getArrayOf().getTpArray().getArrayOf().getTpArray().getArrayLen());
 
-    assertEquals(1 * 2 * 3 * 4 * TypeSizes.get(TypeKind.TP_INT), type.getSize());
+    assertEquals(1 * 2 * 3 * 4 * TypeSizes.get(CTypeKind.TP_INT), type.getSize());
   }
 
   @Test
@@ -714,7 +714,7 @@ public class TestCTypeNew {
     sb.append(" /*006*/  };              \n");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
     p.pushscope();
 
@@ -722,12 +722,12 @@ public class TestCTypeNew {
     CDecl decl = parseDecl(p);
     CType type = build(base, decl);
 
-    assertEquals(TypeKind.TP_STRUCT, type.getKind());
+    assertEquals(CTypeKind.TP_STRUCT, type.getKind());
 
     final List<CStructField> fields = type.getTpStruct().getFields();
     assertEquals(5, fields.size());
 
-    assertEquals(5 * TypeSizes.get(TypeKind.TP_INT), type.getSize());
+    assertEquals(5 * TypeSizes.get(CTypeKind.TP_INT), type.getSize());
     assertEquals(0, fields.get(0).getOffset());
     assertEquals(4, fields.get(1).getOffset());
     assertEquals(8, fields.get(2).getOffset());
@@ -752,7 +752,7 @@ public class TestCTypeNew {
     sb.append(" /*006*/  };             \n");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
     p.pushscope();
 
@@ -760,7 +760,7 @@ public class TestCTypeNew {
     CDecl decl = parseDecl(p);
     CType type = build(base, decl);
 
-    assertEquals(TypeKind.TP_UNION, type.getKind());
+    assertEquals(CTypeKind.TP_UNION, type.getKind());
 
     final List<CStructField> fields = type.getTpStruct().getFields();
     assertEquals(5, fields.size());
@@ -771,8 +771,8 @@ public class TestCTypeNew {
     assertEquals(0, fields.get(3).getOffset());
     assertEquals(0, fields.get(4).getOffset());
 
-    assertEquals(TypeSizes.get(TypeKind.TP_INT), type.getSize());
-    assertEquals(TypeSizes.get(TypeKind.TP_INT), type.getAlign());
+    assertEquals(TypeSizes.get(CTypeKind.TP_INT), type.getSize());
+    assertEquals(TypeSizes.get(CTypeKind.TP_INT), type.getAlign());
 
     for (CStructField f : fields) {
       //System.out.println("printf(\"%d\\n\", offsetof(struct cnum, " + f.getName().getName() + "));");
@@ -787,7 +787,7 @@ public class TestCTypeNew {
     sb.append(" int arr[one][two][three];     \n");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
     TranslationUnit unit = p.parse_unit();
 
@@ -795,7 +795,7 @@ public class TestCTypeNew {
     CSymbol var = unit.getExternalDeclarations().get(1).getDeclaration().getVariables().get(0);
 
     assertTrue(var.getType().isArray());
-    assertEquals(1 * 2 * 3 * TypeSizes.get(TypeKind.TP_INT), var.getType().getSize());
+    assertEquals(1 * 2 * 3 * TypeSizes.get(CTypeKind.TP_INT), var.getType().getSize());
   }
 
   @Test
@@ -815,7 +815,7 @@ public class TestCTypeNew {
     sb.append(" /*010*/  i32 i32 = 0; // int i32; storage-class of [i32] is AUTO   \n");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
     TranslationUnit unit = p.parse_unit();
 
@@ -832,7 +832,7 @@ public class TestCTypeNew {
     sb.append(" /*001*/  int f(a,b,c) int a,b,c; {} \n");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
     TranslationUnit unit = p.parse_unit();
   }
@@ -852,7 +852,7 @@ public class TestCTypeNew {
     sb.append(" /*040*/    };                                  \n");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
     TranslationUnit unit = p.parse_unit();
 
@@ -873,7 +873,7 @@ public class TestCTypeNew {
     sb.append(" /*007*/      };                            \n");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
     TranslationUnit unit = p.parse_unit();
 
@@ -881,12 +881,12 @@ public class TestCTypeNew {
     Declaration declaration = unit.getExternalDeclarations().get(0).getDeclaration();
 
     CType type = declaration.getAgregate();
-    assertEquals(TypeKind.TP_STRUCT, type.getKind());
+    assertEquals(CTypeKind.TP_STRUCT, type.getKind());
     final List<CStructField> fields = type.getTpStruct().getFields();
     assertEquals(15, fields.size());
 
     for (CStructField f : fields) {
-      assertEquals(TypeKind.TP_BITFIELD, f.getType().getKind());
+      assertEquals(CTypeKind.TP_BITFIELD, f.getType().getKind());
     }
 
   }
@@ -904,7 +904,7 @@ public class TestCTypeNew {
     sb.append(" /*006*/  };                  \n");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
     TranslationUnit unit = p.parse_unit();
 
@@ -912,13 +912,13 @@ public class TestCTypeNew {
     Declaration declaration = unit.getExternalDeclarations().get(0).getDeclaration();
 
     CType type = declaration.getAgregate();
-    assertEquals(TypeKind.TP_STRUCT, type.getKind());
+    assertEquals(CTypeKind.TP_STRUCT, type.getKind());
 
     final List<CStructField> fields = type.getTpStruct().getFields();
     assertEquals(4, fields.size());
 
     for (CStructField f : fields) {
-      assertEquals(TypeKind.TP_BITFIELD, f.getType().getKind());
+      assertEquals(CTypeKind.TP_BITFIELD, f.getType().getKind());
     }
 
   }
@@ -936,7 +936,7 @@ public class TestCTypeNew {
     sb.append(" /*006*/  };                  \n");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
     TranslationUnit unit = p.parse_unit();
 
@@ -944,13 +944,13 @@ public class TestCTypeNew {
     Declaration declaration = unit.getExternalDeclarations().get(0).getDeclaration();
 
     CType type = declaration.getAgregate();
-    assertEquals(TypeKind.TP_STRUCT, type.getKind());
+    assertEquals(CTypeKind.TP_STRUCT, type.getKind());
 
     final List<CStructField> fields = type.getTpStruct().getFields();
     assertEquals(4, fields.size());
 
     for (CStructField f : fields) {
-      assertEquals(TypeKind.TP_BITFIELD, f.getType().getKind());
+      assertEquals(CTypeKind.TP_BITFIELD, f.getType().getKind());
     }
 
   }
@@ -963,18 +963,18 @@ public class TestCTypeNew {
     sb.append("static int *const *pi; ");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
 
     CType base = parseType(p);
     CDecl decl = parseDecl(p);
     CType type = build(base, decl);
 
-    assertEquals(TypeKind.TP_POINTER_TO, type.getKind());
+    assertEquals(CTypeKind.TP_POINTER_TO, type.getKind());
     assertEquals(3, type.chainLength());
     assertTrue(type.getTpPointer().isConst());
 
-    assertEquals(TypeKind.TP_POINTER_TO, type.getTpPointer().getPointerTo().getKind());
+    assertEquals(CTypeKind.TP_POINTER_TO, type.getTpPointer().getPointerTo().getKind());
     assertFalse(type.getTpPointer().getPointerTo().isConst());
   }
 
@@ -987,14 +987,14 @@ public class TestCTypeNew {
     sb.append("static const int pi; ");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
 
     CType base = parseType(p);
     CDecl decl = parseDecl(p);
     CType type = build(base, decl);
 
-    assertEquals(TypeKind.TP_INT, type.getKind());
+    assertEquals(CTypeKind.TP_INT, type.getKind());
     assertTrue(type.isConst());
   }
 
@@ -1015,7 +1015,7 @@ public class TestCTypeNew {
     sb.append(" /*009*/  };                   \n");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
     TranslationUnit unit = p.parse_unit();
 
@@ -1023,7 +1023,7 @@ public class TestCTypeNew {
     Declaration declaration = unit.getExternalDeclarations().get(0).getDeclaration();
 
     CType type = declaration.getAgregate();
-    assertEquals(TypeKind.TP_STRUCT, type.getKind());
+    assertEquals(CTypeKind.TP_STRUCT, type.getKind());
 
     assertTrue(type.isConst());
     assertTrue(type.getTpStruct().isHasConstFields());
@@ -1039,14 +1039,14 @@ public class TestCTypeNew {
     sb.append("static inline const int f();");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
 
     CType base = parseType(p);
     CDecl decl = parseDecl(p);
     CType type = build(base, decl);
 
-    assertEquals(TypeKind.TP_FUNCTION, type.getKind());
+    assertEquals(CTypeKind.TP_FUNCTION, type.getKind());
     final CType rtype = type.getTpFunction().getReturnType();
 
     assertTrue(rtype.isConst());
@@ -1061,7 +1061,7 @@ public class TestCTypeNew {
     sb.append("int *const *pi; ");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
 
     CType base = parseType(p);

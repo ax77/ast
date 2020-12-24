@@ -2,11 +2,11 @@ package ast.decls.parser;
 
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import ast._entry.IdentMap;
 import ast.expr.CExpression;
 import ast.expr.parser.ParseExpression;
 import ast.expr.sem.ConstexprEval;
 import ast.parse.Parse;
+import ast.symtab.IdentMap;
 
 public class ParseStaticAssert {
   private final Parse parser;

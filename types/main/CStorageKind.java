@@ -1,6 +1,6 @@
 package ast.types.main;
 
-public enum StorageKind {
+public enum CStorageKind {
   ST_NONE,
   ST_TYPEDEF,
   ST_EXTERN,

@@ -1,11 +1,11 @@
 package ast.stmt.sem;
 
 import jscan.tokenize.Token;
-import ast._entry.IdentMap;
 import ast.parse.Parse;
 import ast.stmt.main.CStatement;
 import ast.stmt.main.CStatementBase;
 import ast.stmt.parser.ParseStatement;
+import ast.symtab.IdentMap;
 
 public class BreakContinue {
   private final Parse parser;

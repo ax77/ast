@@ -7,12 +7,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import jscan.Tokenlist;
-
 import org.junit.Test;
 
+import ast.main.ParserMain;
 import ast.parse.Parse;
 import ast.unit.parser.ParseExternal;
+import jscan.Tokenlist;
 
 public class Test_DiscoverTheFunction {
 
@@ -36,7 +36,7 @@ public class Test_DiscoverTheFunction {
 
     for (String s : tests) {
 
-      Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(s, false)).pp();
+      Tokenlist it = new ParserMain(new StringBuilder(s)).preprocess();
       Parse p = new Parse(it);
 
       assertFalse(isFunc(p));
@@ -58,7 +58,7 @@ public class Test_DiscoverTheFunction {
 
     for (String s : tests) {
 
-      Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(s, false)).pp();
+      Tokenlist it = new ParserMain(new StringBuilder(s)).preprocess();
       Parse p = new Parse(it);
 
       assertTrue(isFunc(p));

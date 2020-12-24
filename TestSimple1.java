@@ -4,12 +4,12 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
-import jscan.Tokenlist;
-
 import org.junit.Test;
 
+import ast.main.ParserMain;
 import ast.parse.Parse;
 import ast.unit.TranslationUnit;
+import jscan.Tokenlist;
 
 public class TestSimple1 {
 
@@ -87,7 +87,7 @@ public class TestSimple1 {
     sb.append(" /*068*/    return ret;                                                       \n");
     sb.append(" /*069*/  }                                                                   \n");
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
     TranslationUnit unit = p.parse_unit();
     
@@ -224,7 +224,7 @@ public class TestSimple1 {
     sb_000.append(" /*122*/    return 0;                                                                     \n");
     sb_000.append(" /*123*/  }                                                                               \n");
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb_000.toString(), false)).pp();
+    Tokenlist it = new ParserMain(new StringBuilder(sb_000)).preprocess();
     Parse p = new Parse(it);
     TranslationUnit unit = p.parse_unit();
 
@@ -281,7 +281,7 @@ public class TestSimple1 {
     sb.append(" /*046*/    return x;                                               \n");
     sb.append(" /*047*/  }                                                         \n");
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
     TranslationUnit unit = p.parse_unit();
 

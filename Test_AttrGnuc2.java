@@ -4,12 +4,12 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
-import jscan.Tokenlist;
-
 import org.junit.Test;
 
+import ast.main.ParserMain;
 import ast.parse.Parse;
 import ast.unit.TranslationUnit;
+import jscan.Tokenlist;
 
 public class Test_AttrGnuc2 {
 
@@ -43,7 +43,7 @@ public class Test_AttrGnuc2 {
     sb.append(" /*023*/  }                                                             \n");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse parser = new Parse(it);
     TranslationUnit unit = parser.parse_unit();
 

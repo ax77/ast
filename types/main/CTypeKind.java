@@ -1,7 +1,7 @@
 package ast.types.main;
 
 //@formatter:off
-public enum TypeKind {
+public enum CTypeKind {
   TP_POINTER_TO
  ,TP_ARRAY_OF
  ,TP_FUNCTION

@@ -1,4 +1,4 @@
-package ast._entry;
+package ast.symtab;
 
 import jscan.hashed.Hash_ident;
 import jscan.symtab.Ident;

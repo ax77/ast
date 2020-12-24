@@ -15,7 +15,7 @@ import ast.symtab.elements.CSymbol;
 import ast.symtab.elements.CSymbolBase;
 import ast.types.CType;
 import ast.types.decl.CDecl;
-import ast.types.main.StorageKind;
+import ast.types.main.CStorageKind;
 import ast.types.parser.ParseBase;
 import ast.types.parser.ParseDecl;
 import ast.types.util.TypeMerger;
@@ -23,7 +23,7 @@ import ast.types.util.TypeMerger;
 public class ParseDeclarations {
   private final Parse parser;
   private CType basetype;
-  private StorageKind storagespec;
+  private CStorageKind storagespec;
 
   public ParseDeclarations(Parse parser) {
     this.parser = parser;
@@ -98,7 +98,7 @@ public class ParseDeclarations {
     if (parser.tp() != T.T_ASSIGN) {
       CSymbolBase symBase = CSymbolBase.SYM_LVAR;
 
-      if (storagespec == StorageKind.ST_TYPEDEF) {
+      if (storagespec == CStorageKind.ST_TYPEDEF) {
         symBase = CSymbolBase.SYM_TYPEDEF;
       }
 
@@ -111,7 +111,7 @@ public class ParseDeclarations {
     parser.checkedMove(T.T_ASSIGN);
     List<Initializer> inits = parseInitializer(type);
 
-    if (storagespec == StorageKind.ST_TYPEDEF) {
+    if (storagespec == CStorageKind.ST_TYPEDEF) {
       parser.perror("typedef with initializer.");
     }
 

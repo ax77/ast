@@ -4,16 +4,16 @@ import java.util.List;
 
 import ast.parse.NullChecker;
 import ast.types.CFuncParam;
-import ast.types.main.TypeKind;
+import ast.types.main.CTypeKind;
 
 public class CDeclEntry {
-  private final TypeKind base;
+  private final CTypeKind base;
   private List<CFuncParam> parameters;
   private int arrlen;
   private boolean isConstPointer;
   private boolean isVariadicFunction;
 
-  public CDeclEntry(TypeKind base) {
+  public CDeclEntry(CTypeKind base) {
     NullChecker.check(base);
     this.base = base;
   }
@@ -26,7 +26,7 @@ public class CDeclEntry {
     this.parameters = parameters;
   }
 
-  public TypeKind getBase() {
+  public CTypeKind getBase() {
     return base;
   }
 

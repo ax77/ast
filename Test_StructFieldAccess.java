@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import jscan.Tokenlist;
-
 import org.junit.Test;
 
 import ast.errors.ParseException;
+import ast.main.ParserMain;
 import ast.parse.Parse;
 import ast.unit.TranslationUnit;
+import jscan.Tokenlist;
 
 public class Test_StructFieldAccess {
 
@@ -461,7 +461,7 @@ public class Test_StructFieldAccess {
     tests.add(sb22);
 
     for (StringBuilder sb : tests) {
-      Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+      Tokenlist it = new ParserMain(sb).preprocess();
       Parse p = new Parse(it);
       TranslationUnit unit = p.parse_unit();
 
@@ -484,7 +484,7 @@ public class Test_StructFieldAccess {
     sb.append(" /*005*/  }                          \n");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
     TranslationUnit unit = p.parse_unit();
 
@@ -501,7 +501,7 @@ public class Test_StructFieldAccess {
     sb.append(" /*005*/  }                          \n");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
     TranslationUnit unit = p.parse_unit();
 

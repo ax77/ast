@@ -4,15 +4,15 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
-import jscan.Tokenlist;
-
 import org.junit.Test;
 
 import ast.attributes.AttributeList;
 import ast.attributes.asm.AsmList;
 import ast.attributes.asm.ParseAsm;
 import ast.attributes.gnuc.ParseAttributesGcc;
+import ast.main.ParserMain;
 import ast.parse.Parse;
+import jscan.Tokenlist;
 
 public class Test_AttrAsmGnuc1 {
 
@@ -26,7 +26,7 @@ public class Test_AttrAsmGnuc1 {
     sb.append("__asm __volatile__ (\"_\" \"fdopen\" )\n");
     sb.append("1 2");
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
 
     AttributeList list = new ParseAttributesGcc(p).parse();

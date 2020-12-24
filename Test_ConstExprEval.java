@@ -7,14 +7,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import jscan.Tokenlist;
-
 import org.junit.Test;
 
 import ast.expr.CExpression;
 import ast.expr.parser.ParseExpression;
 import ast.expr.sem.ConstexprEval;
+import ast.main.ParserMain;
 import ast.parse.Parse;
+import jscan.Tokenlist;
 
 public class Test_ConstExprEval {
 
@@ -251,7 +251,7 @@ public class Test_ConstExprEval {
       String str = ent.getKey();
       long expected = ent.getValue().longValue();
 
-      Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(str, false)).pp();
+      Tokenlist it = new ParserMain(new StringBuilder(str)).preprocess();
       Parse p = new Parse(it);
 
       CExpression expr = new ParseExpression(p).e_expression();

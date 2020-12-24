@@ -3,22 +3,22 @@ package ast;
 import java.io.IOException;
 import java.util.List;
 
+import org.junit.Test;
+
+import ast.errors.ParseException;
+import ast.parse.Parse;
+import ast.unit.TranslationUnit;
 import jscan.tokenize.Stream;
 import jscan.tokenize.Token;
 
-import org.junit.Test;
-
-import ast.parse.Parse;
-import ast.unit.TranslationUnit;
-
-public class Test_StaticAssert1 {
+public class Test_StaticAssert {
 
   private static Stream getHashedStream(String source) throws IOException {
     return new Stream("", source);
   }
 
   @Test
-  public void testStaticAssert() throws IOException {
+  public void testStaticAssert0() throws IOException {
     StringBuilder sb = new StringBuilder();
     //@formatter:off
     sb.append(" /*001*/  struct s                                      \n");
@@ -50,6 +50,38 @@ public class Test_StaticAssert1 {
     sb.append(" /*027*/  int main() {                                  \n");
     sb.append(" /*028*/      return 0;                                 \n");
     sb.append(" /*029*/  }                                             \n");
+
+    List<Token> tokenlist = getHashedStream(sb.toString()).getTokenlist();
+    Parse p = new Parse(tokenlist);
+    TranslationUnit unit = p.parse_unit();
+
+  }
+  
+  @Test
+  public void testStaticAssert1() throws IOException {
+    //@formatter:off
+    StringBuilder sb = new StringBuilder();
+    sb.append(" /*001*/  int main() {             \n");
+    sb.append(" /*002*/      _Static_assert(1);   \n");
+    sb.append(" /*003*/      return 0;            \n");
+    sb.append(" /*004*/  }                        \n");
+    //@formatter:on
+
+    List<Token> tokenlist = getHashedStream(sb.toString()).getTokenlist();
+    Parse p = new Parse(tokenlist);
+    TranslationUnit unit = p.parse_unit();
+
+  }
+
+  @Test(expected = ParseException.class)
+  public void testStaticAssert2() throws IOException {
+    //@formatter:off
+    StringBuilder sb = new StringBuilder();
+    sb.append(" /*001*/  int main() {             \n");
+    sb.append(" /*002*/      _Static_assert(0);   \n");
+    sb.append(" /*003*/      return 0;            \n");
+    sb.append(" /*004*/  }                        \n");
+    //@formatter:on
 
     List<Token> tokenlist = getHashedStream(sb.toString()).getTokenlist();
     Parse p = new Parse(tokenlist);

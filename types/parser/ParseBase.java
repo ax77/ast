@@ -8,26 +8,26 @@ import java.util.List;
 import java.util.Set;
 
 import jscan.tokenize.Token;
-import ast._entry.IdentMap;
 import ast.attributes.main.AttributesAsmsLists;
 import ast.attributes.main.ParseAttributesAsms;
 import ast.parse.Parse;
+import ast.symtab.IdentMap;
 import ast.symtab.elements.CSymbol;
 import ast.symtab.elements.CSymbolBase;
 import ast.types.CType;
 import ast.types.CTypeImpl;
-import ast.types.main.StorageKind;
-import ast.types.main.TypeKind;
+import ast.types.main.CStorageKind;
+import ast.types.main.CTypeKind;
 import ast.types.util.TypeCombiner;
 
 public class ParseBase {
   private final Parse parser;
-  private StorageKind storageSpec;
+  private CStorageKind storageSpec;
   private AttributesAsmsLists attributes;
 
   public ParseBase(Parse p) {
     this.parser = p;
-    this.storageSpec = StorageKind.ST_NONE;
+    this.storageSpec = CStorageKind.ST_NONE;
   }
 
   public CType parseBase() {
@@ -82,7 +82,7 @@ public class ParseBase {
       cut2(storage, ts, qualifiers);
       storageSpec = TypeCombiner.combine_storage(storage);
 
-      TypeKind bts = TypeCombiner.combine_typespec(ts);
+      CTypeKind bts = TypeCombiner.combine_typespec(ts);
       CType basetype = new CType(bts);
 
       return basetype;
@@ -187,11 +187,11 @@ public class ParseBase {
     }
   }
 
-  public StorageKind getStorageSpec() {
+  public CStorageKind getStorageSpec() {
     return storageSpec;
   }
 
-  public void setStorageSpec(StorageKind storageSpec) {
+  public void setStorageSpec(CStorageKind storageSpec) {
     this.storageSpec = storageSpec;
   }
 

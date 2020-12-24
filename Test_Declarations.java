@@ -3,14 +3,14 @@ package ast;
 import java.io.IOException;
 import java.util.List;
 
-import jscan.Tokenlist;
-
 import org.junit.Test;
 
 import ast.decls.Initializer;
+import ast.main.ParserMain;
 import ast.parse.Parse;
 import ast.symtab.elements.CSymbol;
 import ast.unit.TranslationUnit;
+import jscan.Tokenlist;
 
 public class Test_Declarations {
 
@@ -24,7 +24,7 @@ public class Test_Declarations {
     sb.append(" /*004*/  }                                \n");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
     TranslationUnit unit = p.parse_unit();
 
@@ -72,7 +72,7 @@ public class Test_Declarations {
     sb.append(" /*021*/  }                                                                   \n");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
     TranslationUnit unit = p.parse_unit();
 
@@ -122,7 +122,7 @@ public class Test_Declarations {
     sb.append(" /*023*/  }                                                                                \n");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
     TranslationUnit unit = p.parse_unit();
 

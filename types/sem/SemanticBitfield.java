@@ -3,7 +3,7 @@ package ast.types.sem;
 import ast.parse.Parse;
 import ast.types.CBitfieldType;
 import ast.types.CType;
-import ast.types.main.TypeKind;
+import ast.types.main.CTypeKind;
 import ast.types.util.TypeSizes;
 
 public class SemanticBitfield {
@@ -19,7 +19,7 @@ public class SemanticBitfield {
       parser.perror("negative bitfield-width");
     }
 
-    TypeKind kind = base.getKind();
+    CTypeKind kind = base.getKind();
 
     // TODO: warning about enum
     // 
@@ -36,17 +36,17 @@ public class SemanticBitfield {
     return new CType(bf);
   }
 
-  private boolean isPrimitiveInteger(TypeKind kind) {
-    return kind == TypeKind.TP_CHAR
-        || kind == TypeKind.TP_UCHAR
-        || kind == TypeKind.TP_SHORT
-        || kind == TypeKind.TP_USHORT
-        || kind == TypeKind.TP_INT
-        || kind == TypeKind.TP_UINT
-        || kind == TypeKind.TP_LONG
-        || kind == TypeKind.TP_ULONG
-        || kind == TypeKind.TP_LONG_LONG
-        || kind == TypeKind.TP_ULONG_LONG;
+  private boolean isPrimitiveInteger(CTypeKind kind) {
+    return kind == CTypeKind.TP_CHAR
+        || kind == CTypeKind.TP_UCHAR
+        || kind == CTypeKind.TP_SHORT
+        || kind == CTypeKind.TP_USHORT
+        || kind == CTypeKind.TP_INT
+        || kind == CTypeKind.TP_UINT
+        || kind == CTypeKind.TP_LONG
+        || kind == CTypeKind.TP_ULONG
+        || kind == CTypeKind.TP_LONG_LONG
+        || kind == CTypeKind.TP_ULONG_LONG;
   }
 
 }

@@ -4,15 +4,15 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
-import jscan.Tokenlist;
-import jscan.tokenize.Token;
-
 import org.junit.Test;
 
 import ast.attributes.Attribute;
 import ast.attributes.main.AttributesAsmsLists;
 import ast.attributes.main.ParseAttributesAsms;
+import ast.main.ParserMain;
 import ast.parse.Parse;
+import jscan.Tokenlist;
+import jscan.tokenize.Token;
 
 public class Test_AttrC2x {
 
@@ -22,7 +22,7 @@ public class Test_AttrC2x {
     sb.append("[[fallthrough]] [[__fallthrough__]] [[ deprecated, hal:: daisy]]\n");
     sb.append("1 2");
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
 
     AttributesAsmsLists attributesAsmsLists = new ParseAttributesAsms(p).parse();

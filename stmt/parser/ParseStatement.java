@@ -1,6 +1,6 @@
 package ast.stmt.parser;
 
-import static ast._entry.IdentMap.*;
+import static ast.symtab.IdentMap.*;
 import static jscan.tokenize.T.TOKEN_EOF;
 import static jscan.tokenize.T.TOKEN_IDENT;
 import static jscan.tokenize.T.T_COLON;

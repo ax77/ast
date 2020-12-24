@@ -1,6 +1,6 @@
-package ast._entry;
+package ast.main;
 
-public abstract class ParseSettings {
+public abstract class PredefinedBuffer {
 
   public static final boolean CC_SETTINGS_USE_GCC = true;
   public static final boolean CC_SETTINGS_USE_CLANG = false;
@@ -230,7 +230,7 @@ public abstract class ParseSettings {
 
     // GCC
     // 
-    if (ParseSettings.CC_SETTINGS_USE_GCC) {
+    if (PredefinedBuffer.CC_SETTINGS_USE_GCC) {
       addline("#define __GNUC_MINOR__ 2");
       addline("#define __GNUC_PATCHLEVEL__ 1");
       addline("#define __GNUC_STDC_INLINE__ 1");
@@ -239,7 +239,7 @@ public abstract class ParseSettings {
 
     // CLANG
     // 
-    if (ParseSettings.CC_SETTINGS_USE_CLANG) {
+    if (PredefinedBuffer.CC_SETTINGS_USE_CLANG) {
       addline("#define __clang__ 1");
       addline("#define __llvm__ 1");
       addline("#define __clang_major__ 11");
@@ -249,14 +249,14 @@ public abstract class ParseSettings {
 
     // APPLE
     // 
-    if (ParseSettings.CC_SETTINGS_USE_APPLE) {
+    if (PredefinedBuffer.CC_SETTINGS_USE_APPLE) {
       addline("#define __APPLE_CC__ 6000");
       addline("#define __APPLE__ 1");
     }
 
     // WIN32
     // 
-    if (ParseSettings.CC_SETTINGS_USE_WIN32) {
+    if (PredefinedBuffer.CC_SETTINGS_USE_WIN32) {
       addline("#define _WIN32 1");
       addline("#define __WIN32 1");
       addline("#define __WIN32__ 1");
@@ -282,7 +282,7 @@ public abstract class ParseSettings {
 
     // I386
     // 
-    if (ParseSettings.CC_SETTINGS_USE_I386) {
+    if (PredefinedBuffer.CC_SETTINGS_USE_I386) {
       addline("#define i386 1");
       addline("#define __i386 1");
       addline("#define __i386__ 1");

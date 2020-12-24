@@ -1,24 +1,19 @@
 package ast;
 
-import static ast._entry.ParseConf.APPLY_STR_CONCAT;
-import static ast._entry.ParseConf.PREPROCESS_STRING_INPUT;
-
 import java.io.IOException;
-
-import jscan.Tokenlist;
 
 import org.junit.Test;
 
-import ast._entry.ParseConf;
 import ast.errors.ParseException;
+import ast.main.ParserMain;
 import ast.parse.Parse;
 import ast.unit.TranslationUnit;
+import jscan.Tokenlist;
 
 public class Test_Typedefs {
 
   private Tokenlist getTokenlist(StringBuilder sb) throws IOException {
-    ParseConf conf = new ParseConf(PREPROCESS_STRING_INPUT | APPLY_STR_CONCAT, sb);
-    return conf.preprocess();
+    return new ParserMain(sb).preprocess();
   }
 
   @Test

@@ -2,15 +2,12 @@ package ast;
 
 import java.io.IOException;
 
-import jscan.Tokenlist;
-
-import org.junit.Ignore;
 import org.junit.Test;
 
-import ast.decls.Initializer;
+import ast.main.ParserMain;
 import ast.parse.Parse;
-import ast.symtab.elements.CSymbol;
 import ast.unit.TranslationUnit;
+import jscan.Tokenlist;
 
 public class Test_Tags {
 
@@ -34,7 +31,7 @@ public class Test_Tags {
     sb11.append(" /*013*/  }                                \n");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb11.toString(), false)).pp();
+    Tokenlist it = new ParserMain(new StringBuilder(sb11)).preprocess();
     Parse p = new Parse(it);
     TranslationUnit unit = p.parse_unit();
 
@@ -65,7 +62,7 @@ public class Test_Tags {
     sb.append(" /*018*/  }                                                               \n");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
     TranslationUnit unit = p.parse_unit();
 
@@ -88,7 +85,7 @@ public class Test_Tags {
     sb9.append(" /*010*/  }                     \n");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb9.toString(), false)).pp();
+    Tokenlist it = new ParserMain(new StringBuilder(sb9)).preprocess();
     Parse p = new Parse(it);
     TranslationUnit unit = p.parse_unit();
 
@@ -115,7 +112,7 @@ public class Test_Tags {
     sb_044.append(" /*014*/  }                             \n");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb_044.toString(), false)).pp();
+    Tokenlist it = new ParserMain(new StringBuilder(sb_044)).preprocess();
     Parse p = new Parse(it);
     TranslationUnit unit = p.parse_unit();
 
@@ -150,7 +147,7 @@ public class Test_Tags {
     sb.append(" /*022*/  }                                                               \n");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse p = new Parse(it);
     TranslationUnit unit = p.parse_unit();
 

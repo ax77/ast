@@ -6,12 +6,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import jscan.Tokenlist;
-
 import org.junit.Test;
 
+import ast.main.ParserMain;
 import ast.parse.Parse;
 import ast.unit.TranslationUnit;
+import jscan.Tokenlist;
 
 class UtilTestDto {
   private final boolean ignoge;
@@ -1495,7 +1495,7 @@ public class TestSimple2 {
         continue;
       }
 
-      Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(dto.getSource(), false)).pp();
+      Tokenlist it = new ParserMain(new StringBuilder(dto.getSource())).preprocess();
       Parse p = new Parse(it);
 
       TranslationUnit unit = p.parse_unit();

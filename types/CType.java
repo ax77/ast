@@ -7,13 +7,13 @@ import static ast.types.CTypeImpl.QCONST;
 import java.util.List;
 
 import ast.errors.ParseException;
-import ast.types.main.TypeKind;
+import ast.types.main.CTypeKind;
 import ast.types.util.TypePrinter;
 import ast.types.util.TypeSizes;
 
 public class CType implements CTypeApi {
 
-  private final TypeKind kind;
+  private final CTypeKind kind;
   private int qualifiers;
 
   private int size;
@@ -31,7 +31,7 @@ public class CType implements CTypeApi {
   }
 
   // for primitives
-  public CType(TypeKind kind) {
+  public CType(CTypeKind kind) {
     this.kind = kind;
     this.size = TypeSizes.get(kind);
     this.align = this.size;
@@ -39,23 +39,23 @@ public class CType implements CTypeApi {
   }
 
   public CType(CPointerType tpPointer) {
-    this.kind = TypeKind.TP_POINTER_TO;
+    this.kind = CTypeKind.TP_POINTER_TO;
     this.tpPointer = tpPointer;
-    this.size = TypeSizes.get(TypeKind.TP_POINTER_TO);
+    this.size = TypeSizes.get(CTypeKind.TP_POINTER_TO);
     this.align = this.size;
 
   }
 
   public CType(CFunctionType cFunctionType) {
-    this.kind = TypeKind.TP_FUNCTION;
+    this.kind = CTypeKind.TP_FUNCTION;
     this.tpFunction = cFunctionType;
-    this.size = TypeSizes.get(TypeKind.TP_FUNCTION);
+    this.size = TypeSizes.get(CTypeKind.TP_FUNCTION);
     this.align = this.size;
 
   }
 
   public CType(CArrayType cArrayType) {
-    this.kind = TypeKind.TP_ARRAY_OF;
+    this.kind = CTypeKind.TP_ARRAY_OF;
     this.tpArray = cArrayType;
     this.size = cArrayType.getArrayLen() * cArrayType.getArrayOf().getSize();
     this.align = cArrayType.getArrayOf().getAlign();
@@ -63,7 +63,7 @@ public class CType implements CTypeApi {
   }
 
   public CType(CStructType tpStruct, int size, int align) {
-    this.kind = (tpStruct.isUnion() ? TypeKind.TP_UNION : TypeKind.TP_STRUCT);
+    this.kind = (tpStruct.isUnion() ? CTypeKind.TP_UNION : CTypeKind.TP_STRUCT);
     this.tpStruct = tpStruct;
     this.size = size;
     this.align = align;
@@ -71,15 +71,15 @@ public class CType implements CTypeApi {
   }
 
   public CType(CEnumType tpEnum) {
-    this.kind = TypeKind.TP_ENUM;
+    this.kind = CTypeKind.TP_ENUM;
     this.tpEnum = tpEnum;
-    this.size = TypeSizes.get(TypeKind.TP_ENUM);
+    this.size = TypeSizes.get(CTypeKind.TP_ENUM);
     this.align = this.size;
 
   }
 
   public CType(CBitfieldType tpBitfield) {
-    this.kind = TypeKind.TP_BITFIELD;
+    this.kind = CTypeKind.TP_BITFIELD;
     this.tpBitfield = tpBitfield;
 
     //TODO:
@@ -87,7 +87,7 @@ public class CType implements CTypeApi {
     this.align = 1;
   }
 
-  private void assertGetType(TypeKind need) {
+  private void assertGetType(CTypeKind need) {
     if (need != kind) {
       throw new ParseException("internal error: you want get type " + need.toString() + " from " + kind.toString());
     }
@@ -108,17 +108,17 @@ public class CType implements CTypeApi {
     }
   }
 
-  public TypeKind getKind() {
+  public CTypeKind getKind() {
     return kind;
   }
 
   public CArrayType getTpArray() {
-    assertGetType(TypeKind.TP_ARRAY_OF);
+    assertGetType(CTypeKind.TP_ARRAY_OF);
     return tpArray;
   }
 
   public CFunctionType getTpFunction() {
-    assertGetType(TypeKind.TP_FUNCTION);
+    assertGetType(CTypeKind.TP_FUNCTION);
     return tpFunction;
   }
 
@@ -130,7 +130,7 @@ public class CType implements CTypeApi {
   }
 
   public CEnumType getTpEnum() {
-    assertGetType(TypeKind.TP_ENUM);
+    assertGetType(CTypeKind.TP_ENUM);
     return tpEnum;
   }
 
@@ -139,15 +139,15 @@ public class CType implements CTypeApi {
     if (isPrimitive()) {
       r++;
     } else {
-      if (kind == TypeKind.TP_POINTER_TO) {
+      if (kind == CTypeKind.TP_POINTER_TO) {
         r++;
         r += tpPointer.getPointerTo().chainLength();
       }
-      if (kind == TypeKind.TP_ARRAY_OF) {
+      if (kind == CTypeKind.TP_ARRAY_OF) {
         r++;
         r += tpArray.getArrayOf().chainLength();
       }
-      if (kind == TypeKind.TP_FUNCTION) {
+      if (kind == CTypeKind.TP_FUNCTION) {
         r++;
         r += tpFunction.getReturnType().chainLength();
       }
@@ -208,12 +208,12 @@ public class CType implements CTypeApi {
 
   @Override
   public boolean isUnion() {
-    return kind == TypeKind.TP_UNION;
+    return kind == CTypeKind.TP_UNION;
   }
 
   @Override
   public boolean isFunction() {
-    return kind == TypeKind.TP_FUNCTION;
+    return kind == CTypeKind.TP_FUNCTION;
   }
 
   @Override
@@ -233,12 +233,12 @@ public class CType implements CTypeApi {
 
   @Override
   public boolean isStruct() {
-    return kind == TypeKind.TP_STRUCT;
+    return kind == CTypeKind.TP_STRUCT;
   }
 
   @Override
   public boolean isArray() {
-    return kind == TypeKind.TP_ARRAY_OF;
+    return kind == CTypeKind.TP_ARRAY_OF;
   }
 
   @Override
@@ -266,7 +266,7 @@ public class CType implements CTypeApi {
 
   @Override
   public boolean isBitfield() {
-    return kind == TypeKind.TP_BITFIELD;
+    return kind == CTypeKind.TP_BITFIELD;
   }
 
   @Override
@@ -286,7 +286,7 @@ public class CType implements CTypeApi {
 
   @Override
   public boolean isEnumeration() {
-    return kind == TypeKind.TP_ENUM;
+    return kind == CTypeKind.TP_ENUM;
   }
 
   @Override
@@ -296,7 +296,7 @@ public class CType implements CTypeApi {
 
   @Override
   public boolean isVoid() {
-    return kind == TypeKind.TP_VOID;
+    return kind == CTypeKind.TP_VOID;
   }
 
   @Override
@@ -448,20 +448,20 @@ public class CType implements CTypeApi {
   }
 
 //@formatter:off
-  @Override public boolean isBool() { return kind == TypeKind.TP_BOOL; }
-  @Override public boolean isChar() { return kind == TypeKind.TP_CHAR; }
-  @Override public boolean isUchar() { return kind == TypeKind.TP_UCHAR; }
-  @Override public boolean isShort() { return kind == TypeKind.TP_SHORT; }
-  @Override public boolean isUshort() { return kind == TypeKind.TP_USHORT; }
-  @Override public boolean isInt() { return kind == TypeKind.TP_INT; }
-  @Override public boolean isUint() { return kind == TypeKind.TP_UINT; }
-  @Override public boolean isLong() { return kind == TypeKind.TP_LONG; }
-  @Override public boolean isUlong() { return kind == TypeKind.TP_ULONG; }
-  @Override public boolean isLongLong() { return kind == TypeKind.TP_LONG_LONG; }
-  @Override public boolean isUlongLong() { return kind == TypeKind.TP_ULONG_LONG; }
-  @Override public boolean isFloat() { return kind == TypeKind.TP_FLOAT; }
-  @Override public boolean isDouble() { return kind == TypeKind.TP_DOUBLE; }
-  @Override public boolean isLongDouble() { return kind == TypeKind.TP_LONG_DOUBLE; }
+  @Override public boolean isBool() { return kind == CTypeKind.TP_BOOL; }
+  @Override public boolean isChar() { return kind == CTypeKind.TP_CHAR; }
+  @Override public boolean isUchar() { return kind == CTypeKind.TP_UCHAR; }
+  @Override public boolean isShort() { return kind == CTypeKind.TP_SHORT; }
+  @Override public boolean isUshort() { return kind == CTypeKind.TP_USHORT; }
+  @Override public boolean isInt() { return kind == CTypeKind.TP_INT; }
+  @Override public boolean isUint() { return kind == CTypeKind.TP_UINT; }
+  @Override public boolean isLong() { return kind == CTypeKind.TP_LONG; }
+  @Override public boolean isUlong() { return kind == CTypeKind.TP_ULONG; }
+  @Override public boolean isLongLong() { return kind == CTypeKind.TP_LONG_LONG; }
+  @Override public boolean isUlongLong() { return kind == CTypeKind.TP_ULONG_LONG; }
+  @Override public boolean isFloat() { return kind == CTypeKind.TP_FLOAT; }
+  @Override public boolean isDouble() { return kind == CTypeKind.TP_DOUBLE; }
+  @Override public boolean isLongDouble() { return kind == CTypeKind.TP_LONG_DOUBLE; }
 //@formatter:on
 
   @Override
@@ -472,7 +472,7 @@ public class CType implements CTypeApi {
 
   @Override
   public boolean isPointer() {
-    return kind == TypeKind.TP_POINTER_TO;
+    return kind == CTypeKind.TP_POINTER_TO;
   }
 
   @Override

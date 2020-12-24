@@ -2,12 +2,12 @@ package ast;
 
 import java.io.IOException;
 
-import jscan.Tokenlist;
-
 import org.junit.Test;
 
+import ast.main.ParserMain;
 import ast.parse.Parse;
 import ast.unit.TranslationUnit;
+import jscan.Tokenlist;
 
 public class Test_AllHeaders {
 
@@ -2067,7 +2067,7 @@ public class Test_AllHeaders {
     sb.append(" /*2049*/  }                                                                                                                                                                  \n");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
     Parse parser = new Parse(it);
     TranslationUnit unit = parser.parse_unit();
 

@@ -7,15 +7,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import jscan.Tokenlist;
-
 import org.junit.Test;
 
 import ast.expr.CExpression;
 import ast.expr.parser.ParseExpression;
 import ast.expr.sem.ConstexprEval;
+import ast.main.ParserMain;
 import ast.parse.Parse;
 import ast.unit.TranslationUnit;
+import jscan.Tokenlist;
 
 public class Test_Iconv {
 
@@ -75,7 +75,7 @@ public class Test_Iconv {
     sb.append(" /*052*/  }                                                                                                                     \n");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
 
     Parse p = new Parse(it);
     TranslationUnit unit = p.parse_unit();
@@ -116,7 +116,7 @@ public class Test_Iconv {
     sb.append(" /*028*/  }                                                                                    \n");
     //@formatter:on
 
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(sb.toString(), false)).pp();
+    Tokenlist it = new ParserMain(sb).preprocess();
 
     Parse p = new Parse(it);
     TranslationUnit unit = p.parse_unit();
@@ -168,7 +168,7 @@ public class Test_Iconv {
     for (Entry<String, Integer> entry : s.entrySet()) {
 
       String source = entry.getKey();
-      Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
+      Tokenlist it = new ParserMain(new StringBuilder(source)).preprocess();
 
       Parse p = new Parse(it);
       CExpression expr = new ParseExpression(p).e_expression();

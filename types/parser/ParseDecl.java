@@ -11,18 +11,18 @@ import java.util.Set;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import ast._entry.IdentMap;
 import ast.attributes.main.AttributesAsmsLists;
 import ast.attributes.main.ParseAttributesAsms;
 import ast.expr.CExpression;
 import ast.expr.parser.ParseExpression;
 import ast.expr.sem.ConstexprEval;
 import ast.parse.Parse;
+import ast.symtab.IdentMap;
 import ast.types.CFuncParam;
 import ast.types.CType;
 import ast.types.decl.CDecl;
 import ast.types.decl.CDeclEntry;
-import ast.types.main.TypeKind;
+import ast.types.main.CTypeKind;
 import ast.types.util.TypeMerger;
 
 public class ParseDecl {
@@ -63,7 +63,7 @@ public class ParseDecl {
 
     while (!pointers.isEmpty()) {
       int p = pointers.remove(0);
-      CDeclEntry e = new CDeclEntry(TypeKind.TP_POINTER_TO);
+      CDeclEntry e = new CDeclEntry(CTypeKind.TP_POINTER_TO);
       if (p == 2) {
         e.setConstPointer(true);
       }
@@ -93,13 +93,13 @@ public class ParseDecl {
       parser.move();
       if (saved.ofType(T.T_LEFT_PAREN)) {
 
-        CDeclEntry e = new CDeclEntry(TypeKind.TP_FUNCTION);
+        CDeclEntry e = new CDeclEntry(CTypeKind.TP_FUNCTION);
         List<CFuncParam> params = parseParams(e);
         e.setParameters(params);
 
         out.add(e);
       } else {
-        CDeclEntry e = new CDeclEntry(TypeKind.TP_ARRAY_OF);
+        CDeclEntry e = new CDeclEntry(CTypeKind.TP_ARRAY_OF);
 
         CExpression arrinit = parseArrayInit();
 

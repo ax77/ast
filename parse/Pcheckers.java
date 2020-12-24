@@ -6,9 +6,10 @@ import static jscan.tokenize.T.T_MINUS;
 import static jscan.tokenize.T.T_PLUS;
 import static jscan.tokenize.T.T_TILDE;
 import static jscan.tokenize.T.T_TIMES;
+
+import ast.symtab.IdentMap;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import ast._entry.IdentMap;
 
 public abstract class Pcheckers {
 

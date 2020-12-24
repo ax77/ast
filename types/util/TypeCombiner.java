@@ -1,6 +1,6 @@
 package ast.types.util;
 
-import static ast._entry.IdentMap.*;
+import static ast.symtab.IdentMap.*;
 
 import java.util.List;
 
@@ -8,15 +8,15 @@ import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import ast.errors.ParseException;
-import ast.types.main.StorageKind;
-import ast.types.main.TypeKind;
+import ast.types.main.CStorageKind;
+import ast.types.main.CTypeKind;
 
 public class TypeCombiner {
 
-  public static StorageKind combine_storage(List<Token> list) {
+  public static CStorageKind combine_storage(List<Token> list) {
 
     if (list.isEmpty()) {
-      return StorageKind.ST_NONE;
+      return CStorageKind.ST_NONE;
     }
 
     //@formatter:off
@@ -77,25 +77,25 @@ public class TypeCombiner {
     }
 
     if ((flag & f_typedef) == f_typedef) {
-      return StorageKind.ST_TYPEDEF;
+      return CStorageKind.ST_TYPEDEF;
     }
     if ((flag & f_extern) == f_extern) {
-      return StorageKind.ST_EXTERN;
+      return CStorageKind.ST_EXTERN;
     }
     if ((flag & f_static) == f_static) {
-      return StorageKind.ST_STATIC;
+      return CStorageKind.ST_STATIC;
     }
     if ((flag & f_auto) == f_auto) {
-      return StorageKind.ST_AUTO;
+      return CStorageKind.ST_AUTO;
     }
     if ((flag & f_register) == f_register) {
-      return StorageKind.ST_REGISTER;
+      return CStorageKind.ST_REGISTER;
     }
 
     throw new ParseException(lastLoc + "error:" + "unknown storage-class-specifier [" + ts.toString() + "]");
   }
 
-  public static TypeKind combine_typespec(List<Token> list) {
+  public static CTypeKind combine_typespec(List<Token> list) {
 
     //@formatter:off
     final int f_void        = 1 << 0 ;
@@ -228,26 +228,26 @@ public class TypeCombiner {
     // void
     boolean isvoid = istype(flag, f_void, 0);
     if (isvoid) {
-      return TypeKind.TP_VOID;
+      return CTypeKind.TP_VOID;
     }
 
     // _Bool
     boolean isbool = istype(flag, f_bool, 0);
     if (isbool) {
-      return TypeKind.TP_BOOL;
+      return CTypeKind.TP_BOOL;
     }
 
     // char
     // signed char
     boolean ischar = istype(flag, f_char, f_signed);
     if (ischar) {
-      return TypeKind.TP_CHAR;
+      return CTypeKind.TP_CHAR;
     }
 
     // unsigned char
     boolean isuchar = istype(flag, f_char | f_unsigned, 0);
     if (isuchar) {
-      return TypeKind.TP_UCHAR;
+      return CTypeKind.TP_UCHAR;
     }
 
     // short
@@ -256,14 +256,14 @@ public class TypeCombiner {
     // signed short int
     boolean isshort = istype(flag, f_short, f_int | f_signed);
     if (isshort) {
-      return TypeKind.TP_SHORT;
+      return CTypeKind.TP_SHORT;
     }
 
     // unsigned short
     // unsigned short int
     boolean isushort = istype(flag, f_short | f_unsigned, f_int);
     if (isushort) {
-      return TypeKind.TP_USHORT;
+      return CTypeKind.TP_USHORT;
     }
 
     // int 
@@ -271,14 +271,14 @@ public class TypeCombiner {
     // signed int
     boolean isint = istype(flag, f_int, f_signed) || istype(flag, f_signed, f_int);
     if (isint) {
-      return TypeKind.TP_INT;
+      return CTypeKind.TP_INT;
     }
 
     // unsigned
     // unsigned int
     boolean isuint = istype(flag, f_int | f_unsigned, 0) || istype(flag, f_unsigned, 0);
     if (isuint) {
-      return TypeKind.TP_UINT;
+      return CTypeKind.TP_UINT;
     }
 
     // long
@@ -287,14 +287,14 @@ public class TypeCombiner {
     // signed long int
     boolean islong = istype(flag, f_long, f_int | f_signed);
     if (islong) {
-      return TypeKind.TP_LONG;
+      return CTypeKind.TP_LONG;
     }
 
     // unsigned long
     // unsigned long int
     boolean isulong = istype(flag, f_long | f_unsigned, f_int);
     if (isulong) {
-      return TypeKind.TP_ULONG;
+      return CTypeKind.TP_ULONG;
     }
 
     // long long
@@ -303,32 +303,32 @@ public class TypeCombiner {
     // signed long long int
     boolean islonglong = istype(flag, f_longlong, f_signed | f_int);
     if (islonglong) {
-      return TypeKind.TP_LONG_LONG;
+      return CTypeKind.TP_LONG_LONG;
     }
 
     // unsigned long long
     // unsigned long long int
     boolean isulonglong = istype(flag, f_longlong | f_unsigned, f_int);
     if (isulonglong) {
-      return TypeKind.TP_ULONG_LONG;
+      return CTypeKind.TP_ULONG_LONG;
     }
 
     // float
     boolean isfloat = istype(flag, f_float, 0);
     if (isfloat) {
-      return TypeKind.TP_FLOAT;
+      return CTypeKind.TP_FLOAT;
     }
 
     // double
     boolean isdouble = istype(flag, f_double, 0);
     if (isdouble) {
-      return TypeKind.TP_DOUBLE;
+      return CTypeKind.TP_DOUBLE;
     }
 
     // long double
     boolean isldouble = istype(flag, f_long | f_double, 0);
     if (isldouble) {
-      return TypeKind.TP_LONG_DOUBLE;
+      return CTypeKind.TP_LONG_DOUBLE;
     }
 
     throw new ParseException(lastLoc + "error:" + "unknown type-specifier [" + ts.toString() + "]");

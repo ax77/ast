@@ -1,24 +1,25 @@
 package ast;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
+import org.junit.Test;
+
+import ast.main.ParserMain;
+import ast.parse.Pcheckers;
+import ast.symtab.IdentMap;
 import jscan.Tokenlist;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-
-import org.junit.Test;
-
-import ast._entry.IdentMap;
-import ast.parse.Pcheckers;
 
 public class Test_IdentMap {
 
   @Test
   public void testIdents() throws IOException {
     String source = "int int int int int int int";
-    Tokenlist it = new PreprocessSourceForParser(new PreprocessSourceForParserVariant(source, false)).pp();
+    Tokenlist it = new ParserMain(new StringBuilder(source)).preprocess();
     for (;;) {
       Token t = it.next();
       if (t.ofType(T.TOKEN_STREAMBEGIN) || t.ofType(T.TOKEN_STREAMEND)) {
