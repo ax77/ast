@@ -9,6 +9,7 @@ import java.util.List;
 
 import jscan.tokenize.Token;
 import ast.parse.Parse;
+import ast.parse.Pcheckers;
 
 public class ParseAsm {
   private final Parse parser;
@@ -31,7 +32,7 @@ public class ParseAsm {
     tokens.add(parser.tok()); // __asm
     parser.move();
 
-    while (parser.isTypeQual()) {
+    while (Pcheckers.isTypeQual(parser.tok())) {
       Token saved = parser.tok();
       parser.move();
       tokens.add(saved);

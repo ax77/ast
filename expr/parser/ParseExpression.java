@@ -190,7 +190,7 @@ public class ParseExpression {
     //      lhs = build_assign(saved, lhs, rhs);
     //    }
 
-    if (parser.isAssignOperator()) {
+    if (Pcheckers.isAssignOperator(parser.tok())) {
 
       Token saved = parser.tok();
 
@@ -369,7 +369,7 @@ public class ParseExpression {
   private CExpression e_unary() {
 
     // [& * + - ~ !]
-    if (parser.isUnaryOperator()) {
+    if (Pcheckers.isUnaryOperator(parser.tok())) {
       Token operator = parser.tok();
       parser.move();
       return build_unary(operator, e_cast());

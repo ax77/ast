@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ast.errors.ParseException;
+import ast.parse.InitKeywords;
 import ast.parse.NullChecker;
 import ast.parse.Parse;
 import ast.unit.TranslationUnit;
@@ -39,9 +40,12 @@ public class ParserMain implements ParserMainApi {
   @Override
   public Tokenlist preprocess() throws IOException {
 
+    // TODO: twice? here and in parser. think.
+    InitKeywords.initIdentMap();
+
     if (isFromFile) {
-      ParserInternal conf = new ParserInternal(ParserInternal.PREPROCESS_FILE_INPUT | ParserInternal.APPLY_STR_CONCAT,
-          filename);
+      ParserInternal conf = new ParserInternal(ParserInternal.PREPROCESS_FILE_INPUT | ParserInternal.APPLY_STR_CONCAT
+          | ParserInternal.PREPEND_PREDEFINED_BUFFER, filename);
       return conf.preprocess();
     }
 

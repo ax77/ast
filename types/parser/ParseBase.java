@@ -11,6 +11,7 @@ import jscan.tokenize.Token;
 import ast.attributes.main.AttributesAsmsLists;
 import ast.attributes.main.ParseAttributesAsms;
 import ast.parse.Parse;
+import ast.parse.Pcheckers;
 import ast.symtab.IdentMap;
 import ast.symtab.elements.CSymbol;
 import ast.symtab.elements.CSymbolBase;
@@ -70,7 +71,7 @@ public class ParseBase {
       }
     }
 
-    if (parser.isTypeSpec()) {
+    if (Pcheckers.isTypeSpec(parser.tok())) {
       // int typedef i32;
       // int x;
       // int const static x;
@@ -96,7 +97,7 @@ public class ParseBase {
     // i32 int ... :: error
     //
 
-    if (parser.tok().ofType(TOKEN_IDENT) && !parser.tok().isBuiltinIdent()) {
+    if (parser.isUserDefinedId()) {
       CSymbol symbol = parser.getSym(parser.tok().getIdent());
       if (symbol != null) {
         CType typeFromStab = symbol.getType();
@@ -125,25 +126,25 @@ public class ParseBase {
 
       attributes = new ParseAttributesAsms(parser).parse();
 
-      if (parser.isStorageClassSpec()) {
+      if (Pcheckers.isStorageClassSpec(parser.tok())) {
         Token saved = parser.tok();
         parser.move();
         st.add(saved);
       }
 
-      else if (parser.isTypeSpec()) {
+      else if (Pcheckers.isTypeSpec(parser.tok())) {
         Token saved = parser.tok();
         parser.move();
         ts.add(saved);
       }
 
-      else if (parser.isTypeQual()) {
+      else if (Pcheckers.isTypeQual(parser.tok())) {
         Token saved = parser.tok();
         parser.move();
         tq.add(saved);
       }
 
-      else if (parser.isFuncSpec()) {
+      else if (Pcheckers.isFuncSpec(parser.tok())) {
         parser.move(); // TODO: inline, noreturn
       }
 
@@ -158,23 +159,23 @@ public class ParseBase {
 
       attributes = new ParseAttributesAsms(parser).parse();
 
-      if (parser.isStorageClassSpec()) {
+      if (Pcheckers.isStorageClassSpec(parser.tok())) {
         Token saved = parser.tok();
         parser.move();
         storage.add(saved);
       }
 
-      else if (parser.isTypeQual()) {
+      else if (Pcheckers.isTypeQual(parser.tok())) {
         Token saved = parser.tok();
         parser.move();
         qualifiers.add(saved);
       }
 
-      else if (parser.isFuncSpec()) {
+      else if (Pcheckers.isFuncSpec(parser.tok())) {
         parser.move(); // TODO: inline, noreturn
       }
 
-      else if (parser.isStructOrUnionSpecStart() || parser.isEnumSpecStart()) {
+      else if (Pcheckers.isStructOrUnionSpecStart(parser.tok()) || Pcheckers.isEnumSpecStart(parser.tok())) {
         Token saved = parser.tok();
         parser.move();
         compoundKeywords.add(saved);

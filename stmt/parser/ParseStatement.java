@@ -138,7 +138,7 @@ public class ParseStatement {
 
       Token from = parser.checkedMove(goto_ident);
       Ident label = parser.getIdent();
-      
+
       function.addGotos(label);
 
       parser.semicolon();
@@ -377,12 +377,8 @@ public class ParseStatement {
     return null;
   }
 
-  private boolean isUserDefinedId() {
-    return parser.tok().ofType(TOKEN_IDENT) && !parser.tok().isBuiltinIdent();
-  }
-
   private boolean isLabel() {
-    if (isUserDefinedId()) {
+    if (parser.isUserDefinedId()) {
       Token peek = parser.peek();
       if (peek.ofType(T_COLON)) {
         return true;
@@ -401,7 +397,7 @@ public class ParseStatement {
 
     Token from = parser.tok();
     Ident label = parser.getIdent();
-    
+
     function.addLabel(label);
 
     parser.checkedMove(T_COLON);

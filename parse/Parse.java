@@ -44,6 +44,16 @@ public class Parse {
   private List<Token> ringBuffer;
   private Token prevtok;
 
+  public Parse(List<Token> tokens) {
+    this.tokenlist = new Tokenlist(tokens);
+    initParser();
+  }
+
+  public Parse(Tokenlist tokenlist) {
+    this.tokenlist = tokenlist;
+    initParser();
+  }
+
   public Symtab<Ident, CSymbol> getSymbols() {
     return symbols;
   }
@@ -125,17 +135,8 @@ public class Parse {
   //
   // TODO:SEMANTIC
 
-  public Parse(List<Token> tokens) {
-    this.tokenlist = new Tokenlist(tokens);
-
-    initDefaults();
-    initScopes();
-    move();
-  }
-
-  public Parse(Tokenlist tokenlist) {
-    this.tokenlist = tokenlist;
-
+  private void initParser() {
+    InitKeywords.initIdentMap();
     initDefaults();
     initScopes();
     move();
@@ -206,7 +207,7 @@ public class Parse {
     StringBuilder sb = new StringBuilder();
     sb.append("error: " + m + "\n");
     sb.append("  --> " + lastloc + "\n\n");
-    sb.append(ringBufferToStringLines() + "\n");
+    sb.append(RingBuf.ringBufferToStringLines(ringBuffer) + "\n");
 
     throw new ParseException(sb.toString());
   }
@@ -216,7 +217,7 @@ public class Parse {
     StringBuilder sb = new StringBuilder();
     sb.append("warning: " + m + "\n");
     sb.append("  --> " + lastloc + "\n\n");
-    sb.append(ringBufferToStringLines() + "\n");
+    sb.append(RingBuf.ringBufferToStringLines(ringBuffer) + "\n");
 
     //System.out.println(sb.toString());
   }
@@ -282,48 +283,6 @@ public class Parse {
     return tokenlist.peek();
   }
 
-  public String ringBufferToStringLines() {
-
-    List<List<Token>> lines = new ArrayList<List<Token>>(0);
-    List<Token> line = new ArrayList<Token>(0);
-
-    for (Token t : ringBuffer) {
-      if (t.getLocation() != null && t.getLocation().getLine() == 0) {
-        continue; // built-in
-      }
-      line.add(t);
-      if (t.isNewLine()) {
-        lines.add(line);
-        line = new ArrayList<Token>(0);
-      }
-    }
-    if (!line.isEmpty()) {
-      lines.add(line);
-      line = new ArrayList<Token>(0);
-    }
-
-    StringBuilder sb = new StringBuilder();
-
-    for (List<Token> oneline : lines) {
-      StringBuilder tmp = new StringBuilder();
-      boolean first = true;
-      for (Token t : oneline) {
-        if (first) {
-          tmp.append(String.format("%-5d|", t.getRow()));
-          first = false;
-        }
-        if (t.hasLeadingWhitespace()) {
-          tmp.append(" ");
-        }
-        tmp.append(t.getValue());
-      }
-      tmp.append("\n");
-      sb.append(tmp);
-    }
-
-    return sb.toString();
-  }
-
   public Token lparen() {
     return checkedMove(T.T_LEFT_PAREN);
   }
@@ -344,53 +303,15 @@ public class Parse {
     return checkedMove(T_SEMI_COLON);
   }
 
-  //////////////////////////////////////////////////////////////////////
-
-  public boolean isAssignOperator() {
-    return Pcheckers.isAssignOperator(tok);
-  }
-
-  public boolean isUnaryOperator() {
-    return Pcheckers.isUnaryOperator(tok);
-  }
-
-  public boolean isStorageClassSpec() {
-    return Pcheckers.isStorageClassSpec(tok);
-  }
-
-  public boolean isTypeSpec() {
-    return Pcheckers.isTypeSpec(tok);
-  }
-
-  public boolean isTypeQual() {
-    return Pcheckers.isTypeQual(tok);
-  }
-
-  public boolean isFuncSpec() {
-    return Pcheckers.isFuncSpec(tok);
-  }
-
-  public boolean isEnumSpecStart() {
-    return Pcheckers.isEnumSpecStart(tok);
-  }
-
-  public boolean isStructOrUnionSpecStart() {
-    return Pcheckers.isStructOrUnionSpecStart(tok);
-  }
-
-  public boolean isStaticAssert() {
-    return Pcheckers.isStaticAssert(tok);
-  }
-
   //@formatter:off
   public boolean isDeclSpecStart() {
-    return isStorageClassSpec()
-        || isTypeSpec()
-        || isTypeQual()
-        || isFuncSpec()
-        || isEnumSpecStart()
-        || isStructOrUnionSpecStart()
-        || isStaticAssert()
+    return Pcheckers.isStorageClassSpec(tok)
+        || Pcheckers.isTypeSpec(tok)
+        || Pcheckers.isTypeQual(tok)
+        || Pcheckers.isFuncSpec(tok)
+        || Pcheckers.isEnumSpecStart(tok)
+        || Pcheckers.isStructOrUnionSpecStart(tok)
+        || Pcheckers.isStaticAssert(tok)
         || isTypedefName(tok());
   }
   
@@ -423,11 +344,16 @@ public class Parse {
     return Pcheckers.isAsmStart(tok);
   }
 
+  public boolean isUserDefinedId() {
+    return tok.ofType(TOKEN_IDENT) && !tok.isBuiltinIdent();
+  }
+
+  public boolean isUserDefinedId(Token what) {
+    return what.ofType(TOKEN_IDENT) && !what.isBuiltinIdent();
+  }
+
   private boolean isTypedefName(Token tok) {
-    if (!tok.ofType(TOKEN_IDENT)) {
-      return false;
-    }
-    if (tok.isBuiltinIdent()) {
+    if (!isUserDefinedId(tok)) {
       return false;
     }
     CSymbol s = getSym(tok.getIdent());

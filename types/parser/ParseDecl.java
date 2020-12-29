@@ -17,6 +17,7 @@ import ast.expr.CExpression;
 import ast.expr.parser.ParseExpression;
 import ast.expr.sem.ConstexprEval;
 import ast.parse.Parse;
+import ast.parse.Pcheckers;
 import ast.symtab.IdentMap;
 import ast.types.CFuncParam;
 import ast.types.CType;
@@ -45,7 +46,7 @@ public class ParseDecl {
       parser.move();
 
       Set<Ident> ptrTypeQuals = new HashSet<Ident>();
-      while (parser.isTypeQual()) {
+      while (Pcheckers.isTypeQual(parser.tok())) {
         Token saved = parser.tok();
         parser.move();
         ptrTypeQuals.add(saved.getIdent());
